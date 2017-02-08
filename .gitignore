@@ -1,0 +1,8 @@
+passwords
+group_vars
+hosts
+public_keys
+host_vars
+site.*
+ssl
+update.*
