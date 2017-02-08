@@ -23,7 +23,7 @@ And now you need to configure nagios group and nagios type.
 Nagios group is the group you want to add this server in. No need to create this group in nagios, it will be automatically added to /etc/nagios3/conf.d/hostgroups_nagios2.cfg if it doesn't exist.
 ```nagios_group: MY-GROUP```
 
-The nagios type is the service template which will be used by service definition. For example, I have one service definition in nagios named HNO (in french Heures non ouvrées). It means that I can be alerted 24/7 for this host. Here is the service definition:
+The nagios type is the service template which will be used by service definition. For example, I have one service definition in nagios named HNO (in french Heures Non Ouvrées). It means that I can be alerted 24/7 for this host. Here is the service definition:
 ```
 define service {
     name                            HNO-services
@@ -93,7 +93,7 @@ check_mailq:
   critical: 80
 ```
 
-Ther is a special service added in this role which is not listed here, [Integrit](https://github.com/ecashin/integrit). You need to add this service definition in nagios to only check for it every hour cause it consumes a lot of IO:
+There is a special service added in this role which is not listed here, [Integrit](https://github.com/ecashin/integrit). You need to add this service definition in nagios to only check for it every hour cause it consumes a lot of IO:
 ```
 define service{
     name                            integrit-services
