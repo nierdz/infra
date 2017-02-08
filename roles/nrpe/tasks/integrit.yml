@@ -1,0 +1,43 @@
+---
+- name: Install integrit package
+  apt: name=integrit cache_valid_time=86400 state=latest
+
+- name: Copy default configuration file
+  copy: src=integrit.conf dest=/etc/integrit/nagios.conf owner=root group=root mode=0600 force=no
+
+- name: Create /opt/integrit folder
+  file: path=/opt/integrit state=directory owner=root group=root mode=0700
+
+- name: Copy db_update.sh script
+  copy: src=db_update.sh dest=/opt/integrit/db_update.sh owner=root group=root mode=0700
+
+- name: Copy check_integrit script
+  copy: src=check_integrit dest=/usr/lib/nagios/plugins/check_integrit owner=root group=root mode=0755
+
+- name: Write integrit command to /etc/nagios/nrpe_local.cfg
+  lineinfile:
+    dest: /etc/nagios/nrpe_local.cfg
+    regexp: '^command\[check_integrit\]=.*/usr/lib/nagios/plugins/check_integrit.*'
+    line: 'command[check_integrit]=sudo /usr/lib/nagios/plugins/check_integrit -C /etc/integrit/nagios.conf'
+  notify:
+    - restart nrpe
+
+- name: Ajout du path /usr/sbin/integrit dans sudo pour nagios
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    line: 'nagios ALL=(ALL) NOPASSWD: /usr/sbin/integrit'
+    validate: 'visudo -cf %s'
+
+- name: Add INTEGRIT service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : INTEGRIT service"
+    block: |
+      define service {
+        use					integrit-services
+        host_name			{{ mnttech_fqdn }}
+        service_description	INTEGRIT
+        check_command		check_nrpe!check_integrit
+      }

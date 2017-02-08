@@ -1,0 +1,26 @@
+---
+- name: Nrpe and nagios plugins installation 
+  apt: name={{ item }} cache_valid_time=86400 state=latest
+  with_items:
+    - nagios-nrpe-server
+    - nagios-plugins
+    - nagios-plugins-basic
+    - nagios-plugins-contrib
+    - nagios-plugins-standard
+    - libnagios-plugin-perl
+
+- name: Ajout du path /usr/lib/nagios/plugins/ dans sudo pour nagios
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    line: 'nagios ALL=(ALL) NOPASSWD: /usr/lib/nagios/plugins/'
+    validate: 'visudo -cf %s'
+
+- name: Allongement du timeout de NRPE
+  replace: dest=/etc/nagios/nrpe.cfg regexp='^command_timeout=.*$' replace='command_timeout=300'
+  notify:
+    - restart nrpe
+
+- include: configure.yml
+- include: nagios.yml
+- include: integrit.yml

@@ -1,0 +1,185 @@
+---
+- name: Add {{ mnttech_fqdn }}.cfg to nagios
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : host definition"
+    create: yes
+    block: |
+      define host {
+      	use		{{ nagios_type }}-servers
+      	hostgroups	{{ nagios_group }},{{ nagios_type }}
+      	host_name	{{ mnttech_fqdn }}
+      	alias		{{ mnttech_fqdn }}
+      }
+
+- name: Define nagios hostgroup if not already defined
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/conf.d/hostgroups_nagios2.cfg
+    marker: "# {mark} ANSIBLE : hostgroup {{ nagios_group }} definition"
+    create: yes
+    block: |
+      define hostgroup {
+      	hostgroup_name	{{ nagios_group }}
+      	alias			{{ nagios_group }}
+      }
+
+- name: Add PING service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : PING service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		PING
+      	check_command			check_ping!{{ check_ping.warning }}!{{ check_ping.critical }}
+      }
+
+- name: Add SSH service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : SSH service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		SSH
+      	check_command			check_ssh
+      }
+
+- name: Add USERS service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : USERS service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		USERS
+      	check_command			check_nrpe!check_users
+      }
+
+- name: Add LOAD service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : LOAD service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		LOAD
+      	check_command			check_nrpe!check_load
+      	max_check_attempts		{{ check_load.max_check_attempts }} 
+      }
+
+- name: Add PROCS service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : PROCS service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		PROCS
+      	check_command			check_nrpe!check_multiprocs
+      }
+
+- name: Add ZOMBIE PROCS service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : ZOMBIE PROCS service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		ZOMBIE PROCS
+      	check_command			check_nrpe!check_zombie_procs
+      }
+
+- name: Add TOTAL PROCS service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : TOTAL PROCS service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		TOTAL PROCS
+      	check_command			check_nrpe!check_total_procs
+      }
+
+- name: Add SWAP service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : SWAP service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		SWAP
+      	check_command			check_nrpe!check_swap
+      }
+
+- name: Add MEM service in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : MEM service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		MEM
+      	check_command			check_nrpe!check_memory
+      }
+
+- name: Add DISK services in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  with_dict: "{{ check_disk }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : DISK{{ item.key }} service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		DISK{{ item.key }}
+      	check_command			check_nrpe!check{{ item.key }}_disk
+      }
+
+- name: Add MAILQ services in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : MAILQ service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		MAILQ
+      	check_command			check_nrpe!check_mailq
+      }
+
+- name: Add Additionals NRPE services in {{ mnttech_fqdn }}.cfg
+  delegate_to: "{{ nagios_fqdn }}"
+  with_dict: "{{ nrpe_checks }}"
+  blockinfile:
+    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    marker: "# {mark} ANSIBLE : {{ item.key }} service"
+    block: |
+      define service {
+      	use				{{ nagios_type }}-services
+      	host_name			{{ mnttech_fqdn }}
+      	service_description		{{ item.key }}
+      	check_command			check_nrpe!{{ item.value.nrpe }}
+      }

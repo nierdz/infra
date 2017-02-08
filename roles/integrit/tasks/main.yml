@@ -1,0 +1,5 @@
+---
+- name: Integrit db_update.sh
+  shell: /opt/integrit/db_update.sh 
+  args:
+    executable: /bin/bash
