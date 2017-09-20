@@ -1,0 +1,7 @@
+---
+- name: Create users with random passwords
+  mysql_user: name={{ item.key }} password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/mysql_{{ item.key }}_password.txt') }} priv={{ item.value.database }}.*:{{ item.value.privileges }} host={{ item.value.host }} state=present
+  with_dict: "{{ mysql_users }}"
+
+- name: Create cactiuser user
+  mysql_user: name=cactiuser password={{ cacti_mysql_password }} priv=*.*:SUPER,PROCESS host={{ cacti_ip }} state=present

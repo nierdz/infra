@@ -1,0 +1,7 @@
+---
+- name: Set snmpd password
+  set_fact: snmpd_password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/snmpd_password.txt') }}
+
+- name: Add device in cacti
+  delegate_to: "{{ nagios_fqdn }}"
+  shell: /opt/scripts/add_cacti_host.sh -h {{ mnttech_fqdn }} -c {{ snmpd_password }}

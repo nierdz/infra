@@ -1,0 +1,12 @@
+---
+- name: ssh restart
+  service: name=ssh state=restarted
+
+- name: snmpd restart
+  service: name=snmpd state=restarted
+
+- name: cron restart
+  service: name=cron state=restarted
+
+- name: postalias
+  shell: postalias /etc/aliases

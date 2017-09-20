@@ -1,0 +1,51 @@
+---
+- name: Delete default SSL configuration
+  lineinfile: dest=/etc/nginx/nginx.conf regexp={{ item.regexp }} line={{ item.line }} backrefs=yes
+  with_items:
+    - { regexp: '^(\tssl_protocols.*)', line: '#\1' }
+    - { regexp: '^(\tssl_prefer_server_ciphers.*)', line: '#\1' }
+
+- name: Delete default gzip configuration
+  lineinfile: dest=/etc/nginx/nginx.conf regexp={{ item.regexp }} line={{ item.line }} backrefs=yes
+  with_items:
+    - { regexp: '^(\tgzip on.*)', line: '#\1' }
+    - { regexp: '^(\tgzip_disable.*)', line: '#\1' }
+
+- name: Add SSL instructions in /etc/nginx/conf.d folder
+  template: src=security-ssl.conf.j2 dest=/etc/nginx/conf.d/security-ssl.conf owner=root group=root mode=0644
+
+- name: Add gzip instructions in /etc/nginx/conf.d folder
+  template: src=gzip.conf.j2 dest=/etc/nginx/conf.d/gzip.conf owner=root group=root mode=0644
+
+- name: Add proper logrotate with date
+  template: src=logrotate.nginx.j2 dest=/etc/logrotate.d/nginx owner=root group=root mode=0644
+
+- name: Create /home/backup/log/nginx directory
+  file: path=/home/backup/log/nginx state=directory owner=www-data group=www-data mode=750
+
+- name: Add nginx logs archive and delete to crontab
+  blockinfile:
+    dest: /etc/crontab
+    marker: "# {mark} ANSIBLE : Nginx logs archive and delete"
+    create: yes
+    block: |
+      00 4	* * *	root	find /var/log/nginx -mtime +7 -exec mv {} /home/backup/log/nginx/ \;
+      00 5	* * *	root	find /home/backup/log/nginx -type f -name *.gz -mtime +365 -exec /bin/rm {} \;
+  notify:
+    - restart cron
+
+- name: Fix this damn nginx/php-fpm bug of blank page
+  lineinfile: dest=/etc/nginx/fastcgi_params regexp='^fastcgi_param.*SCRIPT_FILENAME.*' line='fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;'
+
+- name: Create /etc/nginx/ssl if needed
+  file: path=/etc/nginx/ssl state=directory owner=root group=root mode=0755
+
+- name: Check if /etc/nginx/ssl/dh4096.pem exists
+  stat: path=/etc/nginx/ssl/dh4096.pem
+  register: dh4096
+
+- name: Create dh4096.pem
+  when: dh4096.stat.exists == False
+  shell: openssl dhparam -out /etc/nginx/ssl/dh4096.pem 4096
+  register: result
+  failed_when: "result.rc != 0"

@@ -1,0 +1,28 @@
+---
+- name: Check if variable proxmox is defined to prevent error
+  debug: msg={{ proxmox }}
+  when: proxmox
+
+- name: Add proxmox apt key 
+  apt_key: url=http://download.proxmox.com/debian/key.asc id=9887F95A
+
+- name: Add pve-install-repo.list
+  apt_repository: repo="deb http://download.proxmox.com/debian {{ ansible_distribution_release }} pve-no-subscription" state=present filename="pve-install-repo"
+
+- name: Proxmox packages installation
+  apt: name={{ item }} cache_valid_time=86400 state=latest
+  with_items:
+    - proxmox-ve
+    - ntp
+    - ssh
+    - postfix
+    - ksm-control-daemon
+    - open-iscsi
+    - systemd-sysv
+    - kpartx
+
+- name: Delete pve-enterprise.list
+  file: path=/etc/apt/sources.list.d/pve-enterprise.list state=absent
+
+- name: Information
+  debug: msg="You need to reboot now! Don't forget to check all you need to do next https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/"

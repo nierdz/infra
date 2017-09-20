@@ -4,7 +4,7 @@ apache2, /usr/sbin/apache2 -k , 3:100 , 1:200
 proftpd, proftpd, ,1:10
 vsftpd, /usr/sbin/vsftpd, ,1:10
 sendmail-mta, sendmail, ,1:10
-dovecot,  /usr/sbin/dovecot -c /etc/dovecot/dovecot.conf,  ,1:1
+dovecot,  /usr/sbin/dovecot,  ,1:1
 amavisd , /usr/sbin/amavisd , , 2:10
 saslauthd,  /usr/sbin/saslauthd -a pam -c -m /var/run/saslauthd -n 5, ,1:10
 dspam, dspam --daemon, ,1:1
@@ -21,9 +21,9 @@ sshd , /usr/sbin/sshd , , 1:1
 snmpd , /usr/sbin/snmpd, , 1:1
 mysqld , /usr/sbin/mysqld, , 1:1
 exim4, /usr/sbin/exim4, , 1:1
-master, /usr/lib/postfix/master, , 1:1
-fail2ban-server, /usr/bin/python /usr/bin/fail2ban-server, ,1:1
+master, /usr/lib/postfix/sbin/master -w, , 1:1
+fail2ban-server, /usr/bin/python3 /usr/bin/fail2ban-server, ,1:1
 php-fpm7.0, php-fpm: master process, ,1:1
 redis-server, /usr/bin/redis-server, ,1:1
-smbd, /usr/sbin/smbd -D, , 1:4
+smbd, /usr/sbin/smbd, , 1:10
 BackupPC, /usr/bin/perl /usr/share/backuppc/bin/BackupPC -d, , 1:1

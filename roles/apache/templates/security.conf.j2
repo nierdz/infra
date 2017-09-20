@@ -1,0 +1,17 @@
+<Directory />
+	AllowOverride None
+	Require all denied
+	Options -Indexes -ExecCGI -Includes -MultiViews
+</Directory>
+
+<Files ".ht*">
+	Require all denied
+</Files>
+
+<Directorymatch "^/.*/\.git/">
+	Require all denied
+</Directorymatch>
+
+ServerTokens Prod
+ServerSignature Off
+TraceEnable Off

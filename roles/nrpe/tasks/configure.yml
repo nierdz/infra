@@ -5,8 +5,11 @@
     regexp: '^allowed_hosts=.*'
     line: 'allowed_hosts=127.0.0.1,{{ nagios_ip }}'
 
-- name: Add check_multiprocs file
+- name: Add check_multiprocs to /usr/lib/nagios/plugins/ folder
   template: src=check_multiprocs.j2 dest=/usr/lib/nagios/plugins/check_multiprocs owner=root group=root mode=0755
+
+- name: Add check_redis.pl to /usr/lib/nagios/plugins folder 
+  template: src=check_redis.j2 dest=/usr/lib/nagios/plugins/check_redis.pl owner=root group=root mode=0755
 
 - name: Add multiprocs.list file
   template: src=multiprocs.list.j2 dest=/etc/nagios/multiprocs.list owner=root group=root mode=0644 force=no
@@ -36,6 +39,6 @@
 
 - name: Write additionals nrpe commands to /etc/nagios/nrpe_local.cfg
   lineinfile: dest=/etc/nagios/nrpe_local.cfg regexp={{ item.value.regexp }} line={{ item.value.line }}
-  with_dict: "{{ nrpe_checks }}"
+  with_dict: "{{ nrpe_checks | default({}) }}"
   notify:
     - restart nrpe

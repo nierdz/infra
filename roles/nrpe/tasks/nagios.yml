@@ -2,7 +2,7 @@
 - name: Add {{ mnttech_fqdn }}.cfg to nagios
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : host definition"
     create: yes
     block: |
@@ -16,7 +16,7 @@
 - name: Define nagios hostgroup if not already defined
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/conf.d/hostgroups_nagios2.cfg
+    dest: /etc/icinga/objects/hostgroups_nagios2.cfg
     marker: "# {mark} ANSIBLE : hostgroup {{ nagios_group }} definition"
     create: yes
     block: |
@@ -28,7 +28,7 @@
 - name: Add PING service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : PING service"
     block: |
       define service {
@@ -41,7 +41,7 @@
 - name: Add SSH service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : SSH service"
     block: |
       define service {
@@ -54,7 +54,7 @@
 - name: Add USERS service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : USERS service"
     block: |
       define service {
@@ -67,7 +67,7 @@
 - name: Add LOAD service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : LOAD service"
     block: |
       define service {
@@ -81,7 +81,7 @@
 - name: Add PROCS service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : PROCS service"
     block: |
       define service {
@@ -94,7 +94,7 @@
 - name: Add ZOMBIE PROCS service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : ZOMBIE PROCS service"
     block: |
       define service {
@@ -107,7 +107,7 @@
 - name: Add TOTAL PROCS service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : TOTAL PROCS service"
     block: |
       define service {
@@ -120,7 +120,7 @@
 - name: Add SWAP service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : SWAP service"
     block: |
       define service {
@@ -133,7 +133,7 @@
 - name: Add MEM service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : MEM service"
     block: |
       define service {
@@ -147,7 +147,7 @@
   delegate_to: "{{ nagios_fqdn }}"
   with_dict: "{{ check_disk }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : DISK{{ item.key }} service"
     block: |
       define service {
@@ -160,7 +160,7 @@
 - name: Add MAILQ services in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : MAILQ service"
     block: |
       define service {
@@ -172,9 +172,9 @@
 
 - name: Add Additionals NRPE services in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
-  with_dict: "{{ nrpe_checks }}"
+  with_dict: "{{ nrpe_checks | default({}) }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : {{ item.key }} service"
     block: |
       define service {

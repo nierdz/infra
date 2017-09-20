@@ -1,0 +1,65 @@
+---
+- name: Check if default vhost is active
+  stat: path=/etc/nginx/sites-enabled/default
+  register: default_vhost
+
+- name: Disable default vhost if needed
+  when: default_vhost.stat.exists == True
+  shell: /usr/sbin/ngx-conf -d default
+  register: result
+  failed_when: "result.rc != 0"
+
+- name: Delete default vhost
+  file: path=/etc/nginx/sites-available/default state=absent
+
+- name: Create users if needed
+  when: item.value.user != 'www-data'
+  user: name={{ item.value.user }} password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/user_{{ item.value.user }}_password.txt encrypt=md5_crypt') }} groups=www-data
+  with_dict: "{{ nginx_vhosts }}"
+
+- name: Create web root directory if needed
+  when: item.value.root is defined
+  file: path={{ item.value.root }} state=directory owner={{ item.value.user }} group={{ item.value.user }} mode=0755
+  with_dict: "{{ nginx_vhosts }}"
+
+- name: Add vhosts to sites-available folder
+  template: src=vhost.conf.j2 dest=/etc/nginx/sites-available/{{ item }}.conf owner=root group=root mode=0644
+  with_items: "{{ nginx_vhosts | list }}"
+  register: vhosts
+
+- name: Push ssl_certificate file in ssl folder if needed
+  when: item.value.ssl_certificate is defined and item.value.certbot is not defined
+  copy: src=ssl/{{ item.value.ssl_certificate }} dest=/etc/nginx/ssl/{{ item.value.ssl_certificate }} owner=root group=root mode=0640
+  with_dict: "{{ nginx_vhosts }}"
+
+- name: Push ssl_certificate_key file in ssl folder if needed
+  when: item.value.ssl_certificate_key is defined and item.value.certbot is not defined
+  copy: src=ssl/{{ item.value.ssl_certificate_key }} dest=/etc/nginx/ssl/{{ item.value.ssl_certificate_key }} owner=root group=root mode=0640
+  with_dict: "{{ nginx_vhosts }}"
+
+- name: Push ssl_trusted_certificate file in ssl folder if needed
+  when: item.value.ssl_trusted_certificate is defined and item.value.certbot is not defined
+  copy: src=ssl/{{ item.value.ssl_trusted_certificate }} dest=/etc/nginx/ssl/{{ item.value.ssl_trusted_certificate }} owner=root group=root mode=0640
+  with_dict: "{{ nginx_vhosts }}"
+
+- name: Activate all vhosts
+  when: vhosts.changed
+  shell: /usr/sbin/ngx-conf -e {{ item.key }}.conf
+  register: result
+  failed_when: "result.rc != 0"
+  with_dict: "{{ nginx_vhosts }}"
+  notify:
+    - check nginx configuration
+    - reload nginx
+
+
+
+
+
+
+
+
+
+
+
+

@@ -32,7 +32,7 @@
 - name: Add INTEGRIT service in {{ mnttech_fqdn }}.cfg
   delegate_to: "{{ nagios_fqdn }}"
   blockinfile:
-    dest: /etc/nagios3/servers/{{ mnttech_fqdn }}.cfg
+    dest: /etc/icinga/servers/{{ mnttech_fqdn }}.cfg
     marker: "# {mark} ANSIBLE : INTEGRIT service"
     block: |
       define service {

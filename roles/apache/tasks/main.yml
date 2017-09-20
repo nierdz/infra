@@ -1,0 +1,12 @@
+---
+- name: Check if variable apache is defined to prevent error
+  debug: msg={{ apache }}
+  when: apache
+
+- name: Install apache2
+  apt: name={{ item }} cache_valid_time=86400 state=latest
+  with_items:
+    - apache2
+
+- include: configuration.yml
+- include: vhosts.yml

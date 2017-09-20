@@ -1,0 +1,116 @@
+---
+- name: Default packages installation
+  apt: name={{ item }} cache_valid_time=86400 state=latest
+  with_items:
+    - aptitude
+    - less
+    - sudo
+    - ntp
+    - vim
+    - openssh-client
+    - snmpd
+    - lshw
+    - iptraf
+    - iperf
+    - strace
+    - rsync
+    - tcpdump
+    - curl
+    - lsof
+    - gdisk
+    - mcrypt
+    - ethtool
+    - screen
+    - bc
+    - netcat
+    - locate
+    - htop
+    - iotop
+    - ccze
+    - fail2ban
+    - bind9
+    - bash-completion
+    - binutils
+    - parted
+    - postfix
+    - git
+    - smartmontools
+    - sysstat
+
+- name: Install other packages
+  apt: "name={{ item }} cache_valid_time=86400 state=latest"
+  with_items: "{{ other_packages|default([]) }}"
+
+- name: Better history
+  copy: src=history.sh dest=/etc/profile.d/history.sh owner=root group=root mode=0755
+
+- name: Update /etc/vim/vimrc
+  copy: src=files/vimrc dest=/etc/vim/vimrc owner=root group=root mode=0644
+
+- name: Create mnttech user
+  user: name=mnttech password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/user_mnttech_password.txt encrypt=md5_crypt') }}
+
+- name: Give mnttech user sudo privileges
+  lineinfile: dest=/etc/sudoers regexp='^mnttech.*' line='mnttech	ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
+- name: Allow root login ssh
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^PermitRootLogin.*$' line='PermitRootLogin yes'
+  notify: 
+    - ssh restart
+
+- name: Create /home/backup directory
+  file: path=/home/backup state=directory
+
+- name: Allow authorized_keys per user
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#(AuthorizedKeysFile.*)' line='\1' backrefs=yes
+  notify:
+    - ssh restart
+
+- name: Creation of root's SSH key
+  user: name=root generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa ssh_key_comment=root@{{ mnttech_fqdn }}
+
+- name: Change root's password
+  user: name=root password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/root_password.txt encrypt=md5_crypt') }}
+
+- name: Set up authorized_keys for root
+  authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
+  with_file:
+    - public_keys/nierdz
+    - public_keys/root@sup1
+    - public_keys/backuppc@backup1.mnt-tech.fr
+    - public_keys/cacti@sup1.mnt-tech.fr
+
+- name: Set up other keys if needed
+  authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
+  with_file: "{{ other_pub_keys|default([]) }}"
+
+- name: Define logrotate in /etc/crontab
+  lineinfile:
+    dest: /etc/crontab
+    line: "00 0	* * *	root	/usr/sbin/logrotate /etc/logrotate.conf"
+  notify:
+    - cron restart
+
+- name: Clean old logrotate script in /etc/cron.daily/logrotate
+  copy: src=files/logrotate dest=/etc/cron.daily/logrotate owner=root group=root mode=0755
+
+- name: Set admins@mnt-tech.fr to mnttech user
+  lineinfile: dest=/etc/aliases regexp="^mnttech.*" line='mnttech{{':'}} admins@mnt-tech.fr'
+  notify:
+    - postalias
+
+- name: Change PS1
+  lineinfile:
+    dest: /etc/bash.bashrc
+    regexp: "^export PS1.*"
+    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"'
+
+- name : Remove mouse support in vim
+  lineinfile:
+    dest: /usr/share/vim/vim80/defaults.vim
+    state: absent
+    regexp: "^.*set mouse=a"
+
+- include: snmpd.yml  
+
+- include: backuppc.yml

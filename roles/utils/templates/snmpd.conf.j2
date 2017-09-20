@@ -1,0 +1,24 @@
+#		sec.name	source			community
+com2sec	readonly	{{ nagios_ip }}	{{ snmpd_password }}
+com2sec	readonly	127.0.0.1		{{ snmpd_password }}
+
+#		groupName	securityModel	securityName
+group	supervision	v2c				readonly
+
+#		name	incl/excl	subtree		mask(optional)
+view	all		included	.1			80
+
+#					context		sec.model	sec.level	match	read	write	notif
+access	supervision	""			any			noauth		exact	all		none	none
+
+# Global preferences
+syslocation Paris (75) France
+syscontact MNT-TECH <admins@mnt-tech.fr>
+
+# Disk Monitoring
+includeAllDisks  10%
+
+{% if php_opcache_address is defined %}
+# To monitor PHP Opcache
+extend phpopcache /usr/bin/curl --silent {{ php_opcache_address }}/opcache_status.php
+{% endif %}

@@ -1,0 +1,35 @@
+---
+- name: Generate ssh keys for backuppc server if needed (first installation only)
+  delegate_to: "{{ backuppc_server }}"
+  user: name=backuppc generate_ssh_key=yes ssh_key_comment=backuppc@{{ backuppc_server }}
+
+- name: Copy public ssh key of backuppc user from backuppc server (first installation only)
+  delegate_to: "{{ backuppc_server }}"
+  fetch: src=/var/lib/backuppc/.ssh/id_rsa.pub dest=public_keys/backuppc@{{ backuppc_server }} flat=yes
+
+- name: Set up authorized_keys
+  authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
+  with_file:
+    - public_keys/backuppc@{{ backuppc_server }}
+
+- name: Add host to /etc/backuppc/hosts in backuppc_server
+  delegate_to: "{{ backuppc_server }}"
+  lineinfile:
+    dest: /etc/backuppc/hosts
+    regexp: '^{{ mnttech_fqdn }}'
+    line: '{{ mnttech_fqdn }} 0 root'
+    force: no
+  register: backuppc_hosts
+
+- name: Add basic config file to backuppc_server
+  delegate_to: "{{ backuppc_server }}"
+  template: src=backuppc_template.j2 dest=/etc/backuppc/{{ mnttech_fqdn }}.pl owner=backuppc group=www-data mode=0640 force=no
+  register: backuppc_config
+
+- name: backuppc restart
+  delegate_to: "{{ backuppc_server }}"
+  service: name=backuppc state=restarted
+  when: backuppc_hosts.changed or backuppc_config.changed
+
+- name: Info about backuppc !!!
+  debug: msg="Don't forget to connect to backuppc server as user backuppc and initiate a first ssh connexion to the new server !!!"

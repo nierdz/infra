@@ -1,0 +1,8 @@
+---
+- name: Set snmpd password
+  set_fact: snmpd_password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/snmpd_password.txt') }}
+
+- name: Set snmpd.conf
+  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf owner=root group=root mode=0755
+  notify: 
+    - snmpd restart

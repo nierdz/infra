@@ -1,0 +1,24 @@
+---
+- name: Update root user password
+  mysql_user: name=root password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/mysql_root_password.txt') }} host_all=yes state=present
+
+- name: Define mysql_root_password variable
+  set_fact: mysql_root_password={{ lookup('file', 'passwords/' + mnttech_fqdn + '/mysql_root_password.txt') }}
+
+- name: Copy /root/.my.cnf 
+  template:
+    src: my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Remove all anonymous user accounts
+  mysql_user: name='' host_all=yes state=absent
+
+- name: Remove MySQL test database.
+  mysql_db: "name='test' state=absent"
+
+- name: Ensure MySQL is started and enabled on boot.
+  service: name=mysql state=started enabled=yes
+

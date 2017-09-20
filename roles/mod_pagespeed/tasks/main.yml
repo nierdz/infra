@@ -1,0 +1,19 @@
+---
+- name: Check if variable mod_pagespeed is defined to prevent error
+  debug: msg={{ mod_pagespeed }}
+  when: mod_pagespeed
+
+- name: Add mod_pagespeed apt key
+  apt_key: url=https://dl.google.com/linux/linux_signing_key.pub
+
+- name: Add mod_pagespeed repository
+  apt_repository: repo="deb http://dl.google.com/linux/mod-pagespeed/deb/ stable main" state=present filename='mod-pagespeed'
+
+- name: Package installation
+  apt: name=mod-pagespeed-stable cache_valid_time=86400 state=latest
+
+- name: Disable mod_pagspeed by default
+  replace: dest=/etc/apache2/mods-enabled/pagespeed.conf regexp='(?i)ModPagespeed o.*' replace='ModPagespeed off'
+  notify:
+    - check apache configuration
+    - reload apache
