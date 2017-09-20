@@ -3,6 +3,10 @@
   debug: msg={{ apache_php_fpm }}
   when: apache_php_fpm
 
+- name: Add dotdeb apt key if needed
+  apt_key: keyserver=keys.gnupg.net id=89DF5277
+  when: php_repo == "dotdeb"
+
 - name: Add dotdeb.list if needed
   apt_repository: repo="deb http://packages.dotdeb.org {{ ansible_distribution_release }} all" state=present filename='dotdeb'
   when: php_repo == "dotdeb"

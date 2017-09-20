@@ -3,13 +3,9 @@
   apt_key: keyserver=keys.gnupg.net id=89DF5277
   when: php_repo == "dotdeb"
 
-# Hack le temps que dotdeb passe sur stretch
 - name: Add dotdeb.list if needed
   apt_repository: repo="deb http://packages.dotdeb.org {{ ansible_distribution_release }} all" state=present filename='dotdeb'
-  when: php_repo == "dotdeb" and ansible_distribution_release != "stretch"
-- name: Add dotdeb.list if needed
-  apt_repository: repo="deb http://packages.dotdeb.org jessie all" state=present filename='dotdeb'
-  when: php_repo == "dotdeb" and ansible_distribution_release == "stretch"
+  when: php_repo == "dotdeb"
 
 - name: Install nginx
   apt: name={{ item }} cache_valid_time=86400 state=latest default_release={{ ansible_distribution_release }}
