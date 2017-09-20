@@ -77,7 +77,6 @@
   with_file:
     - public_keys/nierdz
     - public_keys/root@sup1
-    - public_keys/backuppc@backup1.mnt-tech.fr
     - public_keys/cacti@sup1.mnt-tech.fr
 
 - name: Set up other keys if needed
@@ -94,8 +93,13 @@
 - name: Clean old logrotate script in /etc/cron.daily/logrotate
   copy: src=files/logrotate dest=/etc/cron.daily/logrotate owner=root group=root mode=0755
 
-- name: Set admins@mnt-tech.fr to mnttech user
+- name: Set admins@mnt-tech.fr for mnttech user
   lineinfile: dest=/etc/aliases regexp="^mnttech.*" line='mnttech{{':'}} admins@mnt-tech.fr'
+  notify:
+    - postalias
+
+- name: Set admins@mnt-tech.fr for root user
+  lineinfile: dest=/etc/aliases regexp="^root.*" line='root{{':'}} admins@mnt-tech.fr'
   notify:
     - postalias
 
