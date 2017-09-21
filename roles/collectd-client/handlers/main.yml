@@ -1,0 +1,8 @@
+---
+- name: check collectd configuration
+  shell: "collectd -t"
+  register: result
+  failed_when: "result.rc != 0"
+
+- name: collectd restart
+  service: name=collectd state=restarted

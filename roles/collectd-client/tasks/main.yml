@@ -1,0 +1,13 @@
+---
+- name: Packages installation
+  apt: name={{ item }} cache_valid_time=86400 state=latest
+  with_items:
+    - collectd
+    - collectd-utils
+
+- name: Set Hostname in /etc/collectd/collectd.conf
+  lineinfile: dest=/etc/collectd/collectd.conf regexp='Hostname .*$' line='Hostname "{{ mnttech_fqdn }}"'
+  notify:
+      - check collectd configuration
+      - collectd restart
+
