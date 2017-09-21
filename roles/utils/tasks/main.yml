@@ -1,4 +1,7 @@
 ---
+- name: Set localtime to Europe/Paris
+  timezone: name=Europe/Paris
+
 - name: Default packages installation
   apt: name={{ item }} cache_valid_time=86400 state=latest
   with_items:
