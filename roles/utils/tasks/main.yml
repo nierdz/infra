@@ -121,3 +121,9 @@
 - include: snmpd.yml  
 
 - include: backuppc.yml
+
+- name: Remove backuppc@backup1 key
+  authorized_key:
+    user: root
+    state: absent
+    key: "{{ lookup('file', '/home/ansible/public_keys/backuppc@backup1.mnt-tech.fr') }}"

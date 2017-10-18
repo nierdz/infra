@@ -3,14 +3,16 @@
   debug: msg={{ proxmox }}
   when: proxmox
 
-- name: Add proxmox apt key 
-  apt_key: url=http://download.proxmox.com/debian/key.asc id=9887F95A
+- name: Add proxmox apt key for stretch
+  when: ansible_distribution_release == "stretch"
+  apt_key: url=http://download.proxmox.com/debian/proxmox-ve-release-5.x.gpg
 
 - name: Add pve-install-repo.list
   apt_repository: repo="deb http://download.proxmox.com/debian {{ ansible_distribution_release }} pve-no-subscription" state=present filename="pve-install-repo"
 
+
 - name: Proxmox packages installation
-  apt: name={{ item }} cache_valid_time=86400 state=latest
+  apt: name={{ item }} update_cache=yes state=latest
   with_items:
     - proxmox-ve
     - ntp

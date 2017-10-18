@@ -4,6 +4,24 @@
     dest: /etc/nagios/nrpe.cfg
     regexp: '^allowed_hosts=.*'
     line: 'allowed_hosts=127.0.0.1,{{ nagios_ip }}'
+  notify:
+    - restart nrpe
+
+- name: Set command_timeout in /etc/nagios/nrpe.cfg
+  lineinfile:
+    dest: /etc/nagios/nrpe.cfg
+    regexp: '^command_timeout=.*'
+    line: 'command_timeout=600'
+  notify:
+    - restart nrpe
+
+- name: Set connection_timeout in /etc/nagios/nrpe.cfg
+  lineinfile:
+    dest: /etc/nagios/nrpe.cfg
+    regexp: '^connection_timeout=.*'
+    line: 'connection_timeout=600'
+  notify:
+    - restart nrpe
 
 - name: Add check_multiprocs to /usr/lib/nagios/plugins/ folder
   template: src=check_multiprocs.j2 dest=/usr/lib/nagios/plugins/check_multiprocs owner=root group=root mode=0755

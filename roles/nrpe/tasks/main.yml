@@ -17,11 +17,6 @@
     line: 'nagios ALL=(ALL) NOPASSWD: /usr/lib/nagios/plugins/'
     validate: 'visudo -cf %s'
 
-- name: Allongement du timeout de NRPE
-  replace: dest=/etc/nagios/nrpe.cfg regexp='^command_timeout=.*$' replace='command_timeout=300'
-  notify:
-    - restart nrpe
-
 - include: configure.yml
 - include: nagios.yml
 - include: integrit.yml
