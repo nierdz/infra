@@ -3,7 +3,7 @@
   timezone: name=Europe/Paris
 
 - name: Default packages installation
-  apt: name={{ item }} cache_valid_time=86400 state=latest
+  apt: name={{ item }} cache_valid_time=86400 state=present
   with_items:
     - aptitude
     - less
@@ -41,11 +41,14 @@
     - sysstat
 
 - name: Install other packages
-  apt: "name={{ item }} cache_valid_time=86400 state=latest"
+  apt: "name={{ item }} cache_valid_time=86400 state=present"
   with_items: "{{ other_packages|default([]) }}"
 
 - name: Better history
   copy: src=history.sh dest=/etc/profile.d/history.sh owner=root group=root mode=0755
+
+- name: Add some aliases
+  copy: src=alias.sh dest=/etc/profile.d/alias.sh owner=root group=root mode=0755
 
 - name: Update /etc/vim/vimrc
   copy: src=files/vimrc dest=/etc/vim/vimrc owner=root group=root mode=0644
@@ -78,7 +81,7 @@
 - name: Set up authorized_keys for root
   authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
   with_file:
-    - public_keys/nierdz
+    - public_keys/nierdz@home
     - public_keys/root@sup1
     - public_keys/cacti@sup1.mnt-tech.fr
 
@@ -121,9 +124,3 @@
 - include: snmpd.yml  
 
 - include: backuppc.yml
-
-- name: Remove backuppc@backup1 key
-  authorized_key:
-    user: root
-    state: absent
-    key: "{{ lookup('file', '/home/ansible/public_keys/backuppc@backup1.mnt-tech.fr') }}"
