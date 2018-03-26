@@ -30,11 +30,11 @@
 {% endif %}
 {% if apache_vhosts[item].root is defined %}
 	<Directory {{ apache_vhosts[item].root }}>
-		Order deny,allow
-		Allow from all
-		Require all granted
-		AllowOverride All
-	</Directory>
+	{% if apache_vhosts[item].htpasswd is not defined %}
+	Require all granted
+    {% endif %}
+    AllowOverride All
+    </Directory>
 {% endif %}
 	ErrorLog /var/log/apache2/{{ item }}_error.log
 	CustomLog /var/log/apache2/{{ item }}_access.log combined
