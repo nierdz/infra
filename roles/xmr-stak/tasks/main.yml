@@ -1,0 +1,158 @@
+---
+- name: Check if {{ xmr_stak_dir }} directory exists
+  stat:
+    path: "{{ xmr_stak_dir }}"
+  register: dir
+  changed_when: false
+
+- name: Check if xmr-stak binary exists if {{ xmr_stak_dir }} directory exists
+  stat:
+    path: "/usr/bin/xmr-stak"
+  register: binary
+  when: dir.stat.exists
+  changed_when: false
+
+- name: Check xmr-stak version if already installed
+  shell: |
+    /usr/bin/xmr-stak --version-long \
+    | cut -d/ -f2
+  register: version
+  changed_when: false
+  when:
+    - binary is defined
+
+- name: Create {{ xmr_stak_group }} system group
+  group:
+    name: "{{ xmr_stak_group }}"
+    gid: "{{ xmr_stak_gid }}"
+    system: yes
+
+- name: Create {{ xmr_stak_user }} system user
+  user:
+    name: "{{ xmr_stak_user }}"
+    uid: "{{ xmr_stak_uid }}"
+    group: "{{ xmr_stak_group }}"
+    comment: "xmr-stak mining user"
+    home: "{{ xmr_stak_config_dir }}"
+    system : yes
+
+- name: Create xmt-stak directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ xmr_stak_user }}"
+    group: "{{ xmr_stak_group }}"
+    mode: 0750
+  with_items:
+    - "{{ xmr_stak_config_dir }}"
+    - "{{ xmr_stak_log_dir }}"
+
+- name: Install xmr-stak dependencies
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ xmr_stak_packages }}"
+
+- name: Enable kernel hugepages
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/10-hugepages.conf
+  register: sysctl
+  with_items:
+    - { "key": "vm.nr_hugepages", "value": "{{ xmr_stak_hugepages_size | default(128) }}" }
+    - { "key": "vm.hugetlb_shm_group", "value": "{{ xmr_stak_gid }}" }
+  notify:
+    - restart xmr-stak
+
+- name: Define hugepages PAM limits for {{ xmr_stak_user }} user
+  pam_limits:
+    domain: "{{ xmr_stak_user }}"
+    limit_type: "-"
+    limit_item: memlock
+    value: "{{ xmr_stak_hugepages_size | default (128) * 2048 }}"
+    comment: "xmr-stak"
+    dest: /etc/security/limits.d/10-hugepages.conf
+
+- name: Clone xmr-stak git repository if release has changed or {{ xmr_stak_dir }} doesn't exist
+  git:
+    repo: "{{ xmr_stak_git_url }}"
+    dest: "{{ xmr_stak_dir }}"
+    version: "{{ xmr_stack_release }}"
+    update: yes
+    force: yes
+    accept_hostkey: yes
+  register: update
+  notify: restart xmr-stak 
+  when: (version.stdout.find(xmr_stack_release) != 0) or
+        (not dir.stat.exists)
+
+- name: Configuring xmr-stak donation
+  lineinfile:
+    dest: "{{ xmr_stak_dir }}/{{ item.dest }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { "dest": "xmrstak/donate-level.hpp", "regexp": "^constexpr double fDevDonationLevel =.*", "line": "{{ xmr_stak_donation_value }}" }
+  when: update.changed
+
+- name: Create {{ xmr_stak_build_dir }} directory
+  file:
+    path: "{{ xmr_stak_build_dir }}"
+    state: directory
+  when: update.changed
+
+- name: Compile and install xmr-stak
+  shell: |
+    cmake .. {{ xmr_stak_build_options }} && \
+    make -j {{ ansible_processor_cores }} && \
+    make install
+  args:
+    chdir: "{{ xmr_stak_build_dir }}"
+    executable: /bin/bash
+  when: update.changed
+
+- name: Copy systemd xmr-stak unit file
+  template:
+    src: lib/systemd/system/xmr-stak.service.j2
+    dest: /lib/systemd/system/xmr-stak.service
+  notify:
+    - reload systemd
+    - restart xmr-stak
+
+- meta: flush_handlers
+
+- name: Copy config.txt to {{ xmr_stak_config_dir }}/config.txt
+  template:
+    src: etc/xmr-stak/config.txt.j2
+    dest: "{{ xmr_stak_config_dir }}/config.txt"
+    owner: "{{ xmr_stak_user }}"
+    group: "{{ xmr_stak_group }}"
+    mode: 0640
+  notify: restart xmr-stak
+
+- name: Copy cpu.txt to {{ xmr_stak_config_dir }}/cpu.txt
+  template:
+    src: etc/xmr-stak/cpu.txt.j2
+    dest: "{{ xmr_stak_config_dir }}/cpu.txt"
+    owner: "{{ xmr_stak_user }}"
+    group: "{{ xmr_stak_group }}"
+    mode: 0640
+  notify: restart xmr-stak
+
+- name: Copy pools.txt to {{ xmr_stak_config_dir }}/pools.txt
+  template:
+    src: etc/xmr-stak/pools.txt.j2
+    dest: "{{ xmr_stak_config_dir }}/pools.txt"
+    owner: "{{ xmr_stak_user }}"
+    group: "{{ xmr_stak_group }}"
+    mode: 0640
+  notify: restart xmr-stak
+
+- meta: flush_handlers
+
+- name: Enable xmr-stak service
+  service:
+    name: xmr-stak
+    state: started
+    enabled: true

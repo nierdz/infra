@@ -1,0 +1,20 @@
+/* 
+ * {{ ansible_managed }}
+ */
+
+"call_timeout" : 10,
+"retry_time" : 30,
+"giveup_limit" : 0,
+"verbose_level" : 3,
+"print_motd" : true,
+"h_print_time" : 60,
+"aes_override" : null,
+"use_slow_memory" : "warn",
+"tls_secure_algo" : true,
+"daemon_mode" : true,
+"flush_stdout" : false,
+"output_file" : "{{ xmr_stak_log_dir }}/xmr-stak.log",
+"httpd_port" : {{ xmr_stak_http_port | default(54321) }},
+"http_login" : "",
+"http_pass" : "",
+"prefer_ipv4" : true,

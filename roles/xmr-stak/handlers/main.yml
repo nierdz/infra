@@ -1,0 +1,9 @@
+---
+- name: restart xmr-stak
+  service:
+    name: xmr-stak
+    state: restarted
+
+- name: reload systemd
+  command:
+    systemctl daemon-reload

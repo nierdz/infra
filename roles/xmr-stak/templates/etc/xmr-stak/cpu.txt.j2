@@ -1,0 +1,6 @@
+"cpu_threads_conf" :
+[
+{% for thread in xmr_stack_cpu_threads %}
+	{ "low_power_mode" : false, "no_prefetch" : true, "asm" : "auto", "affine_to_cpu" : {{ thread }} },
+{% endfor %}
+],
