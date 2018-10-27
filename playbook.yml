@@ -1,0 +1,4 @@
+- name: Provision xmr-stak
+  hosts: xmr-stak
+  roles:
+    - { role: xmr-stak, tags: ['xmr-stak'] }
