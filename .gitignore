@@ -7,3 +7,4 @@ site.*
 ssl
 update.*
 ansible.cfg
+retry-files
