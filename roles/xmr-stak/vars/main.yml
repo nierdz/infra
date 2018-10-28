@@ -10,8 +10,7 @@ xmr_stak_user: "xmrstak"
 xmr_stak_group: "xmrstak"
 xmr_stak_uid: 3000
 xmr_stak_gid: 3000
-xmr_stak_pool_address: fr.minexmr.com:4444
-xmr_stak_wallet_address: 47cVdRod3vRgxpWYY1P3tSWraXgz4EBcxCkA7iph42o3H5STNVc7x19gSQw7umAJELUjoo1DNQbZkCRedKr8ros4KdrhZQk
+xmr_stak_wallet_address: 47cVdRod3vRgxpWYY1P3tSWraXgz4EBcxCkA7iph42o3H5STNVc7x19gSQw7umAJELUjoo1DNQbZkCRedKr8ros4KdrhZQk+{{ ansible_nodename.split(".")[0] | lower }}
 xmr_stak_build_options: "-DHWLOC_ENABLE=ON -DCUDA_ENABLE=OFF -DOpenCL_ENABLE=OFF -DCPU_ENABLE=ON -DXMR-STAK_CURRENCY=ALL -DCMAKE_INSTALL_PREFIX:PATH=/usr -DMICROHTTPD_ENABLE=ON -DOpenSSL_ENABLE=ON"
 xmr_stak_http_port: 54321
 xmr_stack_cpu_threads: [0, 1, 2, 3]
