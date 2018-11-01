@@ -2,3 +2,8 @@
   hosts: xmr-stak
   roles:
     - { role: xmr-stak, tags: ['xmr-stak'] }
+
+- name: Configure ip failover
+  hosts: physical
+  roles:
+    - { role: ip-failover, tags: ['ip-failover'] }
