@@ -21,6 +21,7 @@ services:
         - "145.239.217.56:443:443"
     volumes:
       - ./adplusplus/www:/adplusplus/www:ro
+      - ./adplusplus/conf:/adplusplus/conf:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/adplusplus.conf.d/:/etc/nginx/conf.d:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
