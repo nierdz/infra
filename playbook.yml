@@ -8,6 +8,11 @@
   roles:
     - { role: xmr-stak, tags: ['xmr-stak'] }
 
+- name: Provision docker
+  hosts: hv
+  roles:
+    - { role: docker, tags: ['docker'] }
+
 - name: Configure ip failover
   hosts: physical
   roles:
