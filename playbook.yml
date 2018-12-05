@@ -1,3 +1,8 @@
+- name: Provision all servers
+  hosts: all
+  roles:
+    - { role: utils, tags: ['utils'] }
+
 - name: Provision xmr-stak
   hosts: xmr-stak
   roles:
