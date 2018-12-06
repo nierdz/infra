@@ -1,10 +1,15 @@
 ---
+- name: Create override configuration folder
+  file:
+    path: /etc/systemd/network/50-default.network.d/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Configure ip failover
-  lineinfile:
-    dest: /etc/systemd/network/50-default.network
-    line: 'Address={{ item.address }}'
-    insertafter: '^\[Address\]'
-    state: present
-  with_items: "{{ ip_failover }}"
+  template:
+    src: etc/systemd/network/50-default.network.d/50-default.conf.j2
+    dest: /etc/systemd/network/50-default.network.d/50-default.conf
   notify: restart systemd-networkd
   when: ip_failover is defined
