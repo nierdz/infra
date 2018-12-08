@@ -30,22 +30,23 @@ services:
     networks:
       - adplusplus-network
 
-  adplusplus-percona:
-    container_name: adplusplus-percona
+  adplusplus-mysql:
+    container_name: adplusplus-mysql
     build:
-      context: ./adplusplus-percona
+      context: ./adplusplus-mysql
       args:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     restart: always
     volumes:
-      - /opt/adplusplus-percona:/var/lib/mysql:rw
+      - /opt/adplusplus-mysql:/var/lib/mysql:rw
     ports:
       - "127.0.0.1:3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD
-      - MYSQL_DATABASE
-      - MYSQL_USER
-      - MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    #user: "999:999"
     networks:
       - adplusplus-network
 
@@ -59,6 +60,7 @@ services:
       - REDIS_HOST
     depends_on:
       - adplusplus-redis
+      - adplusplus-mysql
     ports:
       - "127.0.0.1:9000:9000"
     networks:
