@@ -17,8 +17,8 @@ services:
     image: nginx:1.15.3
     restart: always
     ports:
-        - "145.239.217.56:80:80"
-        - "145.239.217.56:443:443"
+      - ${ADPLUSPLUS_IP}:80:80
+      - ${ADPLUSPLUS_IP}:443:443
     volumes:
       - ./adplusplus/www:/adplusplus/www:ro
       - ./adplusplus/conf:/adplusplus/conf:ro
