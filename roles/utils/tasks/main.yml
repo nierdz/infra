@@ -129,15 +129,16 @@
 - name: Install crontab entries
   cron:
     name: "{{ item.key }}"
-    backup: "{{ item.value.backup   | default('no') }}"
-    day: "{{ item.value.day         | default('*') }}"
-    hour: "{{ item.value.hour       | default('*') }}"
-    job: "{{ item.value.job         | default()}}"
-    minute: "{{ item.value.minute   | default('*') }}"
-    month: "{{ item.value.month     | default('*') }}"
-    state: "{{ item.value.state     | default('present') }}"
-    user: "{{ item.value.user       | default('root') }}"
-    weekday: "{{ item.value.weekday | default('*') }}"
+    backup: "{{ item.value.backup     | default('no') }}"
+    day: "{{ item.value.day           | default('*') }}"
+    hour: "{{ item.value.hour         | default('*') }}"
+    job: "{{ item.value.job           | default()}}"
+    minute: "{{ item.value.minute     | default('*') }}"
+    month: "{{ item.value.month       | default('*') }}"
+    state: "{{ item.value.state       | default('present') }}"
+    user: "{{ item.value.user         | default('root') }}"
+    weekday: "{{ item.value.weekday   | default('*') }}"
+    disabled: "{{ item.value.disabled | default('no') }}"
   with_dict: "{{crontabs | default({})}}"
 
 - include: snmpd.yml  
