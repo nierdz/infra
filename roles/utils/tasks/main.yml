@@ -81,6 +81,7 @@
   authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
   with_file:
     - public_keys/nierdz@home
+    - public_keys/kmet@work
     - public_keys/root@sup1
     - public_keys/cacti@sup1.mnt-tech.fr
 
