@@ -121,6 +121,25 @@
     state: absent
     regexp: "^.*set mouse=a"
 
+- name: Set vim as default editor
+  alternatives:
+    name: editor
+    path: /usr/bin/vim.basic
+
+- name: Install crontab entries
+  cron:
+    name: "{{ item.key }}"
+    backup: "{{ item.value.backup   | default('no') }}"
+    day: "{{ item.value.day         | default('*') }}"
+    hour: "{{ item.value.hour       | default('*') }}"
+    job: "{{ item.value.job         | default()}}"
+    minute: "{{ item.value.minute   | default('*') }}"
+    month: "{{ item.value.month     | default('*') }}"
+    state: "{{ item.value.state     | default('present') }}"
+    user: "{{ item.value.user       | default('root') }}"
+    weekday: "{{ item.value.weekday | default('*') }}"
+  with_dict: "{{crontabs | default({})}}"
+
 - include: snmpd.yml  
 
 - include: backuppc.yml
