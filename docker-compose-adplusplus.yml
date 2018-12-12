@@ -32,7 +32,7 @@ services:
   adplusplus-mysql:
     container_name: adplusplus-mysql
     build:
-      context: ./adplusplus-mysql
+      context: ./docker/mysql
       args:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     restart: always
