@@ -1,11 +1,10 @@
 version: '3'
 # TODO: 
-#  all container logs on stdout/stderr
 #  add healthcheck on all services
 #  nginx hardening
 #  php-fpm hardening
-#  add git submodule for other projects
-#  add webminerpool
+#  mysql hardening
+#  redis hardening
 #  include ssl config and maybe other configs instead of duplicate code
 
 networks:
