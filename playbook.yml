@@ -2,6 +2,7 @@
   hosts: all
   roles:
     - { role: utils, tags: ['utils'] }
+    - { role: bind, tags: ['bind'] }
 
 - name: Provision xmr-stak
   hosts: xmr-stak

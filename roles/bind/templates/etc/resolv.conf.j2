@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+{% for config in resolv_config %}
+{% if config.nameserver is defined %}
+{% for ns in config.nameserver %}
+nameserver {{ ns }}
+{% endfor %}
+{% endif %}
+{% if config.search is defined %}
+{% for search in config.search %}
+search {{ search }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{% for colour in colours %}
+  Colour number {{ loop.index }} is {{ colour.name }}.
+  And the following are examples of things that are {{ colour.name }}:
+{% for item in colour.things %}
+    - {{ item }}
+{% endfor %}
+
+{% endfor %}

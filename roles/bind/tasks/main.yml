@@ -1,0 +1,30 @@
+---
+- name: install bind9
+  package:
+    name: bind9
+    state: present
+
+- name: Configure bind9 options
+  template:
+    src: etc/bind/named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    owner: root
+    group: bind
+    mode: 0644
+  notify:
+    - restart bind9
+
+- name: start bind9 at boot
+  service:
+    name: bind9
+    enabled: yes
+    state: started
+
+- name: Configure resolv.conf
+  template:
+    src: etc/resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: resolv_config is defined

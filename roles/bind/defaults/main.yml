@@ -1,0 +1,28 @@
+---
+resolv_config:
+  - nameserver:
+    - "127.0.0.1"
+    - "213.186.33.99"
+  - search:
+    - "mnt-tech.fr"
+    - "ovh.net"
+
+colours:
+  - name: Blue
+    things:
+      - Sky
+      - Sea
+      - Jeans
+  - name: Yellow
+    things:
+      - Egg yolk
+      - Taxi
+      - Banana
+      - Lemon
+      - Sun
+  - name: Orange
+    things:
+      - Pumpkin
+      - Basketball
+      - Carrots
+      - Oranges

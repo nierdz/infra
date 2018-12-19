@@ -30,7 +30,6 @@
     - iotop
     - ccze
     - fail2ban
-    - bind9
     - bash-completion
     - binutils
     - parted
