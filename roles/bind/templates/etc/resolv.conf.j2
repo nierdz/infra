@@ -11,12 +11,3 @@ search {{ search }}
 {% endfor %}
 {% endif %}
 {% endfor %}
-
-{% for colour in colours %}
-  Colour number {{ loop.index }} is {{ colour.name }}.
-  And the following are examples of things that are {{ colour.name }}:
-{% for item in colour.things %}
-    - {{ item }}
-{% endfor %}
-
-{% endfor %}
