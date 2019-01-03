@@ -1,11 +1,4 @@
 version: '3'
-# TODO: 
-#  add healthcheck on all services
-#  nginx hardening
-#  php-fpm hardening
-#  mysql hardening
-#  redis hardening
-#  include ssl config and maybe other configs instead of duplicate code
 
 networks:
   adplusplus-network:
