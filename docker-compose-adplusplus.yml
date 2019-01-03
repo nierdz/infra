@@ -27,7 +27,7 @@ services:
     build:
       context: ./docker/mysql
       args:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${ADPLUSPLUS_MYSQL_ROOT_PASSWORD}
     restart: always
     volumes:
       - /opt/adplusplus-mysql:/var/lib/mysql:rw
