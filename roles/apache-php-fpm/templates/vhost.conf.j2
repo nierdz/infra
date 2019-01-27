@@ -35,9 +35,9 @@
 		</IfModule>
 		<FilesMatch ".+\.ph(p[3457]?|t|tml)$">
 		{% if apache_vhosts[item].user == "www-data" %}
-			SetHandler "proxy:unix:/run/php/php7.0-fpm.sock|fcgi://{{ item }}"
+			SetHandler "proxy:unix:/run/php/php7.3-fpm.sock|fcgi://{{ item }}"
 		{% else %}
-			SetHandler "proxy:unix:/run/php/php7.0-fpm-{{ apache_vhosts[item].user }}.sock|fcgi://{{ item }}"
+			SetHandler "proxy:unix:/run/php/php7.3-fpm-{{ apache_vhosts[item].user }}.sock|fcgi://{{ item }}"
 		{% endif %}
 		</FilesMatch>
 		<FilesMatch ".+\.phps$">
