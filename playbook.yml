@@ -19,3 +19,8 @@
   hosts: physical
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
+
+- name: Configure data1.mnt-tech.fr
+  hosts: data
+  roles:
+    - { role: apache-php-fpm, tags: ['apache-php-fpm'] }
