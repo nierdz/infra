@@ -10,8 +10,13 @@
   roles:
     - { role: xmr-stak, tags: ['xmr-stak'] }
 
-- name: Provision docker
+- name: Provision hypervisors
   hosts: hv
+  pre_tasks:
+    - name: Install minicrypt
+      unarchive:
+        src: minicrypt.tar.gz
+        dest: /opt
   roles:
     - { role: docker, tags: ['docker'] }
 
