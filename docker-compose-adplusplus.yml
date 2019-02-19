@@ -25,7 +25,7 @@ services:
 
   adplusplus-php-fpm:
     container_name: adplusplus-php-fpm
-    build: ./adplusplus-php-fpm
+    build: ./docker/php-fpm-7.3
     restart: always
     volumes:
       - ./adplusplus/www:/adplusplus/www:ro
