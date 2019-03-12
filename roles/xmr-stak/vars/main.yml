@@ -1,6 +1,6 @@
 ---
 xmr_stak_git_url: https://github.com/fireice-uk/xmr-stak.git
-xmr_stack_release: 2.8.3
+xmr_stack_release: 2.10.1
 xmr_stak_dir: /opt/xmr-stak
 xmr_stak_build_dir: /opt/xmr-stak/build
 xmr_stak_config_dir: /etc/xmr-stak
