@@ -48,6 +48,7 @@ services:
     restart: always
     volumes:
       - ./madrabbit/www:/madrabbit/www:rw
+      - ./madrabbit/media:/madrabbit/media:rw
     environment:
       - MADRABBIT_MYSQL_DATABASE
       - MADRABBIT_MYSQL_USER
