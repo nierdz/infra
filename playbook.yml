@@ -25,7 +25,7 @@
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
 
-- name: Configure data1.mnt-tech.fr
+- name: Configure nextcloud servers
   hosts: data
   roles:
     - { role: apache-php-fpm, tags: ['apache-php-fpm'] }
