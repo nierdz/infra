@@ -30,20 +30,22 @@
   with_items:
     - apache2
 
-- name: Install php7 if needed
+- name: Install php7 packages if needed
   when: php_version == "7"
-  apt: name={{ item }} cache_valid_time=86400 state=latest
-  with_items:
-    - php7.3-fpm
-    - php7.3-curl
-    - php7.3-redis
-    - php7.3-mysql
-    - php7.3-xml
-    - php7.3-gd
-    - php7.3-mbstring
-    - php7.3-intl
-    - php7.3-zip
-    - php7.3-imagick
+  apt:
+    name:
+      - php7.3-fpm
+      - php7.3-curl
+      - php7.3-redis
+      - php7.3-mysql
+      - php7.3-xml
+      - php7.3-gd
+      - php7.3-mbstring
+      - php7.3-intl
+      - php7.3-zip
+      - php7.3-imagick
+    cache_valid_time: 86400
+    state: latest
 
 - include: configuration.yml
 - include: php-fpm.yml
