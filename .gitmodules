@@ -4,6 +4,3 @@
 [submodule "webminerpool"]
 	path = webminerpool
 	url = https://github.com/notgiven688/webminerpool.git
-[submodule "igln.fr"]
-	path = igln.fr
-	url = git@github.com:nierdz/igln.fr.git
