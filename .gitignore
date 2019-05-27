@@ -6,4 +6,4 @@ host_vars
 site.*
 ssl
 update.*
-retry-files
+.vault_pass.txt
