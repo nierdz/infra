@@ -44,11 +44,15 @@
   user: name=mnttech password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/user_mnttech_password.txt encrypt=md5_crypt') }}
 
 - name: Give mnttech user sudo privileges
-  lineinfile: dest=/etc/sudoers regexp='^mnttech.*' line='mnttech	ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+  lineinfile:
+    des: /etc/sudoers
+    regexp: '^mnttech.*'
+    line: 'mnttech	ALL=(ALL) NOPASSWD:ALL'
+    validate: 'visudo -cf %s'
 
 - name: Allow root login ssh
   lineinfile: dest=/etc/ssh/sshd_config regexp='^PermitRootLogin.*$' line='PermitRootLogin yes'
-  notify: 
+  notify:
     - ssh restart
 
 - name: Create /home/backup directory
