@@ -7,20 +7,35 @@
   apt:
     name: "{{ common_packages }}"
     state: present
-  register: packages_installed
-  until: packages_installed is success
+  register: common_packages_installed
+  until: common_packages_installed is success
   retries: 10
   delay: 2
 
 - name: Install other packages
-  apt: "name={{ item }} cache_valid_time=86400 state=present"
-  with_items: "{{ other_packages|default([]) }}"
+  apt:
+    name: "{{ other_packages|default([]) }}"
+    state: present
+  register: other_packages_installed
+  until: other_packages_installed is success
+  retries: 10
+  delay: 2
 
 - name: Better history
-  copy: src=history.sh dest=/etc/profile.d/history.sh owner=root group=root mode=0755
+  template:
+    src: etc/profile.d/history.sh.j2
+    dest: /etc/profile.d/history.sh
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Add some aliases
-  copy: src=alias.sh dest=/etc/profile.d/alias.sh owner=root group=root mode=0755
+  template:
+    src: etc/profile.d/alias.sh.j2
+    dest: /etc/profile.d/alias.sh
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Update /etc/vim/vimrc
   copy: src=files/vimrc dest=/etc/vim/vimrc owner=root group=root mode=0644
