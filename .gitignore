@@ -6,5 +6,4 @@ host_vars
 site.*
 ssl
 update.*
-ansible.cfg
 retry-files
