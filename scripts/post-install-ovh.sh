@@ -26,4 +26,4 @@ apt-get -y autoremove
 echo "kmet ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kmet
 
 # Fix permissions
-chmod -R kmet:kmet /home/kmet
+chown -R kmet:kmet /home/kmet
