@@ -2,41 +2,15 @@
 - name: Set localtime to Europe/Paris
   timezone: name=Europe/Paris
 
-- name: Default packages installation
-  apt: name={{ item }} cache_valid_time=86400 state=present
-  with_items:
-    - less
-    - sudo
-    - ntp
-    - vim
-    - openssh-client
-    - snmpd
-    - lshw
-    - iptraf
-    - iperf
-    - strace
-    - rsync
-    - tcpdump
-    - curl
-    - lsof
-    - gdisk
-    - mcrypt
-    - ethtool
-    - screen
-    - bc
-    - netcat
-    - locate
-    - htop
-    - iotop
-    - ccze
-    - fail2ban
-    - bash-completion
-    - binutils
-    - parted
-    - postfix
-    - git
-    - smartmontools
-    - sysstat
+- name: Install common packages
+  become: true
+  apt:
+    name: "{{ common_packages }}"
+    state: present
+  register: packages_installed
+  until: packages_installed is success
+  retries: 10
+  delay: 2
 
 - name: Install other packages
   apt: "name={{ item }} cache_valid_time=86400 state=present"

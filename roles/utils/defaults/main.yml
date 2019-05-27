@@ -1,0 +1,35 @@
+---
+
+common_packages:
+  - less
+  - sudo
+  - ntp
+  - vim
+  - openssh-client
+  - snmpd
+  - lshw
+  - iptraf
+  - iperf
+  - strace
+  - rsync
+  - tcpdump
+  - curl
+  - lsof
+  - gdisk
+  - mcrypt
+  - ethtool
+  - screen
+  - bc
+  - netcat
+  - locate
+  - htop
+  - iotop
+  - ccze
+  - fail2ban
+  - bash-completion
+  - binutils
+  - parted
+  - postfix
+  - git
+  - smartmontools
+  - sysstat
