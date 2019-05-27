@@ -6,4 +6,5 @@ host_vars
 site.*
 ssl
 update.*
+venv
 .vault_pass.txt
