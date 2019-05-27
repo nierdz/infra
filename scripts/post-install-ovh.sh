@@ -15,12 +15,15 @@ pushd /home/kmet/.ssh
 wget https://github.com/nierdz.keys -O authorized_keys
 popd
 
-# Remove some OVH shit
+# Remove some OVH shit and install usefull packages
 apt-get update
 apt-get -y upgrade
-apt-get -y install sudo
+apt-get -y install sudo python3-apt
 apt-get -y purge noderig beamium ovh-rtm-metrics-toolkit ovh-rtm-binaries
 apt-get -y autoremove
 
 # Give me some power!
 echo "kmet ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kmet
+
+# Fix permissions
+chmod -R kmet:kmet /home/kmet
