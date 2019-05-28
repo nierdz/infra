@@ -1,6 +1,6 @@
 [all:children]
 physical
-xmr-stak
+xmrstak
 hv
 mx
 data
@@ -14,7 +14,7 @@ data1.igln.fr
 data.atelierasap.com
 atelierasap1.mnt-tech.fr
 
-[xmr-stak]
+[xmrstak]
 hv2.mnt-tech.fr
 hv3.mnt-tech.fr
 data1.mnt-tech.fr

@@ -1,15 +1,18 @@
 - name: Provision all servers
+  become: true
   hosts: all
   roles:
     - { role: utils, tags: ['utils'] }
     - { role: bind, tags: ['bind'] }
 
 - name: Provision xmr-stak
-  hosts: xmr-stak
+  become: true
+  hosts: xmrstak
   roles:
     - { role: xmr-stak, tags: ['xmr-stak'] }
 
 - name: Provision hypervisors
+  become: true
   hosts: hv
   pre_tasks:
     - name: Install minicrypt
@@ -20,11 +23,13 @@
     - { role: docker, tags: ['docker'] }
 
 - name: Configure ip failover
+  become: true
   hosts: physical
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
 
 - name: Configure nextcloud servers
+  become: true
   hosts: data
   roles:
     - { role: apache-php-fpm, tags: ['apache-php-fpm'] }
