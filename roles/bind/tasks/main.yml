@@ -1,5 +1,5 @@
 ---
-- name: install bind9
+- name: Install bind9
   package:
     name: bind9
     state: present
@@ -14,10 +14,10 @@
   notify:
     - restart bind9
 
-- name: start bind9 at boot
+- name: Start bind9 at boot
   service:
     name: bind9
-    enabled: yes
+    enabled: true
     state: started
 
 - name: Configure resolv.conf
