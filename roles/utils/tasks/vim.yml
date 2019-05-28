@@ -1,0 +1,21 @@
+---
+- name: Update /etc/vim/vimrc
+  template:
+    src: etc/vim/vimrc.j2
+    dest: /etc/vim/vimrc
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Remove this shitty mouse support in vim
+  replace:
+    path: /usr/share/vim/vim80/defaults.vim
+    regexp: '^  set mouse=a'
+    replace: '"  set mouse=a'
+  ignore_errors: true
+
+- name: Set vim as default editor
+  alternatives:
+    name: editor
+    path: /usr/bin/vim.basic
+

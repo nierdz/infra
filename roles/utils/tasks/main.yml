@@ -1,19 +1,6 @@
 ---
-
-- name: Remove /etc/sudoers.d/kmet
-  file:
-    path: /etc/sudoers.d/kmet
-    state: absent
-
-- name: Remove /etc/beamium
-  file:
-    path: /etc/beamium
-    state: absent
-
-- name: Remove /etc/noderig
-  file:
-    path: /etc/noderig
-    state: absent
+- name: Import OVH tasks
+  import_tasks: ovh.yml
 
 - name: Install common packages
   become: true
@@ -54,38 +41,6 @@
     group: root
     mode: 0755
 
-- name: Update /etc/vim/vimrc
-  template:
-    src: etc/vim/vimrc.j2
-    dest: /etc/vim/vimrc
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Create admin group
-  group:
-    name: admin
-    gid: 10000
-    state: present
-
-- name: Create user accounts
-  user:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-    comment: "{{ item.comment }}"
-    groups: "{{ item.groups }}"
-    shell: "{{ item.shell }}"
-  with_items: "{{ users }}"
-
-- name: Create sudo file for admin group
-  template:
-    src: etc/sudoers.d/admin.j2
-    dest: /etc/sudoers.d/admin
-    validate: 'visudo -cf %s'
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Define logrotate in /etc/crontab
   lineinfile:
     dest: /etc/crontab
@@ -107,18 +62,6 @@
     regexp: "^export PS1.*"
     line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"'
 
-- name: Remove this shitty mouse support in vim
-  replace:
-    path: /usr/share/vim/vim80/defaults.vim
-    regexp: '^  set mouse=a'
-    replace: '"  set mouse=a'
-  ignore_errors: true
-
-- name: Set vim as default editor
-  alternatives:
-    name: editor
-    path: /usr/bin/vim.basic
-
 - name: Install crontab entries
   cron:
     name: "{{ item.key }}"
@@ -133,3 +76,9 @@
     weekday: "{{ item.value.weekday   | default('*') }}"
     disabled: "{{ item.value.disabled | default('no') }}"
   with_dict: "{{crontabs | default({})}}"
+
+- name: Import vim tasks
+  import_tasks: vim.yml
+
+- name: Import users tasks
+  import_tasks: users.yml

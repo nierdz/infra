@@ -4,3 +4,11 @@
   service:
     name: cron
     state: restarted
+
+- name: apt update
+  become: true
+  apt: update_cache=true
+  register: cache_updated
+  until: cache_updated is success
+  retries: 10
+  delay: 2
