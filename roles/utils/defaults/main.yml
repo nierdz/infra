@@ -6,7 +6,6 @@ common_packages:
   - ntp
   - vim
   - openssh-client
-  - snmpd
   - lshw
   - iptraf
   - iperf
