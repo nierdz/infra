@@ -4,6 +4,11 @@
   roles:
     - { role: utils, tags: ['utils'] }
     - { role: bind, tags: ['bind'] }
+  post_tasks:
+    - name: Remove /etc/sudoers.d/kmet
+      file:
+        path: /etc/sudoers.d/kmet
+        state: absent
 
 - name: Provision xmr-stak
   become: true

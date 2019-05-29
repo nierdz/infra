@@ -1,9 +1,4 @@
 ---
-- name: Remove /etc/sudoers.d/kmet
-  file:
-    path: /etc/sudoers.d/kmet
-    state: absent
-
 - name: Remove /etc/beamium
   file:
     path: /etc/beamium
@@ -37,6 +32,9 @@
     state: absent
   notify:
     - apt update
+
+- name: flush those handlers !
+  meta: flush_handlers
 
 - name: Disable IPv6
   sysctl:
