@@ -11,6 +11,7 @@ help: ## Print this help
 install: ## Install everything
 	$(info --> Install everything)
 	@$(MAKE) install-ansible
+	@$(MAKE) ansible-galaxy-install
 
 install-ansible: ## Install ansible via pip
 	$(info --> Install ansible via `pip`)
@@ -31,4 +32,11 @@ ansible-lint: ## Run ansible-lint on all roles
 		ansible-lint playbook.yml; \
 		ansible-playbook playbook.yml --syntax-check; \
 		yamllint -c .yamllint.yml .; \
+	)
+
+ansible-galaxy-install: ## Install ansible galaxy dependencies
+	$(info --> Install ansible galaxy dependencies)
+	@( \
+		source $(VIRTUALENV_DIR)/bin/activate; \
+		ansible-galaxy install -r requirements.yml -p vendor/roles; \
 	)

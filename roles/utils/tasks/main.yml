@@ -1,6 +1,6 @@
 ---
-- name: Set localtime to Europe/Paris
-  timezone: name=Europe/Paris
+- name: Import OVH tasks
+  import_tasks: ovh.yml
 
 - name: Install common packages
   become: true
@@ -21,6 +21,10 @@
   retries: 10
   delay: 2
 
+- name: Set localtime to Europe/Paris
+  timezone:
+    name: Europe/Paris
+
 - name: Better history
   template:
     src: etc/profile.d/history.sh.j2
@@ -37,86 +41,26 @@
     group: root
     mode: 0755
 
-- name: Update /etc/vim/vimrc
-  copy: src=files/vimrc dest=/etc/vim/vimrc owner=root group=root mode=0644
-
-- name: Create mnttech user
-  user: name=mnttech password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/user_mnttech_password.txt encrypt=md5_crypt') }}
-
-- name: Give mnttech user sudo privileges
-  lineinfile:
-    des: /etc/sudoers
-    regexp: '^mnttech.*'
-    line: 'mnttech	ALL=(ALL) NOPASSWD:ALL'
-    validate: 'visudo -cf %s'
-
-- name: Allow root login ssh
-  lineinfile: dest=/etc/ssh/sshd_config regexp='^PermitRootLogin.*$' line='PermitRootLogin yes'
-  notify:
-    - ssh restart
-
-- name: Create /home/backup directory
-  file: path=/home/backup state=directory
-
-- name: Allow authorized_keys per user
-  lineinfile: dest=/etc/ssh/sshd_config regexp='^#(AuthorizedKeysFile.*)' line='\1' backrefs=yes
-  notify:
-    - ssh restart
-
-- name: Creation of root's SSH key
-  user: name=root generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa ssh_key_comment=root@{{ mnttech_fqdn }}
-
-- name: Change root's password
-  user: name=root password={{ lookup('password', 'passwords/' + mnttech_fqdn + '/root_password.txt encrypt=md5_crypt') }}
-
-- name: Set up authorized_keys for root
-  authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
-  with_file:
-    - public_keys/nierdz@home
-    - public_keys/root@sup1
-    - public_keys/nierdz@inspirux
-    - public_keys/kmet@arkena
-
-- name: Set up other keys if needed
-  authorized_key: user=root path="/root/.ssh/authorized_keys" key={{ item }}
-  with_file: "{{ other_pub_keys|default([]) }}"
-
 - name: Define logrotate in /etc/crontab
   lineinfile:
     dest: /etc/crontab
-    line: "00 0	* * *	root	/usr/sbin/logrotate /etc/logrotate.conf"
+    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf" # noqa 203
   notify:
     - cron restart
 
 - name: Clean old logrotate script in /etc/cron.daily/logrotate
-  copy: src=files/logrotate dest=/etc/cron.daily/logrotate owner=root group=root mode=0755
-
-- name: Set admins@mnt-tech.fr for mnttech user
-  lineinfile: dest=/etc/aliases regexp="^mnttech.*" line='mnttech{{':'}} admins@mnt-tech.fr'
-  notify:
-    - postalias
-
-- name: Set admins@mnt-tech.fr for root user
-  lineinfile: dest=/etc/aliases regexp="^root.*" line='root{{':'}} admins@mnt-tech.fr'
-  notify:
-    - postalias
+  template:
+    src: etc/cron.daily/logrotate.j2
+    dest: /etc/cron.daily/logrotate
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Change PS1
   lineinfile:
     dest: /etc/bash.bashrc
     regexp: "^export PS1.*"
-    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"'
-
-- name : Remove mouse support in vim
-  lineinfile:
-    dest: /usr/share/vim/vim80/defaults.vim
-    state: absent
-    regexp: "^.*set mouse=a"
-
-- name: Set vim as default editor
-  alternatives:
-    name: editor
-    path: /usr/bin/vim.basic
+    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"' # noqa 204
 
 - name: Install crontab entries
   cron:
@@ -124,15 +68,17 @@
     backup: "{{ item.value.backup     | default('no') }}"
     day: "{{ item.value.day           | default('*') }}"
     hour: "{{ item.value.hour         | default('*') }}"
-    job: "{{ item.value.job           | default()}}"
+    job: "{{ item.value.job           | default() }}"
     minute: "{{ item.value.minute     | default('*') }}"
     month: "{{ item.value.month       | default('*') }}"
     state: "{{ item.value.state       | default('present') }}"
     user: "{{ item.value.user         | default('root') }}"
     weekday: "{{ item.value.weekday   | default('*') }}"
     disabled: "{{ item.value.disabled | default('no') }}"
-  with_dict: "{{crontabs | default({})}}"
+  with_dict: "{{ crontabs | default({}) }}"
 
-- include: snmpd.yml  
+- name: Import vim tasks
+  import_tasks: vim.yml
 
-- include: backuppc.yml
+- name: Import users tasks
+  import_tasks: users.yml

@@ -14,6 +14,7 @@
 
 - name: Check xmr-stak version if already installed
   shell: |
+    set -o pipefail
     /usr/bin/xmr-stak --version-long \
     | cut -d/ -f2
   register: version
@@ -50,7 +51,6 @@
 - name: Install xmr-stak dependencies
   package:
     name: "{{ item }}"
-    state: latest
   with_items: "{{ xmr_stak_packages }}"
 
 - name: Enable kernel hugepages
@@ -83,11 +83,11 @@
     force: yes
     accept_hostkey: yes
   register: update
-  notify: restart xmr-stak 
+  notify: restart xmr-stak
   when: (version.stdout.find(xmr_stack_release) != 0) or
         (not dir.stat.exists)
 
-- name: Configuring xmr-stak donation
+- name: Configuring xmr-stak donation # noqa 503
   lineinfile:
     dest: "{{ xmr_stak_dir }}/{{ item.dest }}"
     regexp: "{{ item.regexp }}"
@@ -96,13 +96,13 @@
     - { "dest": "xmrstak/donate-level.hpp", "regexp": "^constexpr double fDevDonationLevel =.*", "line": "{{ xmr_stak_donation_value }}" }
   when: update.changed
 
-- name: Create {{ xmr_stak_build_dir }} directory
+- name: Create {{ xmr_stak_build_dir }} directory # noqa 503
   file:
     path: "{{ xmr_stak_build_dir }}"
     state: directory
   when: update.changed
 
-- name: Compile and install xmr-stak
+- name: Compile and install xmr-stak # noqa 503
   shell: |
     cmake .. {{ xmr_stak_build_options }} && \
     make -j {{ ansible_processor_cores }} && \

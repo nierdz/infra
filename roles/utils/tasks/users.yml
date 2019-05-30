@@ -1,0 +1,25 @@
+---
+- name: Create admin group
+  group:
+    name: admin
+    gid: 10000
+    state: present
+
+- name: Create user accounts
+  user:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    comment: "{{ item.comment }}"
+    groups: "{{ item.groups }}"
+    shell: "{{ item.shell }}"
+  with_items: "{{ users }}"
+
+- name: Create sudo file for admin group
+  template:
+    src: etc/sudoers.d/admin.j2
+    dest: /etc/sudoers.d/admin
+    validate: 'visudo -cf %s'
+    owner: root
+    group: root
+    mode: 0644
+

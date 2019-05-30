@@ -1,0 +1,9 @@
+---
+
+users:
+  - name: kmet
+    comment: 'Kevin MET'
+    groups: admin
+    shell: /bin/bash
+    state: present
+    ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCiJf8hraWJNMlb6XcH03UB7wTzjJrSJsE9MsEEhUkU7dxte5z1kYnVxZZlW0JNFOLPGEXkwd8XtWTV+RuxHciKKBD26MH6ga/HFIsetk5Mg9XyvOQGgc+WUqheykyr2owkd1cuaiWR5X7qbOfS9rSS1SClVeQK/v62rvqk2i115psRBKBqdKT0TLP2ANEDMImnPp8WmTzgXst6xSQmzetZ9DHLHlm11LLl3cExLajE37VvOFcZKOXdn6CH80BajFRAcCv9EclT+XT481tu/b9BOxW0dvC3rp31rfFPT8Qd7ewmjaHPVoqXpN/uaAoV2kK8wxC4y0AwTchsSvrn8X9H nierdz@inspirux"
