@@ -12,9 +12,8 @@
   when: dir.stat.exists
   changed_when: false
 
-- name: Check xmr-stak version if already installed
+- name: Check xmr-stak version if already installed # noqa 306
   shell: |
-    set -o pipefail
     /usr/bin/xmr-stak --version-long \
     | cut -d/ -f2
   register: version
