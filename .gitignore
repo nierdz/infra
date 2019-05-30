@@ -1,8 +1,2 @@
-passwords
-hosts
-public_keys
-site.*
-ssl
-update.*
 venv
 .vault_pass.txt
