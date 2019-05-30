@@ -1,5 +1,4 @@
 passwords
-group_vars
 hosts
 public_keys
 site.*
