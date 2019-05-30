@@ -1,0 +1,4 @@
+---
+- src: https://github.com/geerlingguy/ansible-role-nginx
+  version: 2.6.3
+  name: nginx
