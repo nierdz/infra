@@ -37,4 +37,4 @@
   become: true
   hosts: data
   roles:
-    - { role: apache-php-fpm, tags: ['apache-php-fpm'] }
+    - { role: mysql, tags: ['mysql'] }
