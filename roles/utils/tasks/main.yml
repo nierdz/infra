@@ -44,7 +44,7 @@
 - name: Define logrotate in /etc/crontab
   lineinfile:
     dest: /etc/crontab
-    line: "00 0	* * *	root  /usr/sbin/logrotate /etc/logrotate.conf"
+    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf" # noqa 203
   notify:
     - cron restart
 
@@ -60,7 +60,7 @@
   lineinfile:
     dest: /etc/bash.bashrc
     regexp: "^export PS1.*"
-    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"'
+    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"' # noqa 204
 
 - name: Install crontab entries
   cron:
@@ -68,14 +68,14 @@
     backup: "{{ item.value.backup     | default('no') }}"
     day: "{{ item.value.day           | default('*') }}"
     hour: "{{ item.value.hour         | default('*') }}"
-    job: "{{ item.value.job           | default()}}"
+    job: "{{ item.value.job           | default() }}"
     minute: "{{ item.value.minute     | default('*') }}"
     month: "{{ item.value.month       | default('*') }}"
     state: "{{ item.value.state       | default('present') }}"
     user: "{{ item.value.user         | default('root') }}"
     weekday: "{{ item.value.weekday   | default('*') }}"
     disabled: "{{ item.value.disabled | default('no') }}"
-  with_dict: "{{crontabs | default({})}}"
+  with_dict: "{{ crontabs | default({}) }}"
 
 - name: Import vim tasks
   import_tasks: vim.yml
