@@ -40,3 +40,4 @@
     - vault_vars/data.yml
   roles:
     - { role: mysql, tags: ['mysql'] }
+    - { role: percona, tags: ['percona'] }
