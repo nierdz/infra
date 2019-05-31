@@ -1,0 +1,24 @@
+---
+- name: Check if certificate already exists
+  stat:
+    path: /etc/letsencrypt/live/{{ item.domains | first | replace('*.', '') }}/cert.pem
+  register: letsencrypt_cert
+
+- name: Generate certificates if needed
+  command: >
+    certbot certonly
+    --non-interactive
+    --email {{ item.email }}
+    --agree-tos
+    --webroot
+    --webroot-path {{ item.path }}
+    --post-hook "{{ item.post_hook }}"
+    --domains {{ item.domains | join(',') }}
+  when: not letsencrypt_cert.stat.exists and item.state  == "present"
+
+- name: Delete certificates if needed
+  command: >
+    certbot delete
+    --non-interactive
+    --cert-name {{ item.domains | first | replace('*.', '') }}
+  when: letsencrypt_cert.stat.exists and item.state  == "absent"

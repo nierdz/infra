@@ -38,6 +38,8 @@
   hosts: data
   vars_files:
     - vault_vars/data.yml
+    - vault_vars/all.yml
   roles:
+    - { role: certbot, tags: ['certbot'] }
     - { role: mysql, tags: ['mysql'] }
     - { role: percona, tags: ['percona'] }
