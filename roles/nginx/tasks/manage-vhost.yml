@@ -1,0 +1,26 @@
+---
+- name: Check if certificate already exists
+  stat:
+    path: /etc/letsencrypt/live/{{ item.server_names | first | replace('*.', '') }}/cert.pem
+  register: letsencrypt_cert
+
+- name: Generate vhost if needed
+  template:
+    src: etc/nginx/conf.d/vhost.conf.j2
+    dest: /etc/nginx/conf.d/{{ item.server_names | first }}.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - check nginx configuration
+    - reload nginx
+  when: item.state == "present"
+
+- name: Delete vhost if needed
+  file:
+    path: /etc/nginx/conf.d/{{ item.server_names | first }}.conf
+    state: absent
+  notify:
+    - check nginx configuration
+    - reload nginx
+  when: item.state == "absent"

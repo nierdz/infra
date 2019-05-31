@@ -39,7 +39,11 @@
   vars_files:
     - vault_vars/data.yml
     - vault_vars/all.yml
+  # First nginx will only create a vhost for certbot
+  # Then, second one will create actual vhost
   roles:
+    - { role: nginx, tags: ['nginx'], dummy: 'first' }
     - { role: certbot, tags: ['certbot'] }
+    - { role: nginx, tags: ['nginx'], dummy: 'second' }
     - { role: mysql, tags: ['mysql'] }
     - { role: percona, tags: ['percona'] }

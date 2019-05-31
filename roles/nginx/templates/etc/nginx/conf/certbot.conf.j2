@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+
+location /.well-known/acme-challenge/ {
+  allow all;
+  root /var/www/certbot;
+}

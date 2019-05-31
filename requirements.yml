@@ -1,8 +1,4 @@
 ---
-- src: https://github.com/geerlingguy/ansible-role-nginx
-  version: 2.6.3
-  name: nginx
-
 - src: https://github.com/geerlingguy/ansible-role-php
   version: 3.7.0
   name: php
