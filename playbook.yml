@@ -36,5 +36,7 @@
 - name: Configure nextcloud servers
   become: true
   hosts: data
+  vars_files:
+    - vault_vars/data.yml
   roles:
     - { role: mysql, tags: ['mysql'] }

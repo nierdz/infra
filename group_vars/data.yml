@@ -1,0 +1,17 @@
+---
+# MySQL
+mysql_root_password_update: true
+mysql_packages:
+  - mariadb-client
+  - mariadb-server
+  - python-mysqldb
+mysql_databases:
+  - name: nextcloud
+    encoding: utf8
+    collation: utf8_general_ci
+mysql_users:
+  - name: nextcloud
+    host: "localhost"
+    password: "{{ mysql_nextcloud_password }}"
+    priv: "nextcloud.*:ALL"
+    state: present

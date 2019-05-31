@@ -1,9 +1,0 @@
----
-- name: restart mysql
-  service: name=mysql state=restarted sleep=5
-
-- name: cron restart
-  service: name=cron state=restarted
-
-- name: restart nrpe
-  service: name=nagios-nrpe-server state=restarted
