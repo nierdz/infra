@@ -1,5 +1,4 @@
 <?php
-// {{ ansible_managed }}
 $CONFIG = array (
   'instanceid' => 'oc0dx5wycr89',
   'passwordsalt' => '{{ nextcloud_passwordsalt }}',
@@ -12,9 +11,9 @@ $CONFIG = array (
   'overwrite.cli.url' => 'http://localhost',
   'config_is_read_only' => true,
   'dbtype' => 'mysql',
-  'version' => '16.0.1.1',
-  'dbname' => 'nextcloud',
-  'dbhost' => 'localhost',
+  'version' => '{{ version_long.stdout }}',
+  'dbname' => '{{ nextcloud_dbname }}',
+  'dbhost' => '{{ nextcloud_dbhost }}',
   'dbport' => '',
   'dbtableprefix' => 'oc_',
   'dbuser' => 'nextcloud',
