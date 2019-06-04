@@ -81,6 +81,7 @@ nginx_vhosts:
         try_files $uri /index.php$request_uri;
         access_log off;
       }
+nginx_user: nginx
 
 # PHP
 php_default_version_debian: "7.2"

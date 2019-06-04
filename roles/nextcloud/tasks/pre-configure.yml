@@ -47,8 +47,8 @@
   template:
     src: config/config.php.j2
     dest: "{{ nextcloud_shared_path }}/config/config.php"
-    owner: nginx
-    group: nginx
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: 0644
 
 - name: Check if occ exists
@@ -59,7 +59,7 @@
 - name: Run occ maintenance:mode --on
   command: "/usr/bin/php occ maintenance:mode --on"
   become: true
-  become_user: nginx
+  become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
   when: occ.stat.exists

@@ -4,13 +4,13 @@
     path: "{{ nextcloud_deploy_to }}"
     state: directory
     recurse: yes
-    owner: nginx
-    group: nginx
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
 
 - name: Run occ upgrade
   command: "/usr/bin/php occ upgrade"
   become: true
-  become_user: nginx
+  become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
   when: symlink_update is changed
@@ -18,15 +18,15 @@
 - name: Run occ maintenance:repair
   command: "/usr/bin/php occ maintenance:repair"
   become: true
-  become_user: nginx
+  become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  when: symlink_update is changed
+  when: symlink_update is change
 
 - name: Run occ maintenance:mode --off
   command: "/usr/bin/php occ maintenance:mode --off"
   become: true
-  become_user: nginx
+  become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
   when: symlink_update is changed
