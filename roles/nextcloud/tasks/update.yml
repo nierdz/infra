@@ -1,0 +1,22 @@
+---
+- name: Check if nextcloud {{ nextcloud_git_branch }} already exists
+  stat:
+    path: "{{ nextcloud_releases_path }}/nextcloud_git_branch"
+  register: nextcloud_release
+
+- name: Clone nextcloud git repository if release does not exist
+  git:
+    repo: "{{ nextcloud_git_repo }}"
+    dest: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}"
+    version: "{{ nextcloud_git_branch }}"
+    update: yes
+    force: yes
+    accept_hostkey: yes
+  register: git_update
+  when: not nextcloud_release.stat.exists
+
+- name: Check nextcloud version # noqa 303
+  command: sed -rn "s/.*VersionString = '(.*)';/v\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php"
+  register: version
+  failed_when: version.stdout != nextcloud_git_branch
+  changed_when: false

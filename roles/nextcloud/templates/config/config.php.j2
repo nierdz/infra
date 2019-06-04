@@ -1,0 +1,44 @@
+<?php
+// {{ ansible_managed }}
+$CONFIG = array (
+  'instanceid' => 'oc0dx5wycr89',
+  'passwordsalt' => '{{ nextcloud_passwordsalt }}',
+  'secret' => '{{ nextcloud_secret }}',
+  'trusted_domains' => 
+  array (
+    0 => '{{ nextcloud_domain }}',
+  ),
+  'datadirectory' => '{{ nextcloud_deploy_to }}/{{ nextcloud_data_folder }}',
+  'overwrite.cli.url' => 'http://localhost',
+  'config_is_read_only' => true,
+  'dbtype' => 'mysql',
+  'version' => '16.0.1.1',
+  'dbname' => 'nextcloud',
+  'dbhost' => 'localhost',
+  'dbport' => '',
+  'dbtableprefix' => 'oc_',
+  'dbuser' => 'nextcloud',
+  'dbpassword' => '{{ mysql_nextcloud_password }}',
+  'installed' => true,
+  'mail_from_address' => 'root',
+  'mail_smtpmode' => 'smtp',
+  'mail_smtpauthtype' => 'PLAIN',
+  'mail_domain' => 'data1.mnt-tech.fr',
+  'maintenance' => false,
+  'theme' => '',
+  'loglevel' => 2,
+  'mail_sendmailmode' => 'smtp',
+  'mail_smtpauth' => 1,
+  'mail_smtphost' => 'mx2.mnt-tech.fr',
+  'memcache.distributed' => '\\OC\\Memcache\\Redis',
+  'memcache.locking' => '\\OC\\Memcache\\Redis',
+  'redis' => 
+  array (
+    'host' => 'localhost',
+    'port' => 6379,
+  ),
+  'app_install_overwrite' => 
+  array (
+    0 => 'calendar',
+  ),
+);
