@@ -6,7 +6,7 @@ networks:
 services:
   madrabbit-nginx:
     container_name: madrabbit-nginx
-    image: nginx:1.15
+    image: nginx:1.16
     restart: always
     ports:
       - ${MADRABBIT_IP}:80:80
