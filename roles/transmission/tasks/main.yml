@@ -1,0 +1,29 @@
+---
+- name: Install transmission package
+  apt:
+    name: transmission-daemon
+    state: present
+  register: transmission_installed
+  until: transmission_installed is success
+  retries: 10
+  delay: 2
+
+- name: Stop transmission during configuration
+  service:
+    name: transmission-daemon
+    state: stopped
+  changed_when: false
+
+- name: Install /etc/transmission-daemon/settings.json
+  template:
+    src: etc/transmission-daemon/settings.json.j2
+    dest: /etc/transmission-daemon/settings.json
+    owner: debian-transmission
+    group: debian-transmission
+    mode: 0600
+
+- name: Start transmission
+  service:
+    name: transmission-daemon
+    state: started
+  changed_when: false
