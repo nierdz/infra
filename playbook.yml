@@ -66,3 +66,11 @@
         state: present
         update_cache: yes
         filename: 'sury'
+
+- name: Provision transmission
+  become: true
+  hosts: data1.igln.fr
+  vars_files:
+    - vault_vars/transmission.yml
+  roles:
+    - { role: transmission, tags: ['transmission'] }
