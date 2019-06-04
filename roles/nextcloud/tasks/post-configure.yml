@@ -30,3 +30,11 @@
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
   when: symlink_update is changed
+
+- name: Creates a cron file under /etc/cron.d
+  cron:
+    name: nextcloud
+    minute: "*/5"
+    user: "{{ nginx_user }}"
+    job: "/usr/bin/php -f {{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/cron.php"
+    cron_file: nextcloud
