@@ -29,6 +29,7 @@
   become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+  changed_when: false
 
 - name: Creates a cron file under /etc/cron.d
   cron:

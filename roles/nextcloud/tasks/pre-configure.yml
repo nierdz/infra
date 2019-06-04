@@ -63,3 +63,4 @@
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
   when: occ.stat.exists
+  changed_when: false
