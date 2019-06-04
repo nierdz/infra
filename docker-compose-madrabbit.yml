@@ -45,7 +45,7 @@ services:
   madrabbit-php-fpm:
     container_name: madrabbit-php-fpm
     build:
-      context: ./docker/php-fpm-7.2
+      context: ./docker/php-fpm-7.3
     restart: always
     volumes:
       - ./madrabbit/www:/madrabbit/www:rw
