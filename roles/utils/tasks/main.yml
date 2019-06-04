@@ -3,7 +3,6 @@
   import_tasks: ovh.yml
 
 - name: Install common packages
-  become: true
   apt:
     name: "{{ common_packages }}"
     state: present
