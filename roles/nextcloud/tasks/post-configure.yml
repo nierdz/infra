@@ -29,7 +29,6 @@
   become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  when: symlink_update is changed
 
 - name: Creates a cron file under /etc/cron.d
   cron:
