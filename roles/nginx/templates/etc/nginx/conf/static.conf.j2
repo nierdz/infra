@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+location ~* ^.+\.(css|js|jpg|jpeg|gif|png|ico|svg)$ {
+  add_header Pragma public;
+  add_header Cache-Control "public";
+  expires max;
+}
+location ~* ^.+\.(woff|eot)$ {
+ expires max;
+}

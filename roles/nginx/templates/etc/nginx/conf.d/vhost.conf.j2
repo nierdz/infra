@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80 default_server;
+  server_name {{ item.server_names | join(' ') }};
+  {% if letsencrypt_cert.stat.exists -%}
+  return 301 https://$server_name$request_uri;
+  {% else -%}
+  include /etc/nginx/conf/certbot.conf;
+  {% endif -%}
+  include /etc/nginx/conf/security.conf;
+}
+
+{%- if letsencrypt_cert.stat.exists %}
+server {
+  listen 443 ssl http2 default_server;
+  server_name {{ item.server_names | join(' ') }};
+
+  include /etc/nginx/conf/ssl.conf;
+  ssl_certificate /etc/letsencrypt/live/{{ item.server_names | first | replace('*.', '') }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ item.server_names | first | replace('*.', '') }}/privkey.pem;
+
+  {%- if item.root is defined %}
+  root {{ item.root }};
+  {%- endif %}
+
+  {%- if item.index is defined %}
+  index {{ item.index }};
+  {%- endif %}
+
+  {%- if item.extra_parameters is defined %}
+  {{ item.extra_parameters | indent(2) }}
+  {%- endif %}
+
+  {%- if item.location is defined %}
+  location / {
+    try_files $uri $uri/ =404;
+  }
+  {%- endif %}
+
+  include /etc/nginx/conf/certbot.conf;
+  include /etc/nginx/conf/static.conf;
+  include /etc/nginx/conf/generic.conf;
+  include /etc/nginx/conf/security.conf;
+}
+{%- endif %}

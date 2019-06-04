@@ -24,6 +24,7 @@ common_packages:
   - openssh-client
   - parted
   - postfix
+  - python-apt
   - rsync
   - screen
   - smartmontools

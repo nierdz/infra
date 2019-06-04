@@ -1,0 +1,16 @@
+---
+- name: Create softlinks for shared paths and files
+  file:
+    state: link
+    path: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/{{ item }}"
+    src: "{{ item | regex_replace('[^\\/]+', '..') }}/../shared/{{ item }}"
+  with_flattened:
+    - "{{ nextcloud_shared_paths }}"
+    - "{{ nextcloud_shared_files }}"
+
+- name: Change softlink to new release
+  file:
+    state: link
+    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+    src: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}"
+  register: symlink_update

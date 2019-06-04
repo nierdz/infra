@@ -1,0 +1,20 @@
+- name: Add percona apt key
+  apt_key:
+    keyserver: keys.gnupg.net
+    id: 8507EFA5
+
+- name: Add percona.list configuration file
+  apt_repository:
+    repo: "deb http://repo.percona.com/apt {{ ansible_distribution_release }} main"
+    state: present
+    filename: "percona"
+
+- name: Install percona packages
+  apt:
+    name: "{{ percona_packages }}"
+    state: present
+    update_cache: true
+  register: percona_packages_installed
+  until: percona_packages_installed is success
+  retries: 10
+  delay: 2

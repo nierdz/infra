@@ -1,0 +1,65 @@
+---
+- name: Install php modules
+  apt:
+    name: "{{ nextcloud_php_packages }}"
+    state: present
+    update_cache: true
+  register: php_packages_installed
+  until: php_packages_installed is success
+  retries: 10
+  delay: 2
+
+- name: Install php redis module via pecl
+  pear:
+    name: pecl/redis
+    state: present
+
+- name: Ensure php redis module config file is present
+  template:
+    src: etc/php/7.2/mods-available/redis.ini.j2
+    dest: /etc/php/7.2/mods-available/redis.ini
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable php redis module
+  file:
+    state: link
+    path: "{{ item }}/20-redis.ini"
+    src: /etc/php/7.2/mods-available/redis.ini
+  with_items:
+    - /etc/php/7.2/cli/conf.d
+    - /etc/php/7.2/fpm/conf.d
+
+- name: Install redis packages
+  apt:
+    name:
+      - redis-server
+      - redis-tools
+    state: present
+    update_cache: true
+  register: redis_installed
+  until: redis_installed is success
+  retries: 10
+  delay: 2
+
+- name: Install nextcloud config.php
+  template:
+    src: config/config.php.j2
+    dest: "{{ nextcloud_shared_path }}/config/config.php"
+    owner: nginx
+    group: nginx
+    mode: 0644
+
+- name: Check if occ exists
+  stat:
+    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/occ"
+  register: occ
+
+- name: Run occ maintenance:mode --on
+  command: "/usr/bin/php occ maintenance:mode --on"
+  become: true
+  become_user: nginx
+  args:
+    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+  when: occ.stat.exists
