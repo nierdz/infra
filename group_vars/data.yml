@@ -39,6 +39,12 @@ nginx_vhosts:
       add_header X-Permitted-Cross-Domain-Policies none;
       add_header Referrer-Policy no-referrer;
       fastcgi_hide_header X-Powered-By;
+      location = /.well-known/carddav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+      location = /.well-known/caldav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
       client_max_body_size 512M;
       fastcgi_buffers 64 4K;
       location / {
@@ -81,6 +87,7 @@ nginx_vhosts:
         try_files $uri /index.php$request_uri;
         access_log off;
       }
+nginx_user: nginx
 
 # PHP
 php_default_version_debian: "7.2"
@@ -124,11 +131,11 @@ php_disable_functions: []
 php_opcache_zend_extension: "opcache.so"
 php_opcache_enable: "1"
 php_opcache_enable_cli: "0"
-php_opcache_memory_consumption: "96"
-php_opcache_interned_strings_buffer: "16"
-php_opcache_max_accelerated_files: "4096"
+php_opcache_memory_consumption: "128"
+php_opcache_interned_strings_buffer: "8"
+php_opcache_max_accelerated_files: "10000"
 php_opcache_max_wasted_percentage: "5"
-php_opcache_validate_timestamps: "1"
+php_opcache_validate_timestamps: "0"
 php_opcache_revalidate_path: "0"
-php_opcache_revalidate_freq: "2"
+php_opcache_revalidate_freq: "1"
 php_opcache_max_file_size: "0"

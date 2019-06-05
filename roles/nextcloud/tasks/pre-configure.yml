@@ -43,23 +43,17 @@
   retries: 10
   delay: 2
 
-- name: Install nextcloud config.php
-  template:
-    src: config/config.php.j2
-    dest: "{{ nextcloud_shared_path }}/config/config.php"
-    owner: nginx
-    group: nginx
-    mode: 0644
-
-- name: Check if occ exists
-  stat:
-    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/occ"
-  register: occ
-
-- name: Run occ maintenance:mode --on
-  command: "/usr/bin/php occ maintenance:mode --on"
-  become: true
-  become_user: nginx
-  args:
-    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  when: occ.stat.exists
+# Keep this here just in case...
+#- name: Check if occ exists
+#  stat:
+#    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/occ"
+#  register: occ
+#
+#- name: Run occ maintenance:mode --on
+#  command: "/usr/bin/php occ maintenance:mode --on"
+#  become: true
+#  become_user: "{{ nginx_user }}"
+#  args:
+#    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+#  when: occ.stat.exists
+#  changed_when: false
