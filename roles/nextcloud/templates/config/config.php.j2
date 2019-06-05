@@ -1,6 +1,6 @@
 <?php
 $CONFIG = array (
-  'instanceid' => 'oc0dx5wycr89',
+  'instanceid' => '{{ nextcloud_instanceid }}',
   'passwordsalt' => '{{ nextcloud_passwordsalt }}',
   'secret' => '{{ nextcloud_secret }}',
   'trusted_domains' => 
@@ -16,8 +16,8 @@ $CONFIG = array (
   'dbhost' => '{{ nextcloud_dbhost }}',
   'dbport' => '',
   'dbtableprefix' => 'oc_',
-  'dbuser' => 'nextcloud',
-  'dbpassword' => '{{ mysql_nextcloud_password }}',
+  'dbuser' => '{{ nextcloud_dbuser }}',
+  'dbpassword' => '{{ nextcloud_dbpassword }}',
   'installed' => true,
   'mail_from_address' => 'root',
   'mail_smtpmode' => 'smtp',
