@@ -22,3 +22,4 @@ php_packages:
   - php7.2-xml
   - php7.2-mbstring
   - php-sqlite3
+  - php-imagick
