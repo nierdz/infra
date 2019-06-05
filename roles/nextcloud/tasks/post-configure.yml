@@ -1,4 +1,13 @@
 ---
+# Keep this here just in case...
+#- name: Run occ maintenance:mode --off
+#  command: "/usr/bin/php occ maintenance:mode --off"
+#  become: true
+#  become_user: "{{ nginx_user }}"
+#  args:
+#    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+#  changed_when: false
+
 - name: Run occ upgrade
   command: "/usr/bin/php occ upgrade"
   become: true
@@ -20,14 +29,6 @@
     name: php7.2-fpm
     state: restarted
   when: symlink_update is changed or config_update is changed
-
-- name: Run occ maintenance:mode --off
-  command: "/usr/bin/php occ maintenance:mode --off"
-  become: true
-  become_user: "{{ nginx_user }}"
-  args:
-    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  changed_when: false
 
 - name: Creates a cron file under /etc/cron.d
   cron:
