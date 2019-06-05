@@ -39,6 +39,12 @@ nginx_vhosts:
       add_header X-Permitted-Cross-Domain-Policies none;
       add_header Referrer-Policy no-referrer;
       fastcgi_hide_header X-Powered-By;
+      location = /.well-known/carddav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+      location = /.well-known/caldav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
       client_max_body_size 512M;
       fastcgi_buffers 64 4K;
       location / {
