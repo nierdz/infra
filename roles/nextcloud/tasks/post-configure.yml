@@ -1,12 +1,4 @@
 ---
-- name: Set correct permissions
-  file:
-    path: "{{ nextcloud_deploy_to }}"
-    state: directory
-    recurse: yes
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
-
 - name: Run occ upgrade
   command: "/usr/bin/php occ upgrade"
   become: true

@@ -43,21 +43,6 @@
   retries: 10
   delay: 2
 
-- name: Check nextcloud version
-  shell: |
-    set -o pipefail
-    sed -rn "s/.*Version = array\((.*)\);/\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php" | sed "s/, /./g"
-  register: version_long
-  changed_when: false
-
-- name: Install nextcloud config.php
-  template:
-    src: config/config.php.j2
-    dest: "{{ nextcloud_shared_path }}/config/config.php"
-    owner: "{{ nginx_user }}"
-    group: "{{ nginx_user }}"
-    mode: 0640
-
 - name: Check if occ exists
   stat:
     path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/occ"
