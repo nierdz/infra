@@ -37,3 +37,4 @@
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
     mode: 0640
+  register: config_update

@@ -5,7 +5,7 @@
   become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  when: symlink_update is changed
+  when: symlink_update is changed or config_update is changed
 
 - name: Run occ maintenance:repair
   command: "/usr/bin/php occ maintenance:repair"
@@ -13,7 +13,13 @@
   become_user: "{{ nginx_user }}"
   args:
     chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-  when: symlink_update is change
+  when: symlink_update is changed or config_update is changed
+
+- name: Restart php-fpm
+  service:
+    name: php7.2-fpm
+    state: restarted
+  when: symlink_update is changed or config_update is changed
 
 - name: Run occ maintenance:mode --off
   command: "/usr/bin/php occ maintenance:mode --off"
