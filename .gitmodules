@@ -1,6 +1,3 @@
-[submodule "adplusplus"]
-	path = adplusplus
-	url = ssh://nierdz@git.mnt-tech.fr:/home/nierdz/git/adplusplus.git
 [submodule "webminerpool"]
 	path = webminerpool
 	url = https://github.com/notgiven688/webminerpool.git
