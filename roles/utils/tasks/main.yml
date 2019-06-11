@@ -61,6 +61,12 @@
     regexp: "^export PS1.*"
     line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"' # noqa 204
 
+- name: Enable SSH forwarding for sudo
+  lineinfile:
+    dest: /etc/sudoers
+    insertafter: '^#?\s*Defaults\s+env_keep\b'
+    line: 'Defaults    env_keep += "SSH_AUTH_SOCK"'
+
 - name: Install crontab entries
   cron:
     name: "{{ item.key }}"
