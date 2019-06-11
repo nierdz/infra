@@ -30,6 +30,13 @@
       unarchive:
         src: minicrypt.tar.gz
         dest: /opt
+    - name: Clone infra-docker repository
+      git:
+        repo: git@github.com:nierdz/infra-docker.git
+        dest: /infra-docker
+        accept_hostkey: true
+        track_submodules: true
+        update: false
   roles:
     - { role: docker, tags: ['docker'] }
 
