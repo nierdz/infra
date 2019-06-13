@@ -13,3 +13,8 @@ up: ## Make a docker-compose up
 down: ## Make a docker-compose down
 	$(info --> Make a docker-compose down)
 	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) down
+
+restart: ## Make a docker-compose down and up
+	$(info --> Make a docker-compose down and  up)
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) down
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) up -d
