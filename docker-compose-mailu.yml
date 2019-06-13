@@ -1,0 +1,99 @@
+version: '3'
+
+services:
+  redis:
+    container_name: mailu-redis
+    image: redis:5.0
+    restart: always
+    volumes:
+      - "/mailu/redis:/data"
+ 
+  front:
+    container_name: mailu-nginx
+    image: mailu/nginx:1.6
+    restart: always
+    env_file: mailu.env
+    ports:
+      - ${MAILU_IP}:80:80
+      - ${MAILU_IP}:443:443
+      - ${MAILU_IP}:25:25
+      - ${MAILU_IP}:465:465
+      - ${MAILU_IP}:587:587
+      - ${MAILU_IP}:110:110
+      - ${MAILU_IP}:995:995
+      - ${MAILU_IP}:143:143
+      - ${MAILU_IP}:993:993
+    volumes:
+      - "/mailu/certs:/certs"
+      - "/mailu/overrides/nginx:/overrides"
+
+  admin:
+    container_name: mailu-admin
+    image: mailu/admin:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/data:/data"
+      - "/mailu/dkim:/dkim"
+    depends_on:
+      - redis
+
+  imap:
+    container_name: mailu-dovecot
+    image: mailu/dovecot:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/mail:/mail"
+      - "/mailu/overrides:/overrides"
+    depends_on:
+      - front
+
+  smtp:
+    container_name: mailu-postfix
+    image: mailu/postfix:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/overrides:/overrides"
+    depends_on:
+      - front
+
+  antispam:
+    container_name: mailu-rspamd
+    image: mailu/rspamd:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/filter:/var/lib/rspamd"
+      - "/mailu/dkim:/dkim"
+      - "/mailu/overrides/rspamd:/etc/rspamd/override.d"
+    depends_on:
+      - front
+
+  webmail:
+    container_name: mailu-roundcube
+    image: mailu/roundcube:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/webmail:/data"
+    depends_on:
+      - imap
+
+  database:
+    container_name: mailu-postgresql
+    image: mailu/postgresql:1.6
+    restart: always
+    env_file: mailu.env
+    volumes:
+      - "/mailu/data/psql_db:/data"
+      - "/mailu/data/psql_backup:/backup"
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.203.0/24
