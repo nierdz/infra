@@ -8,6 +8,8 @@ ip_failover:
   - ip: 5.39.49.21/28
   - ip: 5.39.49.22/28
 
+# XMR Stak
+xmr_stack_cpu_threads: [0, 1]
 # Crontabs
 crontabs:
   real time stats:
