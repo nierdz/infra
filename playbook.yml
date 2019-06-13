@@ -37,6 +37,20 @@
         accept_hostkey: true
         track_submodules: true
         update: false
+    - name: Push /infra-docker/.env
+      template:
+        src: vault_files/hv.env
+        dest: /infra-docker/.env
+        mode: 0400
+        owner: root
+        group: root
+    - name: Push /infra-docker/mailu.env
+      template:
+        src: vault_files/hv.mailu.env
+        dest: /infra-docker/mailu.env
+        mode: 0400
+        owner: root
+        group: root
   roles:
     - { role: docker, tags: ['docker'] }
 
