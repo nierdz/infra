@@ -51,6 +51,13 @@
         mode: 0400
         owner: root
         group: root
+    - name: Create certbot directory
+      file:
+        path: /infra-docker/certbot
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
   roles:
     - { role: docker, tags: ['docker'] }
 
