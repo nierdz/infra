@@ -1,16 +1,20 @@
 SHELL := /usr/bin/env bash
+PROJECT_NAME ?= none
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort \
 		| awk 'BEGIN { FS = ":.*?## " }; { printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 }'
 
-fix-permissions: ## To use during first install
-	$(info --> Fix permissions for first install)
-		@( \
-			chown -R root:root .; \
-			find . -type d -exec chmod 755 {} \;; \
-			find . -type f -exec chmod 644 {} \;; \
-			chown -R www-data:www-data madrabbit; \
-			chmod 0600 .env; \
-		)
+up: ## Make a docker-compose up
+	$(info --> Make a docker-compose up)
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) up -d
+
+down: ## Make a docker-compose down
+	$(info --> Make a docker-compose down)
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) down
+
+restart: ## Make a docker-compose down and up
+	$(info --> Make a docker-compose down and  up)
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) down
+	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) up -d
