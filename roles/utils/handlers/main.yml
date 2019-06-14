@@ -11,3 +11,8 @@
   until: cache_updated is success
   retries: 10
   delay: 2
+
+- name: postfix restart
+  service:
+    name: postfix
+    state: restarted
