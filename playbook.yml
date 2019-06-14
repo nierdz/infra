@@ -25,6 +25,8 @@
 - name: Provision hypervisors
   become: true
   hosts: hv
+  vars_files:
+    - vault_vars/all.yml
   pre_tasks:
     - name: Install minicrypt
       unarchive:
@@ -60,6 +62,7 @@
         group: root
   roles:
     - { role: docker, tags: ['docker'] }
+    - { role: certbot, tags: ['certbot'] }
 
 - name: Configure ip failover
   become: true
