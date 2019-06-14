@@ -9,7 +9,6 @@ asap
 [physical]
 hv1.igln.fr
 hv2.mnt-tech.fr
-hv3.mnt-tech.fr
 data1.mnt-tech.fr
 data1.igln.fr
 tmp.igln.fr
@@ -19,7 +18,6 @@ atelierasap1.mnt-tech.fr
 [xmrstak]
 hv1.igln.fr
 hv2.mnt-tech.fr
-hv3.mnt-tech.fr
 data1.mnt-tech.fr
 data1.igln.fr
 tmp.igln.fr
@@ -27,7 +25,6 @@ tmp.igln.fr
 [hv]
 hv1.igln.fr
 hv2.mnt-tech.fr
-hv3.mnt-tech.fr
 
 [mx]
 mx2.mnt-tech.fr
