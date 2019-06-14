@@ -1,0 +1,71 @@
+# Ip aliases
+ip_failover:
+  - ip: 5.39.49.16/28
+  - ip: 5.39.49.17/28
+  - ip: 5.39.49.18/28
+  - ip: 5.39.49.19/28
+  - ip: 5.39.49.20/28
+  - ip: 5.39.49.21/28
+  - ip: 5.39.49.22/28
+
+# XMR Stak
+xmr_stack_cpu_threads: [0, 1]
+
+# Certbot
+certbot_certs:
+  - email: "{{ my_email }}"
+    path: "/infra-docker/certbot"
+    state: "present"
+    post_hook: "pushd /infra-docker && /usr/local/bin/docker-compose -p madrabbit -f /infra-docker/docker-compose-madrabbit.yml restart madrabbit-nginx"
+    domains:
+      - mad-rabbit.com
+      - www.mad-rabbit.com
+      - media.mad-rabbit.com
+      - static.mad-rabbit.com
+      - tenminutestokill.com
+      - www.tenminutestokill.com
+      - media.tenminutestokill.com
+      - static.tenminutestokill.com
+
+  - email: "{{ my_email }}"
+    path: "/infra-docker/certbot"
+    state: "present"
+    post_hook: "pushd /infra-docker && /usr/local/bin/docker-compose -p mnttech -f /infra-docker/docker-compose-mnttech.yml restart mnttech-nginx"
+    domains:
+      - mnt-tech.fr
+      - www.mnt-tech.fr
+
+  - email: "{{ my_email }}"
+    path: "/infra-docker/certbot"
+    state: "present"
+    post_hook: "pushd /infra-docker && /usr/local/bin/docker-compose -p igln -f /infra-docker/docker-compose-igln.yml restart igln"
+    domains:
+      - igln.fr
+      - www.igln.fr
+
+# Crontabs
+crontabs:
+  real time stats:
+    user: root
+    state: absent
+    job: /root/infra-docker/adplusplus/scripts/stats_rt.sh
+    minute: 1-59/2
+  daily stats:
+    user: root
+    state: absent
+    job: /root/infra-docker/adplusplus/scripts/stats.sh
+    minute: 00
+    hour: 1
+  daily stats users:
+    user: root
+    state: absent
+    job: /root/infra-docker/adplusplus/scripts/users.sh
+    minute: 00
+    hour: 3
+    disabled: yes
+  daily purge:
+    user: root
+    state: absent
+    job: /root/infra-docker/adplusplus/scripts/purge.sh
+    minute: 00
+    hour: 2

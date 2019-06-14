@@ -82,6 +82,14 @@
     disabled: "{{ item.value.disabled | default('no') }}"
   with_dict: "{{ crontabs | default({}) }}"
 
+- name: Bind primary ip to postfix
+  lineinfile:
+    dest: /etc/postfix/main.cf
+    regexp: '^#?\s*inet_interfaces'
+    line: "inet_interfaces = {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+  notify:
+    - postfix restart
+
 - name: Import vim tasks
   import_tasks: vim.yml
 
