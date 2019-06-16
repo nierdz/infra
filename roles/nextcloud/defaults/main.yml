@@ -10,7 +10,6 @@ nextcloud_php_packages:
   - php7.2-mysql
   - php7.2-zip
 nextcloud_deploy_to: "/var/www/data.igln.fr"
-nextcloud_data_folder: "data"
 nextcloud_domain: "data.igln.fr"
 nextcloud_version_dir: "releases"
 nextcloud_releases_path: "{{ nextcloud_deploy_to }}/{{ nextcloud_version_dir }}"
