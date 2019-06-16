@@ -1,6 +1,5 @@
 ---
 # MySQL
-mysql_root_password_update: true
 mysql_packages:
   - mariadb-client
   - mariadb-server
@@ -12,7 +11,7 @@ mysql_databases:
 mysql_users:
   - name: nextcloud
     host: "localhost"
-    password: "{{ mysql_nextcloud_password }}"
+    password: "{{ nextcloud_dbpassword }}"
     priv: "nextcloud.*:ALL"
     state: present
 
