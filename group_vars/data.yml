@@ -1,6 +1,5 @@
 ---
 # MySQL
-mysql_root_password_update: true
 mysql_packages:
   - mariadb-client
   - mariadb-server
