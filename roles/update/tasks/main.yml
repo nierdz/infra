@@ -1,3 +1,0 @@
----
-- name: Aptitude safe-upgrade
-  apt: update_cache=yes upgrade=safe
