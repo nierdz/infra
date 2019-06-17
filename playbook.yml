@@ -15,6 +15,7 @@
         module: file
         path: /home/{{ ansible_user }}/.ssh/{{ ansible_env.SUDO_USER }}@{{ inventory_hostname }}:22
         state: absent
+      changed_when: false
 
 - name: Provision xmr-stak
   become: true
