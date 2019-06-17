@@ -1,8 +1,0 @@
----
-- name: Create php fpm configuration files if needed
-  when: item.value.user != 'www-data' and item.value.php is defined and item.value.php and php_version == "7"
-  template: src=php-fpm.conf.j2 dest=/etc/php/7.3/fpm/pool.d/{{ item.value.user }}.conf owner=root group=root mode=0644 force=no
-  with_dict: "{{ apache_vhosts }}"
-  notify:
-    - check php7.3-fpm configuration
-    - reload php7.3-fpm
