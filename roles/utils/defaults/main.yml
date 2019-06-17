@@ -32,4 +32,5 @@ common_packages:
   - sysstat
   - sudo
   - tcpdump
+  - tig
   - vim
