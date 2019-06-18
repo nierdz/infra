@@ -1,2 +1,14 @@
 # XMR Stak
 xmr_stack_cpu_threads: [0, 1]
+
+# Elasticsearch
+es_version: "7.1.1"
+es_heap_size: "2g"
+es_config:
+  node.name: "{{inventory_hostname}}"
+  cluster.name: "elasticsearch"
+  network.host: 127.0.0.1
+  http.port: 9200
+  bootstrap.memory_lock: true
+es_jvm_custom_parameters:
+  - "-Des.enforce.bootstrap.checks=true"
