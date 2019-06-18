@@ -106,3 +106,9 @@
     - vault_vars/transmission.yml
   roles:
     - { role: transmission, tags: ['transmission'] }
+
+- name: Provision ELK
+  become: true
+  hosts: data1.igln.fr
+  roles:
+    - { role: elasticsearch, tags: ['elasticsearch'] }
