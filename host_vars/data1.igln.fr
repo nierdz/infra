@@ -24,3 +24,6 @@ logstash_version: "1:7.1.1-1"
 
 # Filebeat
 filebeat_version: "7.1.1"
+
+# Kibana
+kibana_version: "7.1.1"
