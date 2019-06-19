@@ -1,0 +1,20 @@
+---
+- name: Install Filebeat
+  apt:
+    name: "filebeat={{ filebeat_version }}"
+    state: present
+    update_cache: true
+  register: filebeat_installed
+  until: filebeat_installed is success
+  retries: 10
+  delay: 2
+
+- name: Create main configuration file
+  template:
+    src: etc/filebeat/filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart filebeat

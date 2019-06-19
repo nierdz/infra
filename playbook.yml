@@ -119,3 +119,4 @@
   roles:
     - { role: java, tags: ['java'] }
     - { role: logstash, tags: ['logstash'] }
+    - { role: filebeat, tags: ['filebeat'] }
