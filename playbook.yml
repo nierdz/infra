@@ -112,3 +112,9 @@
   hosts: data1.igln.fr
   roles:
     - { role: elasticsearch, tags: ['elasticsearch'] }
+
+- name: Provision shits for ELK
+  become: true
+  hosts: data1.igln.fr
+  roles:
+    - { role: java, tags: ['java'] }

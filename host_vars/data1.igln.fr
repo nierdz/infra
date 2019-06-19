@@ -13,3 +13,7 @@ es_config:
   bootstrap.memory_lock: true
 es_jvm_custom_parameters:
   - "-Des.enforce.bootstrap.checks=true"
+
+# Java
+java_packages:
+  - openjdk-8-jre
