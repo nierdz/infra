@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+filter {
+  if [filebeat_syslog] {
+    grok {
+      match => { "message" => "%{SYSLOGBASE} %{GREEDYDATA:message}"}
+    }
+    mutate {
+      add_field => { "logstash_filtered" => true }
+    }
+  }
+}

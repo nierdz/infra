@@ -118,3 +118,4 @@
   hosts: data1.igln.fr
   roles:
     - { role: java, tags: ['java'] }
+    - { role: logstash, tags: ['logstash'] }

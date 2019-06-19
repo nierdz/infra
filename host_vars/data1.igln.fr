@@ -18,3 +18,6 @@ es_jvm_custom_parameters:
 # Java
 java_packages:
   - openjdk-8-jre
+
+# Logstash
+logstash_version: "1:7.1.1-1"

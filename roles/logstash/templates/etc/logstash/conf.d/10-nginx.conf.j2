@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+filter {
+  if [filebeat_nginx] {
+    grok {
+      match => { "message" => "%{COMBINEDAPACHELOG}"}
+    }
+    geoip {
+      source => "clientip"
+    }
+    mutate {
+      add_field => { "logstash_filtered" => true }
+    }
+  }
+}
