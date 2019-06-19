@@ -2,6 +2,7 @@
 xmr_stack_cpu_threads: [0, 1]
 
 # Elasticsearch
+es_major_version: "7.x"
 es_version: "7.1.1"
 es_heap_size: "2g"
 es_config:
