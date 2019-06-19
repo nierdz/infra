@@ -107,7 +107,7 @@
   roles:
     - { role: transmission, tags: ['transmission'] }
 
-- name: Provision ELK
+- name: Provision Elasticsearch
   become: true
   hosts: data1.igln.fr
   roles:
