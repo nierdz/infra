@@ -7,10 +7,10 @@
   version: 2.9.4
   name: mysql
 
-- src: https://github.com/ansistrano/deploy
-  version: 3.1.0
-  name: deploy
+- src: https://github.com/elastic/ansible-elasticsearch
+  version: 7.1.1
+  name: elasticsearch
 
-- src: https://github.com/ansistrano/rollback
-  version: 2.0.0
-  name: rollback
+- src: https://github.com/geerlingguy/ansible-role-java
+  version: 1.9.5
+  name: java

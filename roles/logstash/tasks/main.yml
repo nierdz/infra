@@ -1,0 +1,34 @@
+---
+- name: Install Logstash
+  apt:
+    name: "logstash={{ logstash_version }}"
+    state: present
+    update_cache: true
+  register: logstash_installed
+  until: logstash_installed is success
+  retries: 10
+  delay: 2
+
+- name: Create main configuration file
+  template:
+    src: etc/logstash/logstash.yml.j2
+    dest: /etc/logstash/logstash.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart logstash
+
+- name: Create Logstash configuration files.
+  template:
+    src: "etc/logstash/conf.d/{{ item }}.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - 01-beats-input.conf
+    - 10-nginx.conf
+    - 11-syslog.conf
+    - 100-es-output.conf
+  notify: restart logstash

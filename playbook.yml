@@ -106,3 +106,18 @@
     - vault_vars/transmission.yml
   roles:
     - { role: transmission, tags: ['transmission'] }
+
+- name: Provision Elasticsearch
+  become: true
+  hosts: data1.igln.fr
+  roles:
+    - { role: elasticsearch, tags: ['elasticsearch'] }
+
+- name: Provision shits for ELK
+  become: true
+  hosts: data1.igln.fr
+  roles:
+    - { role: java, tags: ['java'] }
+    - { role: logstash, tags: ['logstash'] }
+    - { role: filebeat, tags: ['filebeat'] }
+    - { role: kibana, tags: ['kibana'] }
