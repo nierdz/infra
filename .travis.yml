@@ -1,0 +1,9 @@
+---
+sudo: required
+language: generic
+
+before_install:
+  - make install
+
+script:
+  - make ansible-lint
