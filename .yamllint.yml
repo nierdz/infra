@@ -3,7 +3,8 @@
 extends: default
 
 ignore: |
-  venv
+  venv/
+  vendor/
 
 rules:
   braces:
