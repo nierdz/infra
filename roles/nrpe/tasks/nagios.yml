@@ -75,7 +75,7 @@
       	host_name			{{ mnttech_fqdn }}
       	service_description		LOAD
       	check_command			check_nrpe!check_load
-      	max_check_attempts		{{ check_load.max_check_attempts }} 
+      	max_check_attempts		{{ check_load.max_check_attempts }}
       }
 
 - name: Add PROCS service in {{ mnttech_fqdn }}.cfg

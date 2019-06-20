@@ -34,7 +34,7 @@
     group: "{{ xmr_stak_group }}"
     comment: "xmr-stak mining user"
     home: "{{ xmr_stak_config_dir }}"
-    system : yes
+    system: yes
 
 - name: Create xmt-stak directories
   file:

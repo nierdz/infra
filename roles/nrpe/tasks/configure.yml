@@ -26,7 +26,7 @@
 - name: Add check_multiprocs to /usr/lib/nagios/plugins/ folder
   template: src=check_multiprocs.j2 dest=/usr/lib/nagios/plugins/check_multiprocs owner=root group=root mode=0755
 
-- name: Add check_redis.pl to /usr/lib/nagios/plugins folder 
+- name: Add check_redis.pl to /usr/lib/nagios/plugins folder
   template: src=check_redis.j2 dest=/usr/lib/nagios/plugins/check_redis.pl owner=root group=root mode=0755
 
 - name: Add multiprocs.list file

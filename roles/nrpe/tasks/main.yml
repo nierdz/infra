@@ -1,5 +1,5 @@
 ---
-- name: Nrpe and nagios plugins installation 
+- name: Nrpe and nagios plugins installation
   apt: name={{ item }} cache_valid_time=86400 state=latest
   with_items:
     - nagios-nrpe-server

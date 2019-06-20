@@ -18,4 +18,3 @@
   alternatives:
     name: editor
     path: /usr/bin/vim.basic
-

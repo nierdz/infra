@@ -8,6 +8,5 @@
 - name: Set Hostname in /etc/collectd/collectd.conf
   lineinfile: dest=/etc/collectd/collectd.conf regexp='Hostname .*$' line='Hostname "{{ mnttech_fqdn }}"'
   notify:
-      - check collectd configuration
-      - collectd restart
-
+    - check collectd configuration
+    - collectd restart
