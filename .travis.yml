@@ -6,7 +6,7 @@ before_install:
   - make install
 
 script:
-  - make ansible-lint
+  - make travis-lint
 
 env:
   global:
