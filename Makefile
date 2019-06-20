@@ -34,6 +34,14 @@ ansible-lint: ## Run ansible-lint on all roles
 		yamllint -c .yamllint.yml .; \
 	)
 
+travis-lint: ## Run ansible-lint on travis
+	$(info --> Run ansible-lint on travis)
+	@export \
+		ANSIBLE_VAULT_PASSWORD=$(ANSIBLE_VAULT_PASSWORD) \
+		&& source $(VIRTUALENV_DIR)/bin/activate \
+		&& ansible-lint -v playbook.yml \
+		&& yamllint -c .yamllint.yml .
+
 ansible-galaxy-install: ## Install ansible galaxy dependencies
 	$(info --> Install ansible galaxy dependencies)
 	@( \
