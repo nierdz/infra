@@ -36,6 +36,7 @@
     - name: Clone infra-docker repository
       git:
         repo: git@github.com:nierdz/infra-docker.git
+        version: "master"
         dest: /infra-docker
         accept_hostkey: true
         track_submodules: true
