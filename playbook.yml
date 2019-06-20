@@ -113,6 +113,13 @@
   hosts: data1.igln.fr
   roles:
     - { role: elasticsearch, tags: ['elasticsearch'] }
+  pre_tasks:
+    - name: Fix this damn elasticsearch systemd service unit
+      lineinfile:
+        state: present
+        create: true
+        insertafter: "^SuccessExitStatus=143"
+        line: "LimitMEMLOCK=infinity"
 
 - name: Provision beats
   become: true
