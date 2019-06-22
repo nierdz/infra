@@ -12,8 +12,9 @@ es_config:
   http.port: 9200
   bootstrap.memory_lock: true
   discovery.type: single-node
-es_jvm_custom_parameters:
-  - "-Des.enforce.bootstrap.checks=true"
+# Unless I found a way to manage certs in ansible, I disable boostrap check for now
+#es_jvm_custom_parameters:
+#  - "-Des.enforce.bootstrap.checks=true"
 
 # Filebeat
 filebeat_version: "7.1.1"
