@@ -111,6 +111,8 @@
 - name: Provision Elasticsearch & Kibana
   become: true
   hosts: data1.igln.fr
+  vars_files:
+    - vault_vars/es.yml
   roles:
     - { role: elasticsearch, tags: ['elasticsearch'] }
     - { role: kibana, tags: ['kibana'] }
