@@ -1,8 +1,0 @@
----
-- name: Tinyproxy package installation
-  apt: name=tinyproxy cache_valid_time=86400 state=latest
-
-- name: Change configuration
-  replace: dest=/etc/tinyproxy.conf regexp='^Allow 127.0.0.1.*' replace='Allow 109.190.86.17'
-  notify:
-    - tinyproxy restart
