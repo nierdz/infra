@@ -47,3 +47,19 @@
     add elasticsearch.password
     --stdin --force
   when: '"elasticsearch.password" not in kibana_keystore_list.stdout'
+
+- name: Create /etc/kibana/kibana.yml
+  template:
+    src: etc/kibana/kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart kibana
+
+- name: Ensure kibana is enabled and started
+  service:
+    name: kibana
+    enabled: true
+    state: started

@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+server.port: 5601
+server.host: "data.igln.fr"
+#server.maxPayloadBytes: 1048576
+server.name: "data.igln.fr"
+elasticsearch.hosts: ["http://94.23.24.201:9200"]
+elasticsearch.preserveHost: true
+elasticsearch.username: "kibana"
+#elasticsearch.password: stored in keystore
+kibana.index: ".kibana"
+kibana.defaultAppId: "home"
+server.ssl.enabled: true
+server.ssl.certificate: /etc/letsencrypt/live/data.igln.fr/fullchain.pem
+server.ssl.key: /etc/letsencrypt/live/data.igln.fr/privkey.pem
+pid.file: /run/kibana/kibana.pid
