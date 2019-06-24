@@ -8,3 +8,11 @@
   until: kibana_installed is success
   retries: 10
   delay: 2
+
+- name: Create pid directory
+  file:
+    path: /run/kibana
+    state: directory
+    owner: kibana
+    group: kibana
+    mode: 0755
