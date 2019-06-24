@@ -58,6 +58,15 @@
   notify:
     - restart filebeat
 
+- name: Enable filebeat modules
+  file:
+    src: "/etc/filebeat/modules.d/{{ item }}.yml.disabled"
+    path: "/etc/filebeat/modules.d/{{ item }}.yml"
+    state: link
+  loop: "{{ filebeat_modules }}"
+  notify:
+    - restart filebeat
+
 - name: Ensure filebeat is enabled and started
   service:
     name: filebeat
