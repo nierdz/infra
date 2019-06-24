@@ -131,5 +131,7 @@
 - name: Provision beats
   become: true
   hosts: data1.igln.fr
+  vars_files:
+    - vault_vars/es.yml
   roles:
     - { role: filebeat, tags: ['filebeat'] }
