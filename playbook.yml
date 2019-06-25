@@ -108,17 +108,30 @@
   roles:
     - { role: transmission, tags: ['transmission'] }
 
-- name: Provision Elasticsearch
+- name: Provision Elasticsearch & Kibana
   become: true
   hosts: data1.igln.fr
+  vars_files:
+    - vault_vars/es.yml
   roles:
     - { role: elasticsearch, tags: ['elasticsearch'] }
+    - { role: kibana, tags: ['kibana'] }
+  pre_tasks:
+    - name: Fix this damn elasticsearch systemd service unit
+      lineinfile:
+        path: /usr/lib/systemd/system/elasticsearch.service
+        state: present
+        create: true
+        insertafter: "^SuccessExitStatus=143"
+        line: "LimitMEMLOCK=infinity"
+    - name: Systemctl daemon-reload
+      systemd:
+        daemon_reload: yes
 
-- name: Provision shits for ELK
+- name: Provision beats
   become: true
   hosts: data1.igln.fr
+  vars_files:
+    - vault_vars/es.yml
   roles:
-    - { role: java, tags: ['java'] }
-    - { role: logstash, tags: ['logstash'] }
     - { role: filebeat, tags: ['filebeat'] }
-    - { role: kibana, tags: ['kibana'] }

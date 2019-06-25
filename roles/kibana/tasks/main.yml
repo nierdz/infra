@@ -8,3 +8,58 @@
   until: kibana_installed is success
   retries: 10
   delay: 2
+
+- name: Create pid directory
+  file:
+    path: /run/kibana
+    state: directory
+    owner: kibana
+    group: kibana
+    mode: 0755
+
+- name: Check if kibana keystore already exists
+  stat:
+    path: /var/lib/kibana/kibana.keystore
+  register: kibana_keystore
+
+- name: Create the keystore if it doesn't exist yet
+  become: true
+  become_user: kibana
+  command: >
+    {{ kibana_home }}/bin/kibana-keystore create
+  when: not kibana_keystore.stat.exists
+
+- name: Check if kibana password is already stored
+  become: true
+  become_user: kibana
+  command: >
+    {{ kibana_home }}/bin/kibana-keystore list
+  register: kibana_keystore_list
+  changed_when: false
+
+- name: Store kibana password if needed
+  become: true
+  become_user: kibana
+  shell: >
+    set -o pipefail &&
+    echo {{ kibana_password }} |
+    {{ kibana_home }}/bin/kibana-keystore
+    add elasticsearch.password
+    --stdin --force
+  when: '"elasticsearch.password" not in kibana_keystore_list.stdout'
+
+- name: Create /etc/kibana/kibana.yml
+  template:
+    src: etc/kibana/kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart kibana
+
+- name: Ensure kibana is enabled and started
+  service:
+    name: kibana
+    enabled: true
+    state: started

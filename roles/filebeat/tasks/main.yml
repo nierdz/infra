@@ -9,7 +9,46 @@
   retries: 10
   delay: 2
 
-- name: Create main configuration file
+- name: Check if filebeat keystore already exists
+  stat:
+    path: /var/lib/filebeat/filebeat.keystore
+  register: filebeat_keystore
+
+- name: Create the keystore if it doesn't exist yet
+  command: >
+    {{ filebeat_home }}/bin/filebeat
+    -c /etc/filebeat/filebeat.yml
+    -path.home /usr/share/filebeat
+    -path.config /etc/filebeat
+    -path.data /var/lib/filebeat
+    keystore create
+  when: not filebeat_keystore.stat.exists
+
+- name: Check if filebeat password is already stored
+  command: >
+    {{ filebeat_home }}/bin/filebeat
+    -c /etc/filebeat/filebeat.yml
+    -path.home /usr/share/filebeat
+    -path.config /etc/filebeat
+    -path.data /var/lib/filebeat
+    keystore list
+  register: filebeat_keystore_list
+  changed_when: false
+
+- name: Store filebeat password if needed
+  shell: >
+    set -o pipefail &&
+    echo {{ filebeat_password }} |
+    {{ filebeat_home }}/bin/filebeat
+    -c /etc/filebeat/filebeat.yml
+    -path.home /usr/share/filebeat
+    -path.config /etc/filebeat
+    -path.data /var/lib/filebeat
+    keystore add FILEBEAT_PASSWORD
+    --stdin --force
+  when: '"FILEBEAT_PASSWORD" not in filebeat_keystore_list.stdout'
+
+- name: Create /etc/filebeat/filebeat.yml
   template:
     src: etc/filebeat/filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
@@ -17,4 +56,64 @@
     group: root
     mode: 0644
   notify:
+    - check filebeat configuration
     - restart filebeat
+
+- name: Enable filebeat modules
+  file:
+    src: "/etc/filebeat/modules.d/{{ item }}.yml.disabled"
+    path: "/etc/filebeat/modules.d/{{ item }}.yml"
+    state: link
+  loop: "{{ filebeat_modules }}"
+  notify:
+    - check filebeat configuration
+    - restart filebeat
+
+  # Bit dirty but didn't find proper way to get this
+- name: Get system dashboard id
+  shell: >
+    set -o pipefail &&
+    grep -B1 "Filebeat-new-users-and-groups.json" /usr/share/filebeat/module/system/module.yml |
+    grep -oE "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
+  register: dashboard_id
+  changed_when: false
+
+- name: Wait for kibana to be up
+  uri:
+    url: https://data.igln.fr:5601/status
+    user: elastic
+    password: "{{ elastic_password }}"
+  retries: 30
+  delay: 5
+  register: result
+  until: result.status == 200
+  changed_when: false
+
+- name: Check if setup is already done
+  uri:
+    url: http://94.23.24.201:9200/.kibana_1/_search
+    user: elastic
+    password: "{{ elastic_password }}"
+    method: POST
+    body_format: json
+    body: '{ "query": { "match" : { "_id" : "dashboard:{{ dashboard_id.stdout }}-ecs" } } }'
+  register: kibana_dashboard
+  failed_when: false
+
+- name: Setup filebeat
+  command: >
+    {{ filebeat_home }}/bin/filebeat
+    -c /etc/filebeat/filebeat.yml
+    -path.home /usr/share/filebeat
+    -path.config /etc/filebeat
+    -path.data /var/lib/filebeat
+    setup
+  when: kibana_dashboard.json.hits.total.value is not defined or kibana_dashboard.json.hits.total.value != 1
+  notify:
+    - restart kibana
+
+- name: Ensure filebeat is enabled and started
+  service:
+    name: filebeat
+    enabled: true
+    state: started
