@@ -69,6 +69,35 @@
     - check filebeat configuration
     - restart filebeat
 
+  # Bit dirty but didn't find proper way to get this
+- name: Get system dashboard id
+  shell: >
+    set -o pipefail &&
+    grep -B1 "Filebeat-new-users-and-groups.json" /usr/share/filebeat/module/system/module.yml |
+    grep -oE "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
+  register: dashboard_id
+  changed_when: false
+
+- name: Check if setup is already done
+  uri:
+    url: http://94.23.24.201:9200/.kibana_1/_search
+    user: elastic
+    password: "{{ elastic_password }}"
+    method: POST
+    body_format: json
+    body: '{ "query": { "match" : { "_id" : "dashboard:{{ dashboard_id.stdout }}-ecs" } } }'
+  register: kibana_dashboard
+
+- name: Setup filebeat
+  command: >
+    {{ filebeat_home }}/bin/filebeat
+    -c /etc/filebeat/filebeat.yml
+    -path.home /usr/share/filebeat
+    -path.config /etc/filebeat
+    -path.data /var/lib/filebeat
+    setup
+  when: kibana_dashboard.json.hits.total.value != 1
+
 - name: Ensure filebeat is enabled and started
   service:
     name: filebeat
