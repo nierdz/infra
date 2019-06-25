@@ -96,7 +96,8 @@
     -path.config /etc/filebeat
     -path.data /var/lib/filebeat
     setup
-  when: kibana_dashboard.json.hits.total.value != 1
+  notify:
+    - restart kibana
 
 - name: Ensure filebeat is enabled and started
   service:
