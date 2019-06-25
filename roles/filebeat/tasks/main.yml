@@ -78,6 +78,17 @@
   register: dashboard_id
   changed_when: false
 
+- name: Wait for kibana to be up
+  uri:
+    url: https://data.igln.fr:5601/status
+    user: elastic
+    password: "{{ elastic_password }}"
+  retries: 30
+  delay: 5
+  register: result
+  until: result.status == 200
+  changed_when: false
+
 - name: Check if setup is already done
   uri:
     url: http://94.23.24.201:9200/.kibana_1/_search
