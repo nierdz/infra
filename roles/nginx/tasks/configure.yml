@@ -79,3 +79,14 @@
   notify:
     - check nginx configuration
     - reload nginx
+
+- name: Create server-status configuration
+  template:
+    src: etc/nginx/conf.d/localhost.conf.j2
+    dest: /etc/nginx/conf.d/localhost.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check nginx configuration
+    - reload nginx
