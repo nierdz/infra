@@ -135,3 +135,4 @@
     - vault_vars/es.yml
   roles:
     - { role: filebeat, tags: ['filebeat'] }
+    - { role: metricbeat, tags: ['metricbeat'] }

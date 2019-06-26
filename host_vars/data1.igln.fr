@@ -94,5 +94,8 @@ filebeat_modules:
   - redis
   - system
 
+# Metricbeat
+metricbeat_version: "7.1.1"
+
 # Kibana
 kibana_version: "7.1.1"

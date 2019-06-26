@@ -1,0 +1,10 @@
+---
+- name: Install metricbeat
+  apt:
+    name: "metricbeat={{ metricbeat_version }}"
+    state: present
+    update_cache: true
+  register: metricbeat_installed
+  until: metricbeat_installed is success
+  retries: 10
+  delay: 2
