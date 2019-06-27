@@ -48,6 +48,12 @@ es_users:
       password: "{{ nierdz_password }}"
       roles:
         - superuser
+    packetbeat:
+      password: "{{ packetbeat_password }}"
+      roles:
+        - packetbeat
+        - kibana_dashboard_only_user
+        - kibana_user
     remote_monitoring_user:
       password: "{{ remote_monitoring_user_password }}"
 es_roles:
@@ -75,6 +81,19 @@ es_roles:
         - monitor
       indices:
           - names: 'metricbeat-*'
+            privileges:
+              - create_index
+              - index
+              - manage
+              - read
+    packetbeat:
+      cluster:
+        - manage_ilm
+        - manage_index_templates
+        - manage_ml
+        - monitor
+      indices:
+          - names: 'packetbeat-*'
             privileges:
               - create_index
               - index
