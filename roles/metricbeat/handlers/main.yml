@@ -7,3 +7,9 @@
   service:
     name: metricbeat
     state: restarted
+
+- name: restart kibana
+  service:
+    name: kibana
+    state: restarted
+  delegate_to: data1.igln.fr
