@@ -16,21 +16,13 @@
 
 - name: Create the keystore if it doesn't exist yet
   command: >
-    {{ filebeat_home }}/bin/filebeat
-    -c /etc/filebeat/filebeat.yml
-    -path.home /usr/share/filebeat
-    -path.config /etc/filebeat
-    -path.data /var/lib/filebeat
+    /usr/bin/filebeat
     keystore create
   when: not filebeat_keystore.stat.exists
 
 - name: Check if filebeat password is already stored
   command: >
-    {{ filebeat_home }}/bin/filebeat
-    -c /etc/filebeat/filebeat.yml
-    -path.home /usr/share/filebeat
-    -path.config /etc/filebeat
-    -path.data /var/lib/filebeat
+    /usr/bin/filebeat
     keystore list
   register: filebeat_keystore_list
   changed_when: false
@@ -39,11 +31,7 @@
   shell: >
     set -o pipefail &&
     echo {{ filebeat_password }} |
-    {{ filebeat_home }}/bin/filebeat
-    -c /etc/filebeat/filebeat.yml
-    -path.home /usr/share/filebeat
-    -path.config /etc/filebeat
-    -path.data /var/lib/filebeat
+    /usr/bin/filebeat
     keystore add FILEBEAT_PASSWORD
     --stdin --force
   when: '"FILEBEAT_PASSWORD" not in filebeat_keystore_list.stdout'
@@ -102,11 +90,7 @@
 
 - name: Setup filebeat
   command: >
-    {{ filebeat_home }}/bin/filebeat
-    -c /etc/filebeat/filebeat.yml
-    -path.home /usr/share/filebeat
-    -path.config /etc/filebeat
-    -path.data /var/lib/filebeat
+    /usr/bin/filebeat
     setup
   when: kibana_dashboard.json.hits.total.value is not defined or kibana_dashboard.json.hits.total.value != 1
   notify:
