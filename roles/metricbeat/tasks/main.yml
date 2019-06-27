@@ -93,3 +93,9 @@
   when: kibana_dashboard.json.hits.total.value is not defined or kibana_dashboard.json.hits.total.value != 1
   notify:
     - restart kibana
+
+- name: Ensure metricbeat is enabled and started
+  service:
+    name: metricbeat
+    enabled: true
+    state: started
