@@ -59,10 +59,8 @@
 
   # Bit dirty but didn't find proper way to get this
 - name: Get system dashboard id
-  shell: >
-    set -o pipefail &&
-    grep -B1 "Filebeat-new-users-and-groups.json" /usr/share/filebeat/module/system/module.yml |
-    grep -oE "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
+  command:
+    jq -r .objects[3].id /usr/share/filebeat/kibana/7/dashboard/Filebeat-syslog.json
   register: dashboard_id
   changed_when: false
 
@@ -84,7 +82,7 @@
     password: "{{ elastic_password }}"
     method: POST
     body_format: json
-    body: '{ "query": { "match" : { "_id" : "dashboard:{{ dashboard_id.stdout }}-ecs" } } }'
+    body: '{ "query": { "match" : { "_id" : "visualization:{{ dashboard_id.stdout }}" } } }'
   register: kibana_dashboard
   failed_when: false
 
