@@ -3,6 +3,7 @@
   command: >
     /usr/bin/filebeat
     test config
+
 - name: restart filebeat
   service:
     name: filebeat

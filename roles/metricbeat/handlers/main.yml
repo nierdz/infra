@@ -3,6 +3,7 @@
   command: >
     /usr/bin/metricbeat
     test config
+
 - name: restart metricbeat
   service:
     name: metricbeat
