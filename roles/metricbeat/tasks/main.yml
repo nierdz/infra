@@ -46,3 +46,13 @@
   notify:
     - check metricbeat configuration
     - restart metricbeat
+
+- name: Enable metricbeat modules
+  file:
+    src: "/etc/metricbeat/modules.d/{{ item }}.yml.disabled"
+    path: "/etc/metricbeat/modules.d/{{ item }}.yml"
+    state: link
+  loop: "{{ metricbeat_modules }}"
+  notify:
+    - check metricbeat configuration
+    - restart metricbeat
