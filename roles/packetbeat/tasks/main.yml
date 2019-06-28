@@ -35,3 +35,14 @@
     keystore add PACKETBEAT_PASSWORD
     --stdin --force
   when: '"PACKETBEAT_PASSWORD" not in packetbeat_keystore_list.stdout'
+
+- name: Create /etc/packetbeat/packetbeat.yml
+  template:
+    src: etc/packetbeat/packetbeat.yml.j2
+    dest: /etc/packetbeat/packetbeat.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check packetbeat configuration
+    - restart packetbeat

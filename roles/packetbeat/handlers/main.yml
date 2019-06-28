@@ -1,0 +1,10 @@
+---
+- name: check packetbeat configuration
+  command: >
+    /usr/bin/packetbeat
+    test config
+
+- name: restart packetbeat
+  service:
+    name: packetbeat
+    state: restarted
