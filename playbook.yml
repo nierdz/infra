@@ -136,3 +136,4 @@
   roles:
     - { role: filebeat, tags: ['filebeat'] }
     - { role: metricbeat, tags: ['metricbeat'] }
+    - { role: packetbeat, tags: ['packetbeat'] }

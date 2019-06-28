@@ -1,0 +1,10 @@
+---
+- name: Install packetbeat
+  apt:
+    name: "packetbeat={{ packetbeat_version }}"
+    state: present
+    update_cache: true
+  register: packetbeat_installed
+  until: packetbeat_installed is success
+  retries: 10
+  delay: 2
