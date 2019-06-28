@@ -8,3 +8,30 @@
   until: packetbeat_installed is success
   retries: 10
   delay: 2
+
+- name: Check if packetbeat keystore already exists
+  stat:
+    path: /var/lib/packetbeat/packetbeat.keystore
+  register: packetbeat_keystore
+
+- name: Create the keystore if it doesn't exist yet
+  command: >
+    /usr/bin/packetbeat
+    keystore create
+  when: not packetbeat_keystore.stat.exists
+
+- name: Check if packetbeat password is already stored
+  command: >
+    /usr/bin/packetbeat
+    keystore list
+  register: packetbeat_keystore_list
+  changed_when: false
+
+- name: Store packetbeat password if needed
+  shell: >
+    set -o pipefail &&
+    echo {{ packetbeat_password }} |
+    /usr/bin/packetbeat
+    keystore add PACKETBEAT_PASSWORD
+    --stdin --force
+  when: '"PACKETBEAT_PASSWORD" not in packetbeat_keystore_list.stdout'
