@@ -1,12 +1,12 @@
 ---
-- name: check filebeat configuration
+- name: check packetbeat configuration
   command: >
-    /usr/bin/filebeat
+    /usr/bin/packetbeat
     test config
 
-- name: restart filebeat
+- name: restart packetbeat
   service:
-    name: filebeat
+    name: packetbeat
     state: restarted
 
 - name: restart kibana

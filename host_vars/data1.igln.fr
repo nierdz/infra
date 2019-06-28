@@ -48,6 +48,12 @@ es_users:
       password: "{{ nierdz_password }}"
       roles:
         - superuser
+    packetbeat:
+      password: "{{ packetbeat_password }}"
+      roles:
+        - packetbeat
+        - kibana_dashboard_only_user
+        - kibana_user
     remote_monitoring_user:
       password: "{{ remote_monitoring_user_password }}"
 es_roles:
@@ -80,6 +86,19 @@ es_roles:
               - index
               - manage
               - read
+    packetbeat:
+      cluster:
+        - manage_ilm
+        - manage_index_templates
+        - manage_ml
+        - monitor
+      indices:
+          - names: 'packetbeat-*'
+            privileges:
+              - create_index
+              - index
+              - manage
+              - read
 es_enable_xpack: true
 es_api_basic_auth_username: elastic
 es_api_basic_auth_password: "{{ elastic_password }}"
@@ -93,6 +112,19 @@ filebeat_modules:
   - nginx
   - redis
   - system
+
+# Metricbeat
+metricbeat_version: "7.1.1"
+metricbeat_modules:
+  - elasticsearch
+  - kibana
+  - mysql
+  - nginx
+  - php_fpm
+  - redis
+
+# Packetbet
+packetbeat_version: "7.2.0"
 
 # Kibana
 kibana_version: "7.1.1"

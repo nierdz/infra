@@ -1,0 +1,101 @@
+---
+- name: Install metricbeat
+  apt:
+    name: "metricbeat={{ metricbeat_version }}"
+    state: present
+    update_cache: true
+  register: metricbeat_installed
+  until: metricbeat_installed is success
+  retries: 10
+  delay: 2
+
+- name: Check if metricbeat keystore already exists
+  stat:
+    path: /var/lib/metricbeat/metricbeat.keystore
+  register: metricbeat_keystore
+
+- name: Create the keystore if it doesn't exist yet
+  command: >
+    /usr/bin/metricbeat
+    keystore create
+  when: not metricbeat_keystore.stat.exists
+
+- name: Check if metricbeat password is already stored
+  command: >
+    /usr/bin/metricbeat
+    keystore list
+  register: metricbeat_keystore_list
+  changed_when: false
+
+- name: Store metricbeat password if needed
+  shell: >
+    set -o pipefail &&
+    echo {{ metricbeat_password }} |
+    /usr/bin/metricbeat
+    keystore add METRICBEAT_PASSWORD
+    --stdin --force
+  when: '"METRICBEAT_PASSWORD" not in metricbeat_keystore_list.stdout'
+
+- name: Create /etc/metricbeat/metricbeat.yml
+  template:
+    src: etc/metricbeat/metricbeat.yml.j2
+    dest: /etc/metricbeat/metricbeat.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check metricbeat configuration
+    - restart metricbeat
+
+- name: Enable metricbeat modules
+  file:
+    src: "/etc/metricbeat/modules.d/{{ item }}.yml.disabled"
+    path: "/etc/metricbeat/modules.d/{{ item }}.yml"
+    state: link
+  loop: "{{ metricbeat_modules }}"
+  notify:
+    - check metricbeat configuration
+    - restart metricbeat
+
+  # Bit dirty but didn't find proper way to get this
+- name: Get system dashboard id
+  command: >
+    jq -r .objects[2].id /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-system-overview.json
+  register: dashboard_id
+  changed_when: false
+
+- name: Wait for kibana to be up
+  uri:
+    url: https://data.igln.fr:5601/status
+    user: elastic
+    password: "{{ elastic_password }}"
+  retries: 30
+  delay: 5
+  register: result
+  until: result.status == 200
+  changed_when: false
+
+- name: Check if setup is already done
+  uri:
+    url: http://94.23.24.201:9200/.kibana_1/_search
+    user: elastic
+    password: "{{ elastic_password }}"
+    method: POST
+    body_format: json
+    body: '{ "query": { "match" : { "_id" : "visualization:{{ dashboard_id.stdout }}" } } }'
+  register: kibana_dashboard
+  failed_when: false
+
+- name: Setup metricbeat
+  command: >
+    /usr/bin/metricbeat
+    setup
+  when: kibana_dashboard.json.hits.total.value is not defined or kibana_dashboard.json.hits.total.value != 1
+  notify:
+    - restart kibana
+
+- name: Ensure metricbeat is enabled and started
+  service:
+    name: metricbeat
+    enabled: true
+    state: started

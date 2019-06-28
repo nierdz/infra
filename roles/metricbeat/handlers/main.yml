@@ -1,12 +1,12 @@
 ---
-- name: check filebeat configuration
+- name: check metricbeat configuration
   command: >
-    /usr/bin/filebeat
+    /usr/bin/metricbeat
     test config
 
-- name: restart filebeat
+- name: restart metricbeat
   service:
-    name: filebeat
+    name: metricbeat
     state: restarted
 
 - name: restart kibana
