@@ -10,3 +10,7 @@
 - src: https://github.com/elastic/ansible-elasticsearch
   version: 7.1.1
   name: elasticsearch
+
+- src: https://github.com/nierdz/ansible-role-docker
+  version: v1.0
+  name: docker
