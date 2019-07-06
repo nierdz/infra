@@ -20,4 +20,4 @@ nextcloud_shared_paths: []
 nextcloud_shared_files:
   - config/config.php
 nextcloud_git_repo: "https://github.com/nextcloud/server"
-nextcloud_git_branch: "v16.0.1"
+nextcloud_git_branch: "v16.0.2"
