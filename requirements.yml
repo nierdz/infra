@@ -14,3 +14,7 @@
 - src: https://github.com/nierdz/ansible-role-docker
   version: v1.0
   name: docker
+
+- src: https://github.com/nierdz/ansible-role-nginx
+  version: v1.0
+  name: nginx

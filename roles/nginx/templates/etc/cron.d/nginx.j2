@@ -1,7 +1,0 @@
-# {{ ansible_managed }}
-
-# Move logs older than 7 days to /var/backups/logs/nginx
-00 4  * * * root  find /var/log/nginx -mtime +7 -exec mv {} /var/backups/logs/nginx/ \;
-
-# Delete archived logs older than one year
-00 5  * * * root  find /var/backups/logs/nginx -type f -name *.gz -mtime +365 -delete
