@@ -19,7 +19,8 @@ popd
 apt-get update
 apt-get -y upgrade
 apt-get -y install sudo python3-apt
-apt-get -y purge noderig beamium ovh-rtm-metrics-toolkit ovh-rtm-binaries
+# For now there's no OVH shit on debian 10
+#apt-get -y purge noderig beamium ovh-rtm-metrics-toolkit ovh-rtm-binaries
 apt-get -y autoremove
 
 # Give me some power!
