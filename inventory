@@ -7,6 +7,7 @@ asap
 
 [physical]
 hv1.igln.fr
+hv2.igln.fr
 data1.igln.fr
 data.atelierasap.com
 atelierasap1.mnt-tech.fr
@@ -19,6 +20,7 @@ data2.igln.fr
 
 [hv]
 hv1.igln.fr
+hv2.igln.fr
 
 [data]
 data1.igln.fr
