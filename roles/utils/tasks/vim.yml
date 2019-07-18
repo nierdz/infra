@@ -9,7 +9,7 @@
 
 - name: Remove this shitty mouse support in vim
   replace:
-    path: /usr/share/vim/vim80/defaults.vim
+    path: /usr/share/vim/vim81/defaults.vim
     regexp: '^  set mouse=a'
     replace: '"  set mouse=a'
   ignore_errors: true
