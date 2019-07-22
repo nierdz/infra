@@ -33,4 +33,5 @@ common_packages:
   - sudo
   - tcpdump
   - tig
+  - tree
   - vim
