@@ -1,0 +1,8 @@
+---
+- name: Deactivate /etc/hosts management by cloud-init
+  template:
+    src: etc/cloud/cloud.cfg.d/50_local.cfg.j2
+    dest: /etc/cloud/cloud.cfg.d/50_local.cfg
+    owner: root
+    group: root
+    mode: 0644

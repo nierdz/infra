@@ -95,3 +95,6 @@
 
 - name: Import users tasks
   import_tasks: users.yml
+
+- name: Import cloud-init tasks
+  import_tasks: cloud-init.yml
