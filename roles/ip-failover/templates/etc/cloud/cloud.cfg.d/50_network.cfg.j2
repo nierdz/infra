@@ -1,0 +1,11 @@
+---
+# {{ ansible_managed }}
+network:
+  version: 2
+  ethernets:
+    eno1:
+      dhcp4: true
+      addresses:
+        {% for failover in ip_failover -%}
+        - {{ failover.ip }}
+        {% endfor %}
