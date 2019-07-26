@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+DEBUG=${DEBUG:=0}
+[[ $DEBUG -eq 1 ]] && set -o xtrace
+
+FTP_HOST="{{ backup_ftp_host }}"
+FTP_LOGIN="{{ backup_ftp_login }}"
+FTP_PASSWORD="{{ backup_ftp_password }}"
+DIRECTORIES=({{ backup_fs_directories }})
+TIME_TO_KEEP="{{ backup_fs_time_to_keep }}" # Time in days you want to keep old backups
+DATE=$(date +%Y%m%d)
+DATE_TO_KEEP_TS=$(date -d "-$TIME_TO_KEEP days" +%s)
+LOG="/var/log/fs_backup.log"
+
+# LOG
+exec 1> $LOG
+exec 2> $LOG
+
+# Function to log errors
+returncheck() {
+  if [ "$1" -ne 0 ]
+    then
+      echo "$(date +"%Y-%m-%d %H:%M:%S") $2"
+      echo "ERROR FS Backup: $2"
+      exit 1
+  fi
+}
+
+# Check for directories to backup
+for directory in "${DIRECTORIES[@]}"; do
+  if [ ! -d "$directory" ]; then
+    returncheck 1 "Directory $directory does not exist"
+  fi
+done
+
+# Backup folders
+for directory in "${DIRECTORIES[@]}"; do
+  lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}" -e "set ftp:ssl-allow no; mirror -RL ${directory} ${DATE}; quit"
+  returncheck $? "Problem during upload of $directory"
+done
+
+# list folders
+FTP_FOLDERS=$(lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}" -e "set ftp:ssl-allow no; glob -d echo *; quit")
+returncheck $? "Problem during listing of folders on ftp server"
+
+# Delete old folders
+for date in $FTP_FOLDERS; do
+  date_ts=$(date -d "$date" +%s)
+  if [ "$date_ts" -lt "$DATE_TO_KEEP_TS" ]; then
+    lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}" -e "set ftp:ssl-allow no; rm -r ${date}; quit"
+    returncheck $? "Problem during deletion of old folder $date"
+  fi
+done

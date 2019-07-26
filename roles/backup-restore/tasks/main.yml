@@ -1,0 +1,16 @@
+---
+- name: Create /usr/local/bin/mysql_backup.sh
+  template:
+    src: usr/local/bin/mysql_backup.sh.j2
+    dest: /usr/local/bin/mysql_backup.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Create /usr/local/bin/fs_backup.sh
+  template:
+    src: usr/local/bin/fs_backup.sh.j2
+    dest: /usr/local/bin/fs_backup.sh
+    owner: root
+    group: root
+    mode: 0700
