@@ -1,13 +1,5 @@
 ---
-- name: cloud-init clean
-  command: /usr/bin/cloud-init clean
-
-- name: restart cloud-init
+- name: restart systemd-networkd
   systemd:
-    name: cloud-init
-    state: restarted
-
-- name: restart networking
-  systemd:
-    name: networking
+    name: systemd-networkd
     state: restarted
