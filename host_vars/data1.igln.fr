@@ -152,8 +152,8 @@ backup_ftp_password: !vault |
           6466643737343332640a323662616539323738303532323661313530653839343231393332373966
           3463
 backup_fs_directories:
-  - '"/var/backups/mysql"'
-  - '"/etc/letsencrypt/"'
+  - "/var/backups/mysql"
+  - "/etc/letsencrypt/"
 backup_fs_time_to_keep: "60"
 backup_mysql_time_to_keep: "60"
 
