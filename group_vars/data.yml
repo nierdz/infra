@@ -138,3 +138,6 @@ php_opcache_validate_timestamps: "0"
 php_opcache_revalidate_path: "0"
 php_opcache_revalidate_freq: "1"
 php_opcache_max_file_size: "0"
+
+# ELK
+kibana_server: data2.igln.fr
