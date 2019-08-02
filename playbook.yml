@@ -104,7 +104,7 @@
 
 - name: Provision transmission
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/transmission.yml
   roles:
@@ -112,7 +112,7 @@
 
 - name: Provision Elasticsearch & Kibana
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
@@ -132,7 +132,7 @@
 
 - name: Provision beats
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
