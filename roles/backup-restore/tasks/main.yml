@@ -1,4 +1,14 @@
 ---
+- name: Install lftp package
+  apt:
+    name: "lftp"
+    state: present
+    update_cache: true
+  register: lftp_installed
+  until: lftp_installed is success
+  retries: 10
+  delay: 2
+
 - name: Create /usr/local/bin/mysql_backup.sh
   template:
     src: usr/local/bin/mysql_backup.sh.j2
