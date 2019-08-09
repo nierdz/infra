@@ -24,3 +24,22 @@
     owner: root
     group: root
     mode: 0700
+
+- name: Ansible check file exists example.
+  stat:
+    path: "{{ item }}"
+  register: backup_dirs
+  with_items: "{{ backup_fs_directories }}"
+
+- name: Restore backups if directories do not exist
+  environment:
+    FTP_HOST: "{{ backup_ftp_host }}"
+    FTP_LOGIN: "{{ backup_ftp_login }}"
+    FTP_PASSWORD: "{{ backup_ftp_password }}"
+  command: >
+    /usr/bin/lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}"
+    -e "set ftp:ssl-allow no; mirror {{ ansible_date_time.date | replace('-', '') }}{{ item.item }} {{ item.item }}; quit"
+  with_items: "{{ backup_dirs.results }}"
+  when: not item.stat.exists and restore_backup is defined and restore_backup
+  async: 3600
+  poll: 15
