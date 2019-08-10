@@ -40,7 +40,7 @@ done
 
 # Backup folders
 for directory in "${DIRECTORIES[@]}"; do
-  lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}" -e "set ftp:ssl-allow no; mirror -RL ${directory} ${DATE}; quit"
+  lftp "ftp://${FTP_LOGIN}:${FTP_PASSWORD}@${FTP_HOST}" -e "set ftp:ssl-allow no; mirror -RL ${directory} ${DATE}/${directory}; quit"
   returncheck $? "Problem during upload of $directory"
 done
 
