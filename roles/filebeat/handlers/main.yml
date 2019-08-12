@@ -13,4 +13,4 @@
   service:
     name: kibana
     state: restarted
-  delegate_to: data1.igln.fr
+  delegate_to: "{{ kibana_server }}"

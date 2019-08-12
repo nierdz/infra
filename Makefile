@@ -46,5 +46,5 @@ ansible-galaxy-install: ## Install ansible galaxy dependencies
 	$(info --> Install ansible galaxy dependencies)
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
-		ansible-galaxy install -r requirements.yml -p vendor/roles; \
+		ansible-galaxy install -f -r requirements.yml -p vendor/roles; \
 	)

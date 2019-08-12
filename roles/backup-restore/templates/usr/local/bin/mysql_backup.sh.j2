@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+DEBUG=${DEBUG:=0}
+[[ $DEBUG -eq 1 ]] && set -o xtrace
+
+DATABASES="ALL" # List of databases to backup separate by space. Use ALL to backup all databases except the system ones
+MYSQLDUMP="/usr/bin/mysqldump"
+MYSQL="/usr/bin/mysql"
+GZIP="/bin/gzip"
+TIME_TO_KEEP="{{ backup_mysql_time_to_keep }}" # Time in days you want to keep old backups
+MYSQLDUMP_OPT="" # Additional options for mysqldump; ie :  --ignore-table=db_name.tbl_name
+DATE=$(date +%Y%m%d)
+BACKUP_ROOT="/var/backups/mysql"
+BACKUP_DIR="$BACKUP_ROOT/$DATE"
+LOG="/var/log/mysql_backup.log"
+
+# LOG
+exec 1> $LOG
+exec 2> $LOG
+
+returncheck() {
+  if [ "$1" -ne 0 ]
+    then
+      echo "$(date +"%Y-%m-%d %H:%M:%S") $2"
+      echo "ERROR MySQL Backup: $2"
+      exit 1
+  fi
+}
+
+# Check Mysql credentials
+$MYSQL --silent --raw -e "SELECT @@hostname;"
+returncheck $? "Impossible to connect to MySQL server"
+
+# Create backup folder
+if [ ! -d "$BACKUP_DIR" ]
+then
+  mkdir -p "$BACKUP_DIR"
+  returncheck $? "Impossible to create backup folder"
+fi
+
+# Get list of databases to backup
+if [ "$DATABASES" = "ALL" ]
+then
+  DATABASES=$($MYSQL --silent --raw -e "SHOW DATABASES;" | grep -v "Database\\|information_schema\\|mysql\\|performance_schema")
+  returncheck $? "Impossible to retrieve databases list"
+fi
+
+# Dump databases
+for DB in $DATABASES
+do
+  $MYSQLDUMP ${MYSQLDUMP_OPT} --opt --routines --events "${DB}" > "${BACKUP_DIR}/${DB}.sql"
+  returncheck $? "Impossible to backup database $DB"
+done
+
+# Gzip dumps
+for DB in $DATABASES
+do
+  ${GZIP} -f "${BACKUP_DIR}/${DB}.sql"
+  returncheck $? "Impossible to zip database $DB"
+done
+
+# Check dumps
+for DB in $DATABASES; do
+  docker run \
+    -d \
+    --name "${DB}-${DATE}" \
+    --rm \
+    -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
+    -e "MYSQL_DATABASE=${DB}" \
+    -v "${BACKUP_DIR}/${DB}.sql.gz:/docker-entrypoint-initdb.d/${DB}.sql.gz" \
+    mariadb:10.3
+  returncheck $? "Impossible to restore database $DB on docker"
+done
+
+# Stop containers
+for DB in $DATABASES; do
+  docker stop "${DB}-${DATE}"
+  returncheck $? "Impossible to stop container $DB on docker"
+done
+
+# Delete old backups
+find "${BACKUP_ROOT}" -type d -mtime +"${TIME_TO_KEEP}" -delete
+returncheck $? "Impossible to delete old backups"

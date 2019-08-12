@@ -25,6 +25,7 @@ common_packages:
   - parted
   - postfix
   - python-apt
+  - python-pip
   - rsync
   - screen
   - smartmontools
@@ -33,4 +34,5 @@ common_packages:
   - sudo
   - tcpdump
   - tig
+  - tree
   - vim

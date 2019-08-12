@@ -65,12 +65,34 @@
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
+#  post_tasks:
+#    - name: Install docker python dependencies
+#      pip:
+#        name:
+#          - docker
+#          - docker-compose
+#        state: present
+#    - name: Start compose projects
+#      become: true
+#      docker_compose:
+#        project_name: "{{ item.name }}"
+#        project_src: /infra-docker
+#        files: "{{ item.file }}"
+#        state: present
+#        debug: true
+#      with_items:
+#        - { name: 'adplusplus', file: 'docker-compose-adplusplus.yml' }
+#        - { name: 'igln', file: 'docker-compose-igln.yml' }
+#        - { name: 'madrabbit', file: 'docker-compose-madrabbit.yml' }
+#        - { name: 'mnttech', file: 'docker-compose-mnttech.yml' }
+#        - { name: 'mailu', file: 'docker-compose-mailu.yml' }
 
 - name: Configure ip failover
   become: true
   hosts: physical
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
+    - { role: backup-restore, tags: ['backup-restore'] }
 
 - name: Configure nextcloud servers
   become: true
@@ -88,6 +110,7 @@
     - { role: php, tags: ['php'] }
     - { role: percona, tags: ['percona'] }
     - { role: nextcloud, tags: ['nextcloud'] }
+    - { role: docker, tags: ['docker'] }
   pre_tasks:
     - name: Install sury key
       apt_key:
@@ -102,7 +125,7 @@
 
 - name: Provision transmission
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/transmission.yml
   roles:
@@ -110,7 +133,7 @@
 
 - name: Provision Elasticsearch & Kibana
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
@@ -130,7 +153,7 @@
 
 - name: Provision beats
   become: true
-  hosts: data1.igln.fr
+  hosts: data2.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
