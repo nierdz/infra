@@ -52,7 +52,7 @@ nginx_vhosts:
       location ~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/ {
         deny all;
       }
-      location ~ ^\/(?:\.|autotest|occ|issue|indie|db_|console) {
+      location ~ ^\/(?:autotest|occ|issue|indie|db_|console) {
         deny all;
       }
       location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+)\.php(?:$|\/) {
