@@ -27,6 +27,8 @@
   shell: |
     set -o pipefail
     sed -rn "s/.*Version = array\((.*)\);/\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php" | sed "s/, /./g"
+  args:
+    executable: /bin/bash
   register: version_long
   changed_when: false
 
