@@ -92,7 +92,6 @@
   hosts: physical
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
-    - { role: backup-restore, tags: ['backup-restore'] }
 
 - name: Configure nextcloud servers
   become: true
