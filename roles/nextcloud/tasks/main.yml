@@ -8,9 +8,6 @@
 - name: Import update tasks
   import_tasks: update.yml
 
-- name: Import symlink tasks
-  import_tasks: symlink.yml
-
 - name: Import post configure tasks
   import_tasks: post-configure.yml
 

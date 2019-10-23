@@ -1,12 +1,12 @@
 ---
-# Keep this here just in case...
-#- name: Run occ maintenance:mode --off
-#  command: "/usr/bin/php occ maintenance:mode --off"
-#  become: true
-#  become_user: "{{ nginx_user }}"
-#  args:
-#    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-#  changed_when: false
+- name: Create .ocdata file in data folder if needed
+  copy:
+    content: ""
+    dest: /var/www/data/.ocdata
+    force: no
+    group: "{{ nginx_user }}"
+    owner: "{{ nginx_user }}"
+    mode: 0644
 
 - name: Run occ upgrade
   command: "/usr/bin/php occ upgrade"
