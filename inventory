@@ -9,11 +9,12 @@ asap
 hv2.igln.fr
 data2.igln.fr
 data.atelierasap.com
-atelierasap1.mnt-tech.fr
+backup.atelierasap.com
 
 [xmrstak]
 hv2.igln.fr
 data2.igln.fr
+backup.atelierasap.com
 
 [hv]
 hv2.igln.fr
@@ -23,5 +24,5 @@ data2.igln.fr
 data.atelierasap.com
 
 [asap]
-srv1.atelierasap.com
 data.atelierasap.com
+backup.atelierasap.com
