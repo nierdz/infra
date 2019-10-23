@@ -98,7 +98,6 @@
   become: true
   hosts: data
   vars_files:
-    - vault_vars/data.yml
     - vault_vars/all.yml
   # First nginx will only create a vhost for certbot
   # Then, second one will create actual vhost
