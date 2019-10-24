@@ -98,7 +98,6 @@
   hosts: nextcloud
   vars_files:
     - vault_vars/all.yml
-    - group_vars/nextcloud.yml
   # First nginx will only create a vhost for certbot
   # Then, second one will create actual vhost
   roles:
