@@ -61,7 +61,7 @@ nextcloud_admin_password: !vault |
 
 # Elasticsearch
 es_major_version: "7.x"
-es_version: "7.1.1"
+es_version: "7.4.1"
 es_heap_size: "2g"
 es_config:
   node.name: "{{inventory_hostname}}"
@@ -162,7 +162,7 @@ es_api_basic_auth_username: elastic
 es_api_basic_auth_password: "{{ elastic_password }}"
 
 # Filebeat
-filebeat_version: "7.1.1"
+filebeat_version: "7.4.1"
 filebeat_modules:
   - elasticsearch
   - kibana
@@ -172,7 +172,7 @@ filebeat_modules:
   - system
 
 # Metricbeat
-metricbeat_version: "7.1.1"
+metricbeat_version: "7.4.1"
 metricbeat_modules:
   - elasticsearch
   - kibana
@@ -182,10 +182,10 @@ metricbeat_modules:
   - redis
 
 # Packetbet
-packetbeat_version: "7.2.0"
+packetbeat_version: "7.4.1"
 
 # Kibana
-kibana_version: "7.1.1"
+kibana_version: "7.4.1"
 
 # Backup/Restore
 backup_mysql_time_to_keep: "60"
@@ -194,7 +194,7 @@ backup_mysql_time_to_keep: "60"
 crontabs:
   backup mysql fs:
     user: root
-    state: present
+    state: absent
     job: /usr/local/bin/mysql_backup.sh && /usr/local/bin/fs_backup.sh
     minute: 00
     hour: 1

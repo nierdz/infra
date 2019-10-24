@@ -1,4 +1,5 @@
 ---
+# Users
 users:
   - name: kmet
     comment: 'Kevin MET'
@@ -7,18 +8,24 @@ users:
     state: present
     ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCiJf8hraWJNMlb6XcH03UB7wTzjJrSJsE9MsEEhUkU7dxte5z1kYnVxZZlW0JNFOLPGEXkwd8XtWTV+RuxHciKKBD26MH6ga/HFIsetk5Mg9XyvOQGgc+WUqheykyr2owkd1cuaiWR5X7qbOfS9rSS1SClVeQK/v62rvqk2i115psRBKBqdKT0TLP2ANEDMImnPp8WmTzgXst6xSQmzetZ9DHLHlm11LLl3cExLajE37VvOFcZKOXdn6CH80BajFRAcCv9EclT+XT481tu/b9BOxW0dvC3rp31rfFPT8Qd7ewmjaHPVoqXpN/uaAoV2kK8wxC4y0AwTchsSvrn8X9H nierdz@inspirux"
 
+# PHP
+php_default_version_debian: "7.3"
 php_packages:
-  - php7.2-common
-  - php7.2-cli
-  - php7.2-dev
-  - php7.2-fpm
+  - php7.3-common
+  - php7.3-cli
+  - php7.3-dev
+  - php7.3-fpm
   - libpcre3-dev
-  - php7.2-gd
-  - php7.2-curl
-  - php7.2-imap
-  - php7.2-json
-  - php7.2-opcache
-  - php7.2-xml
-  - php7.2-mbstring
+  - php7.3-gd
+  - php7.3-curl
+  - php7.3-imap
+  - php7.3-json
+  - php7.3-opcache
+  - php7.3-xml
+  - php7.3-mbstring
   - php-sqlite3
   - php-imagick
+
+# Elasticsearch
+es_ip_address: 46.105.122.24
+kibana_server: data2.igln.fr

@@ -26,7 +26,7 @@
 
 - name: Restart php-fpm
   service:
-    name: php7.2-fpm
+    name: php7.3-fpm
     state: restarted
   when: symlink_update is changed or config_update is changed
 

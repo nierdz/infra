@@ -9,7 +9,7 @@ setup.template.settings:
 setup.kibana:
   host: "https://data.igln.fr:5601"
 output.elasticsearch:
-  hosts: ["94.23.24.201:9200"]
+  hosts: ["{{ es_ip_address }}:9200"]
   username: "metricbeat"
   password: "${METRICBEAT_PASSWORD}"
 processors:

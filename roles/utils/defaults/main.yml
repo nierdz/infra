@@ -15,6 +15,7 @@ common_packages:
   - iotop
   - iperf
   - iptraf
+  - jq
   - less
   - locate
   - lshw

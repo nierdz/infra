@@ -4,11 +4,11 @@
   name: php
 
 - src: https://github.com/geerlingguy/ansible-role-mysql
-  version: 2.9.4
+  version: 2.9.5
   name: mysql
 
 - src: https://github.com/elastic/ansible-elasticsearch
-  version: 7.1.1
+  version: 7.4.1
   name: elasticsearch
 
 - src: https://github.com/nierdz/ansible-role-docker

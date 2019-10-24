@@ -88,7 +88,6 @@ nginx_vhosts:
 nginx_user: nginx
 
 # PHP
-php_default_version_debian: "7.2"
 php_enable_webserver: false
 php_enable_php_fpm: true
 php_enable_apc: false
