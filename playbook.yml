@@ -92,14 +92,13 @@
   hosts: physical
   roles:
     - { role: ip-failover, tags: ['ip-failover'] }
-    - { role: backup-restore, tags: ['backup-restore'] }
 
 - name: Configure nextcloud servers
   become: true
   hosts: data
   vars_files:
-    - vault_vars/data.yml
     - vault_vars/all.yml
+    - group_vars/nextcloud.yml
   # First nginx will only create a vhost for certbot
   # Then, second one will create actual vhost
   roles:

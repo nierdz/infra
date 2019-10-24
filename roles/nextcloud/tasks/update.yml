@@ -17,18 +17,51 @@
   register: git_update
   when: not nextcloud_release.stat.exists
 
-- name: Check nextcloud version # noqa 303
-  command: sed -rn "s/.*VersionString = '(.*)';/v\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php"
-  register: version
-  failed_when: version.stdout != nextcloud_git_branch
-  changed_when: false
-
-- name: Check nextcloud long version
+- name: Check nextcloud version
   shell: |
     set -o pipefail
     sed -rn "s/.*Version = array\((.*)\);/\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php" | sed "s/, /./g"
+  args:
+    executable: /bin/bash
   register: version_long
   changed_when: false
+
+- name: Change softlink to new release
+  file:
+    state: link
+    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+    src: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}"
+  register: symlink_update
+
+- name: Check if database is installed
+  shell: |
+    set -o pipefail
+    mysql {{ nextcloud_dbname }} -u {{ nextcloud_dbuser }} -p{{ nextcloud_dbpassword }} -e "show tables like 'oc_users';" | grep oc_users
+  args:
+    executable: /bin/bash
+  register: oc_users_table
+  changed_when: false
+  failed_when: false
+
+- name: Install database if needed
+  command: >
+    /usr/bin/php occ maintenance:install
+      --database "mysql"
+      --database-name "{{ nextcloud_dbname }}"
+      --database-user "{{ nextcloud_dbuser }}"
+      --database-pass "{{ nextcloud_dbpassword }}"
+      --admin-user "{{ nextcloud_admin_user }}"
+      --admin-pass "{{ nextcloud_admin_password }}"
+  become: true
+  become_user: "{{ nginx_user }}"
+  args:
+    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
+  when: oc_users_table.rc != 0
+
+- name: remove automatically created config.php if exists
+  file:
+    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/config/config.php"
+    state: absent
 
 - name: Install nextcloud config.php
   template:
@@ -38,3 +71,12 @@
     group: "{{ nginx_user }}"
     mode: 0640
   register: config_update
+
+- name: Create softlinks for shared paths and files
+  file:
+    state: link
+    path: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/{{ item }}"
+    src: "{{ item | regex_replace('[^\\/]+', '..') }}/../shared/{{ item }}"
+  with_flattened:
+    - "{{ nextcloud_shared_paths }}"
+    - "{{ nextcloud_shared_files }}"

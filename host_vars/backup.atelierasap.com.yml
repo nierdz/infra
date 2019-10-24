@@ -1,0 +1,8 @@
+---
+resolv_config:
+  - nameserver:
+      - "127.0.0.1"
+      - "213.186.33.99"
+      - "9.9.9.9"
+  - search:
+      - "atelierasap.com"

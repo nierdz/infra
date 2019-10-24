@@ -2,6 +2,7 @@
 
 common_packages:
   - ack
+  - apt-transport-https
   - bash-completion
   - bc
   - binutils

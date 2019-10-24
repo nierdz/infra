@@ -42,18 +42,3 @@
   until: redis_installed is success
   retries: 10
   delay: 2
-
-# Keep this here just in case...
-#- name: Check if occ exists
-#  stat:
-#    path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}/occ"
-#  register: occ
-#
-#- name: Run occ maintenance:mode --on
-#  command: "/usr/bin/php occ maintenance:mode --on"
-#  become: true
-#  become_user: "{{ nginx_user }}"
-#  args:
-#    chdir: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-#  when: occ.stat.exists
-#  changed_when: false
