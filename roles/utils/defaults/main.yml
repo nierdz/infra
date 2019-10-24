@@ -21,6 +21,7 @@ common_packages:
   - lshw
   - lsof
   - mcrypt
+  - ncdu
   - netcat
   - ntp
   - openssh-client
