@@ -27,3 +27,4 @@ php_packages:
 
 # Elasticsearch
 es_ip_address: 46.105.122.24
+kibana_server: data2.igln.fr
