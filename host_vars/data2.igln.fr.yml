@@ -194,7 +194,7 @@ backup_mysql_time_to_keep: "60"
 crontabs:
   backup mysql fs:
     user: root
-    state: present
+    state: absent
     job: /usr/local/bin/mysql_backup.sh && /usr/local/bin/fs_backup.sh
     minute: 00
     hour: 1
