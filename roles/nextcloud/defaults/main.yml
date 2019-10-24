@@ -1,14 +1,15 @@
 ---
 nextcloud_php_packages:
   - php-pear
-  - php7.2-bz2
-  - php7.2-curl
-  - php7.2-gd
-  - php7.2-json
-  - php7.2-intl
-  - php7.2-mbstring
-  - php7.2-mysql
-  - php7.2-zip
+  - php-redis
+  - php7.3-bz2
+  - php7.3-curl
+  - php7.3-gd
+  - php7.3-json
+  - php7.3-intl
+  - php7.3-mbstring
+  - php7.3-mysql
+  - php7.3-zip
 nextcloud_deploy_to: "/var/www"
 nextcloud_domain: ""
 nextcloud_version_dir: "releases"

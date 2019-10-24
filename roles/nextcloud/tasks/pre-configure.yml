@@ -9,28 +9,6 @@
   retries: 10
   delay: 2
 
-- name: Install php redis module via pecl
-  pear:
-    name: pecl/redis
-    state: present
-
-- name: Ensure php redis module config file is present
-  template:
-    src: etc/php/7.2/mods-available/redis.ini.j2
-    dest: /etc/php/7.2/mods-available/redis.ini
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Enable php redis module
-  file:
-    state: link
-    path: "{{ item }}/20-redis.ini"
-    src: /etc/php/7.2/mods-available/redis.ini
-  with_items:
-    - /etc/php/7.2/cli/conf.d
-    - /etc/php/7.2/fpm/conf.d
-
 - name: Install redis packages
   apt:
     name:
