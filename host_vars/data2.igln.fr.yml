@@ -162,7 +162,7 @@ es_api_basic_auth_username: elastic
 es_api_basic_auth_password: "{{ elastic_password }}"
 
 # Filebeat
-filebeat_version: "7.1.1"
+filebeat_version: "7.4.1"
 filebeat_modules:
   - elasticsearch
   - kibana
@@ -172,7 +172,7 @@ filebeat_modules:
   - system
 
 # Metricbeat
-metricbeat_version: "7.1.1"
+metricbeat_version: "7.4.1"
 metricbeat_modules:
   - elasticsearch
   - kibana
@@ -182,7 +182,7 @@ metricbeat_modules:
   - redis
 
 # Packetbet
-packetbeat_version: "7.2.0"
+packetbeat_version: "7.4.1"
 
 # Kibana
 kibana_version: "7.1.1"
