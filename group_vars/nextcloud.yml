@@ -22,16 +22,15 @@ certbot_certs:
     state: "present"
     post_hook: "/bin/systemctl restart nginx.service"
     domains:
-      - data.igln.fr
+      - "{{ nextcloud_domain }}"
 
 # Nginx
 nginx_vhosts:
   - server_names:
-      - data.igln.fr
-      - data.mnt-tech.fr
+      - "{{ nextcloud_domain }}"
     state: "present"
-    root: /var/www/data.igln.fr/current
-    index: index.php index.html
+    root: "/var/www/{{ nextcloud_domain }}/current"
+    index: index.php
     extra_parameters: |
       add_header X-Robots-Tag none;
       add_header X-Download-Options noopen;
@@ -138,6 +137,3 @@ php_opcache_validate_timestamps: "0"
 php_opcache_revalidate_path: "0"
 php_opcache_revalidate_freq: "1"
 php_opcache_max_file_size: "0"
-
-# ELK
-kibana_server: data2.igln.fr
