@@ -6,3 +6,32 @@ resolv_config:
       - "9.9.9.9"
   - search:
       - "atelierasap.com"
+
+# Certbot
+certbot_certs:
+  - email: "{{ my_email }}"
+    path: "/var/www/certbot"
+    state: "present"
+    post_hook: "/bin/systemctl restart nginx.service"
+    domains:
+      - backup.atelierasap.com
+
+# Nginx
+nginx_vhosts:
+  - server_names:
+      - backup.atelierasap.com
+    state: "present"
+    root: "/usr/share/backuppc/cgi-bin/"
+    index: index.cgi
+    extra_parameters: |
+      add_header X-Robots-Tag none;
+      auth_basic "BackupPC admin";
+      auth_basic_user_file /etc/nginx/backuppc.htpasswd;
+      rewrite ^/backuppc/image(/.*)$ /image$1 last;
+      location  ~\.cgi$ {
+        gzip off;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        fastcgi_index BackupPC_Admin;
+        fastcgi_param SCRIPT_FILENAME /usr/share/backuppc/cgi-bin$fastcgi_script_name;
+      }
