@@ -77,7 +77,7 @@
 
 - name: Check if setup is already done
   uri:
-    url: http://94.23.24.201:9200/.kibana_1/_search
+    url: http://{{ es_ip_address }}:9200/.kibana_1/_search
     user: elastic
     password: "{{ elastic_password }}"
     method: POST
