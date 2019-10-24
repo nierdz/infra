@@ -1,4 +1,15 @@
 ---
+- name: Remove ovh packages
+  apt:
+    name:
+      - beamium
+      - noderig
+      - ovh-rtm-binaries
+      - ovh-rtm-metrics-toolkit
+    state: absent
+    purge: true
+    autoremove: true
+
 - name: Remove /etc/beamium
   file:
     path: /etc/beamium
