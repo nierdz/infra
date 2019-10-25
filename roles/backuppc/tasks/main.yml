@@ -26,3 +26,42 @@
     owner: root
     group: nginx
     mode: 0640
+
+- name: Generate ssh keys for backuppc user
+  user:
+    name: backuppc
+    generate_ssh_key: true
+    ssh_key_comment: backuppc@{{ backuppc_server }}
+
+- name: Remove localhost from backuppc hosts
+  lineinfile:
+    path: /etc/backuppc/hosts
+    state: absent
+    regexp: '^localhost'
+  notify:
+    - restart backuppc
+
+- name: Remove /etc/backuppc/localhost.pl
+  file:
+    path: /etc/backuppc/localhost.pl
+    state: absent
+  notify:
+    - restart backuppc
+
+- name: Configure ssh for backuppc
+  template:
+    src: var/lib/backuppc/.ssh/config.j2
+    dest: /var/lib/backuppc/.ssh/config
+    owner: backuppc
+    group: backuppc
+    mode: 0600
+
+- name: Create backuppc configuration file
+  template:
+    src: etc/backuppc/config.pl.j2
+    dest: /etc/backuppc/config.pl
+    owner: backuppc
+    group: backuppc
+    mode: 0640
+  notify:
+    - restart backuppc
