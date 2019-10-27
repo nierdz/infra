@@ -16,6 +16,12 @@
     name: postfix
     state: restarted
 
+- name: restart backuppc
+  delegate_to: "{{ backuppc_server }}"
+  systemd:
+    name: backuppc
+    state: restarted
+
 - name: restart sshd
   service:
     name: sshd

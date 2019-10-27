@@ -99,3 +99,6 @@
 
 - name: Import users tasks
   import_tasks: users.yml
+
+- name: Import backuppc tasks
+  import_tasks: backuppc.yml
