@@ -1,5 +1,4 @@
 ---
-
 - name: cron restart
   service:
     name: cron
