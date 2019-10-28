@@ -14,3 +14,10 @@ $Conf{RsyncArgs} = [
   '--block-size=2048',
   '--recursive'
 ];
+
+$Conf{BackupFilesExclude} = {
+  '/var' => [
+    '/var/lib/mysql',
+    '/var/lib/elasticsearch'
+  ]
+};
