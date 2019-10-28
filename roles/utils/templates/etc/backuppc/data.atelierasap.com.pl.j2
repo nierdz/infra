@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+# Limit bandwith to 8192 Kbps
+$Conf{RsyncArgs} = [
+  '--bwlimit=16384',
+  '--numeric-ids',
+  '--perms',
+  '--owner',
+  '--group',
+  '-D',
+  '--links',
+  '--hard-links',
+  '--times',
+  '--block-size=2048',
+  '--recursive'
+];
+
+$Conf{BackupFilesExclude} = {
+  '/var' => [
+    '/var/lib/mysql',
+    '/var/lib/elasticsearch'
+  ]
+};

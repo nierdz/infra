@@ -32,6 +32,7 @@ ansible-lint: ## Run ansible-lint on all roles
 		ansible-lint playbook.yml; \
 		ansible-playbook playbook.yml --syntax-check; \
 		yamllint -c .yamllint.yml .; \
+		pre-commit run --all-files; \
 	)
 
 travis-lint: ## Run ansible-lint on travis

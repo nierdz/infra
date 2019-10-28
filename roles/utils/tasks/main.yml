@@ -2,6 +2,10 @@
 - name: Import OVH tasks
   import_tasks: ovh.yml
 
+- name: Set up hostname according to inventory_hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
 - name: Install common packages
   apt:
     name: "{{ common_packages }}"
@@ -95,3 +99,6 @@
 
 - name: Import users tasks
   import_tasks: users.yml
+
+- name: Import backuppc tasks
+  import_tasks: backuppc.yml

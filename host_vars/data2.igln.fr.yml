@@ -124,12 +124,12 @@ es_roles:
         - manage_pipeline
         - monitor
       indices:
-          - names: 'filebeat-*'
-            privileges:
-              - create_index
-              - index
-              - manage
-              - read
+        - names: 'filebeat-*'
+          privileges:
+            - create_index
+            - index
+            - manage
+            - read
     metricbeat:
       cluster:
         - manage_ilm
@@ -138,12 +138,12 @@ es_roles:
         - manage_pipeline
         - monitor
       indices:
-          - names: 'metricbeat-*'
-            privileges:
-              - create_index
-              - index
-              - manage
-              - read
+        - names: 'metricbeat-*'
+          privileges:
+            - create_index
+            - index
+            - manage
+            - read
     packetbeat:
       cluster:
         - manage_ilm
@@ -151,12 +151,12 @@ es_roles:
         - manage_ml
         - monitor
       indices:
-          - names: 'packetbeat-*'
-            privileges:
-              - create_index
-              - index
-              - manage
-              - read
+        - names: 'packetbeat-*'
+          privileges:
+            - create_index
+            - index
+            - manage
+            - read
 es_enable_xpack: true
 es_api_basic_auth_username: elastic
 es_api_basic_auth_password: "{{ elastic_password }}"

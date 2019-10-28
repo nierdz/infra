@@ -98,7 +98,6 @@
   hosts: nextcloud
   vars_files:
     - vault_vars/all.yml
-    - group_vars/nextcloud.yml
   # First nginx will only create a vhost for certbot
   # Then, second one will create actual vhost
   roles:
@@ -159,3 +158,14 @@
     - { role: filebeat, tags: ['filebeat'] }
     - { role: metricbeat, tags: ['metricbeat'] }
     - { role: packetbeat, tags: ['packetbeat'] }
+
+- name: Provision backuppc
+  become: true
+  hosts: backup.atelierasap.com
+  vars_files:
+    - vault_vars/all.yml
+  roles:
+    - { role: nginx, tags: ['nginx'], dummy: 'first' }
+    - { role: certbot, tags: ['certbot'] }
+    - { role: nginx, tags: ['nginx'], dummy: 'second' }
+    - { role: backuppc, tags: ['backuppc'] }

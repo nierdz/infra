@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+$Conf{BackupFilesExclude} = {
+  '/var' => [
+    '/var/lib/mysql',
+    '/var/lib/elasticsearch'
+  ]
+};

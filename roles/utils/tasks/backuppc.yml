@@ -1,0 +1,33 @@
+---
+- name: Get backuppc public ssh key
+  delegate_to: "{{ backuppc_server }}"
+  slurp:
+    src: /var/lib/backuppc/.ssh/id_rsa.pub
+  register: backuppc_ssh_key
+
+- name: Copy backuppc ssh key to root's authorized_keys
+  authorized_key:
+    user: root
+    path: "/root/.ssh/authorized_keys"
+    key: "{{ backuppc_ssh_key['content'] | b64decode }}"
+
+- name: Add host to /etc/backuppc/hosts in backuppc_server
+  delegate_to: "{{ backuppc_server }}"
+  lineinfile:
+    dest: /etc/backuppc/hosts
+    regexp: '^{{ inventory_hostname }}'
+    line: '{{ inventory_hostname }} 0 root'
+    force: no
+  notify:
+    - restart backuppc
+
+- name: Create backuppc config file
+  delegate_to: "{{ backuppc_server }}"
+  template:
+    src: etc/backuppc/{{ inventory_hostname }}.pl.j2
+    dest: /etc/backuppc/{{ inventory_hostname }}.pl
+    owner: backuppc
+    group: www-data
+    mode: 0640
+  notify:
+    - restart backuppc

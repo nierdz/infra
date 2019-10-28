@@ -3,7 +3,7 @@ $CONFIG = array (
   'instanceid' => '{{ nextcloud_instanceid }}',
   'passwordsalt' => '{{ nextcloud_passwordsalt }}',
   'secret' => '{{ nextcloud_secret }}',
-  'trusted_domains' => 
+  'trusted_domains' =>
   array (
     0 => '{{ nextcloud_domain }}',
   ),
@@ -30,12 +30,12 @@ $CONFIG = array (
   'memcache.local' => '\\OC\\Memcache\\Redis',
   'memcache.distributed' => '\\OC\\Memcache\\Redis',
   'memcache.locking' => '\\OC\\Memcache\\Redis',
-  'redis' => 
+  'redis' =>
   array (
     'host' => 'localhost',
     'port' => 6379,
   ),
-  'app_install_overwrite' => 
+  'app_install_overwrite' =>
   array (
     0 => 'calendar',
   ),

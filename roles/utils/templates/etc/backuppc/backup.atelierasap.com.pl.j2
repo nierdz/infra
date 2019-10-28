@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+# Do not save /var cause it contains all backups
+$Conf{RsyncShareName} = [
+  '/home',
+  '/etc'
+];
