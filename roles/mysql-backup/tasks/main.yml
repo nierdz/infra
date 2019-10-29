@@ -1,0 +1,8 @@
+---
+- name: Create /usr/local/bin/mysql_backup.sh
+  template:
+    src: usr/local/bin/mysql_backup.sh.j2
+    dest: /usr/local/bin/mysql_backup.sh
+    owner: root
+    group: root
+    mode: 0700
