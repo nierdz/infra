@@ -10,7 +10,7 @@ services:
  
   front:
     container_name: mailu-nginx
-    image: mailu/nginx:1.6
+    image: mailu/nginx:1.7
     restart: always
     env_file: mailu.env
     ports:
@@ -29,7 +29,7 @@ services:
 
   admin:
     container_name: mailu-admin
-    image: mailu/admin:1.6
+    image: mailu/admin:1.7
     restart: always
     env_file: mailu.env
     volumes:
@@ -40,7 +40,7 @@ services:
 
   imap:
     container_name: mailu-dovecot
-    image: mailu/dovecot:1.6
+    image: mailu/dovecot:1.7
     restart: always
     env_file: mailu.env
     volumes:
@@ -51,7 +51,7 @@ services:
 
   smtp:
     container_name: mailu-postfix
-    image: mailu/postfix:1.6
+    image: mailu/postfix:1.7
     restart: always
     env_file: mailu.env
     volumes:
@@ -61,7 +61,7 @@ services:
 
   antispam:
     container_name: mailu-rspamd
-    image: mailu/rspamd:1.6
+    image: mailu/rspamd:1.7
     restart: always
     env_file: mailu.env
     volumes:
@@ -73,7 +73,7 @@ services:
 
   webmail:
     container_name: mailu-roundcube
-    image: mailu/roundcube:1.6
+    image: mailu/roundcube:1.7
     restart: always
     env_file: mailu.env
     volumes:
@@ -83,12 +83,11 @@ services:
 
   database:
     container_name: mailu-postgresql
-    image: mailu/postgresql:1.6
+    image: postgres:12.0
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/data/psql_db:/data"
-      - "/mailu/data/psql_backup:/backup"
+      - "/mailu/data/pg_data:/var/lib/postgresql/data"
 
 networks:
   default:

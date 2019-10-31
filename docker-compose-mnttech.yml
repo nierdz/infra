@@ -6,7 +6,7 @@ networks:
 services:
   mnttech-nginx:
     container_name: mnttech-nginx
-    image: nginx:1.16
+    image: nginx:1.17
     restart: always
     ports:
       - ${MNTTECH_IP}:80:80
