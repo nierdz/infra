@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 shopt -s histappend
-HISTSIZE=100000
-HISTFILESIZE=200000
+HISTSIZE=10000
+HISTFILESIZE=20000
 HISTTIMEFORMAT="%F - %T : "
 HISTCONTROL=ignoredups
 PROMPT_COMMAND="history -a;history -c;history -r;$PROMPT_COMMAND"
