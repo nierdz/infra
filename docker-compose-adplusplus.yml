@@ -6,7 +6,7 @@ networks:
 services:
   adplusplus-nginx:
     container_name: adplusplus-nginx
-    image: nginx:1.16
+    image: nginx:1.17
     restart: always
     ports:
       - ${ADPLUSPLUS_IP}:80:80
