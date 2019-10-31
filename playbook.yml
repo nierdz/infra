@@ -109,6 +109,7 @@
     - { role: percona, tags: ['percona'] }
     - { role: nextcloud, tags: ['nextcloud'] }
     - { role: docker, tags: ['docker'] }
+    - { role: mysql-backup, tags: ['mysql-backup'] }
   pre_tasks:
     - name: Install sury key
       apt_key:
