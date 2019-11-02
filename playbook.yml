@@ -29,10 +29,6 @@
   vars_files:
     - vault_vars/all.yml
   pre_tasks:
-    - name: Install minicrypt
-      unarchive:
-        src: minicrypt.tar.gz
-        dest: /opt
     - name: Clone infra-docker repository
       git:
         repo: git@github.com:nierdz/infra-docker.git
