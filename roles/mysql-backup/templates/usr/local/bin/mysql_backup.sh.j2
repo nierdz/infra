@@ -12,7 +12,7 @@ DATABASES="ALL" # List of databases to backup separate by space. Use ALL to back
 MYSQLDUMP="/usr/bin/mysqldump"
 MYSQL="/usr/bin/mysql"
 GZIP="/bin/gzip"
-TIME_TO_KEEP="{{ backup_mysql_time_to_keep }}" # Time in days you want to keep old backups
+TIME_TO_KEEP="{{ mysql_backup.time_to_keep }}" # Time in days you want to keep old backups
 MYSQLDUMP_OPT="" # Additional options for mysqldump; ie :  --ignore-table=db_name.tbl_name
 DATE=$(date +%Y%m%d)
 BACKUP_ROOT="/var/backups/mysql"

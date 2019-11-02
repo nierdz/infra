@@ -66,8 +66,9 @@ nextcloud_admin_password: !vault |
           3765356439386630330a386137626436383137343638643363643866313731316234643966333739
           38653935643466316334303032363135663462356434396135313337653534643539
 
-# Backup/Restore
-backup_mysql_time_to_keep: "60"
+# MySQL backup
+mysql_backup:
+  time_to_keep: "60"
 
 # Crontabs
 crontabs:

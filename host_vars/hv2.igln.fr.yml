@@ -85,4 +85,4 @@ backup_ftp_password: !vault |
 mysql_backup:
   docker: true
   container: madrabbit-mysql
-backup_mysql_time_to_keep: "60"
+  time_to_keep: "60"
