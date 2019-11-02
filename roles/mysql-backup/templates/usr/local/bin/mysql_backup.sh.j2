@@ -12,7 +12,7 @@ DATABASES="ALL" # List of databases to backup separate by space. Use ALL to back
 MYSQLDUMP="/usr/bin/mysqldump"
 MYSQL="/usr/bin/mysql"
 GZIP="/bin/gzip"
-TIME_TO_KEEP="{{ backup_mysql_time_to_keep }}" # Time in days you want to keep old backups
+TIME_TO_KEEP="{{ mysql_backup.time_to_keep }}" # Time in days you want to keep old backups
 MYSQLDUMP_OPT="" # Additional options for mysqldump; ie :  --ignore-table=db_name.tbl_name
 DATE=$(date +%Y%m%d)
 BACKUP_ROOT="/var/backups/mysql"
@@ -33,6 +33,9 @@ returncheck() {
 }
 
 # Check Mysql credentials
+{% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined %}
+docker exec {{ mysql_backup.container }} \
+{% endif %}
 $MYSQL --silent --raw -e "SELECT @@hostname;"
 returncheck $? "Impossible to connect to MySQL server"
 
@@ -46,15 +49,55 @@ fi
 # Get list of databases to backup
 if [ "$DATABASES" = "ALL" ]
 then
-  DATABASES=$($MYSQL --silent --raw -e "SHOW DATABASES;" | grep -v "Database\\|information_schema\\|mysql\\|performance_schema")
+  {% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined -%}
+  DATABASES=$(docker exec {{ mysql_backup.container }} $MYSQL --silent --raw -e "SHOW DATABASES;" | grep -v "Database\\|information_schema\\|mysql\\|performance_schema\\|sys")
   returncheck $? "Impossible to retrieve databases list"
+  {% else %}
+  DATABASES=$($MYSQL --silent --raw -e "SHOW DATABASES;" | grep -v "Database\\|information_schema\\|mysql\\|performance_schema\\|sys")
+  returncheck $? "Impossible to retrieve databases list"
+  {% endif %}
 fi
 
 # Dump databases
 for DB in $DATABASES
 do
+  {% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined -%}
+  docker exec {{ mysql_backup.container }} \
+  {% endif %}
   $MYSQLDUMP ${MYSQLDUMP_OPT} --opt --routines --events "${DB}" > "${BACKUP_DIR}/${DB}.sql"
   returncheck $? "Impossible to backup database $DB"
+done
+
+# Create temporary databases to check dumps
+for DB in $DATABASES
+do
+  {% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined -%}
+  docker exec {{ mysql_backup.container }} \
+  {% endif %}
+  $MYSQL --silent -e "CREATE DATABASE \`$DB$DATE\`;"
+  returncheck $? "Impossible to create database \`$DB$DATE\`"
+done
+
+# Restore dumps in temporary databases
+for DB in $DATABASES
+do
+  {% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined -%}
+  cat "${BACKUP_DIR}/${DB}.sql" | docker exec -i {{ mysql_backup.container }} $MYSQL "$DB$DATE"
+  returncheck $? "Impossible to restore $DB in temporary \`$DB$DATE\`"
+  {% else %}
+  cat "${BACKUP_DIR}/${DB}.sql" | $MYSQL "$DB$DATE"
+  returncheck $? "Impossible to restore $DB in temporary \`$DB$DATE\`"
+  {% endif %}
+done
+
+# Drop temporary databases
+for DB in $DATABASES
+do
+  {% if mysql_backup.docker is defined and mysql_backup.docker and mysql_backup.container is defined -%}
+  docker exec {{ mysql_backup.container }} \
+  {% endif %}
+  $MYSQL --silent -e "DROP DATABASE \`$DB$DATE\`;"
+  returncheck $? "Impossible to drop database \`$DB$DATE\`"
 done
 
 # Gzip dumps
@@ -64,25 +107,6 @@ do
   returncheck $? "Impossible to zip database $DB"
 done
 
-# Check dumps
-for DB in $DATABASES; do
-  docker run \
-    -d \
-    --name "${DB}-${DATE}" \
-    --rm \
-    -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
-    -e "MYSQL_DATABASE=${DB}" \
-    -v "${BACKUP_DIR}/${DB}.sql.gz:/docker-entrypoint-initdb.d/${DB}.sql.gz" \
-    mariadb:10.3
-  returncheck $? "Impossible to restore database $DB on docker"
-done
-
-# Stop containers
-for DB in $DATABASES; do
-  docker stop "${DB}-${DATE}"
-  returncheck $? "Impossible to stop container $DB on docker"
-done
-
 # Delete old backups
-find "${BACKUP_ROOT}" -type d -mtime +"${TIME_TO_KEEP}" -delete
+find "${BACKUP_ROOT}" -type d -mtime +"${TIME_TO_KEEP}" -exec rm -r {} \;
 returncheck $? "Impossible to delete old backups"

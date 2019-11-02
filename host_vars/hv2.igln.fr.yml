@@ -51,10 +51,10 @@ certbot_certs:
 
 # Crontabs
 crontabs:
-  backup mysql fs:
+  mysql backup:
     user: root
     state: present
-    job: /usr/local/bin/mysql_backup.sh && /usr/local/bin/fs_backup.sh
+    job: /usr/local/bin/mysql_backup.sh
     minute: 00
     hour: 1
 
@@ -80,11 +80,9 @@ backup_ftp_password: !vault |
           66373632306636316265316331353761333163343337633839353961633064343234326137353563
           3662393461363938350a613233613935623836333837383631633833633339616535386561366538
           3236
-backup_fs_directories:
-  - "/infra-docker/madrabbit/"
-  - "/infra-docker/adplusplus/"
-  - "/infra-docker/mnttech/"
-  - "/etc/letsencrypt/"
-backup_fs_time_to_keep: "2"
-backup_mysql_time_to_keep: "60"
-restore_backup: true
+
+# Mysql backup
+mysql_backup:
+  docker: true
+  container: madrabbit-mysql
+  time_to_keep: "60"

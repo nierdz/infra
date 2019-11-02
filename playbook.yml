@@ -29,10 +29,6 @@
   vars_files:
     - vault_vars/all.yml
   pre_tasks:
-    - name: Install minicrypt
-      unarchive:
-        src: minicrypt.tar.gz
-        dest: /opt
     - name: Clone infra-docker repository
       git:
         repo: git@github.com:nierdz/infra-docker.git
@@ -65,6 +61,7 @@
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
+    - { role: mysql-backup, tags: ['mysql-backup'] }
 #  post_tasks:
 #    - name: Install docker python dependencies
 #      pip:
@@ -108,7 +105,6 @@
     - { role: php, tags: ['php'] }
     - { role: percona, tags: ['percona'] }
     - { role: nextcloud, tags: ['nextcloud'] }
-    - { role: docker, tags: ['docker'] }
     - { role: mysql-backup, tags: ['mysql-backup'] }
   pre_tasks:
     - name: Install sury key

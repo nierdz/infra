@@ -187,8 +187,9 @@ packetbeat_version: "7.4.1"
 # Kibana
 kibana_version: "7.4.1"
 
-# Backup/Restore
-backup_mysql_time_to_keep: "60"
+# MySQL backup
+mysql_backup:
+  time_to_keep: "60"
 
 # Crontabs
 crontabs:
