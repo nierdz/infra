@@ -61,6 +61,7 @@
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
+    - { role: mysql-backup, tags: ['mysql-backup'] }
 #  post_tasks:
 #    - name: Install docker python dependencies
 #      pip:
