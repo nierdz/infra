@@ -108,5 +108,5 @@ do
 done
 
 # Delete old backups
-find "${BACKUP_ROOT}" -type d -mtime +"${TIME_TO_KEEP}" -delete
+find "${BACKUP_ROOT}" -type d -mtime +"${TIME_TO_KEEP}" -exec rm -r {} \;
 returncheck $? "Impossible to delete old backups"
