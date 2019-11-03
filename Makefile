@@ -1,5 +1,7 @@
 SHELL := /usr/bin/env bash
 PROJECT_NAME ?= none
+USER := kmet
+SERVER := hv2.igln.fr
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -21,4 +23,8 @@ restart: ## Make a docker-compose down and up
 
 rsync-pull: ## Pull files from server
 	$(info --> Pull files from server)
-	@rsync -avz --exclude-from "rsync-exclude.list" kmet@hv2.igln.fr:/infra-docker/ .
+	@rsync -avz --exclude-from "rsync-exclude.list" $(USER)@$(SERVER):/infra-docker/ .
+
+rsync-push: ## Push files to server
+	$(info --> Push files to server)
+	@rsync -avz --exclude-from "rsync-exclude.list" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra-docker/
