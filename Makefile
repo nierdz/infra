@@ -18,3 +18,7 @@ restart: ## Make a docker-compose down and up
 	$(info --> Make a docker-compose down and  up)
 	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) down
 	@docker-compose -f docker-compose-$(PROJECT_NAME).yml -p $(PROJECT_NAME) up -d
+
+rsync-pull: ## Pull files from server
+	$(info --> Pull files from server)
+	@rsync -avz --exclude-from "rsync-exclude.list" kmet@hv2.igln.fr:/infra-docker/ .
