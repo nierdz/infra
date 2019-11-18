@@ -8,6 +8,7 @@ users:
     state: present
     ssh_key: |
       ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDch7PXOqVis44PiH6/WmfyukAAEpbNwv6Teh69mr3mgHSKQVEjawSxx/04R/zF4dK7DkTOF4F5w18Lf5e4T8i6uKxyyFfDn3kyo9aTm2wsJJ9Dd3bKTieqEPv+nm7W2ExZ1U+zE9WH5vxjn4eYHSgLjxcsk+hreY7dgqAeswVkzRpXutgZR6qVI4jR37zBXy6i9i+IFDV5veMWJf4GPx7VHgdfbzgUvfP+/LLs9uGf/l0KyLidwF5cMc9gKBJf0ta4xll/WqrsJWjDK6YAhzpnxmnUt5/bIsvZpPmoJk36oAh2wrPwYhXGogg5oygwh7/LB/N0dIg0rNE3LKjx+orqWWvFkHSII+rXpl4ulUFDhpmBTq8+w0jpIa2zh4JfByTtiogIfTSe/0zab8mokbbWuveNbmb2T/uKBoSb9Zhrba1GZbQxlT12q6eJdLFJypJACENBmEHgt67/m6ToJx62v+dkVcqrfaHWZ+F64P2JJ7NnucIWwLZo/Z6t2dqfCps= nierdz@precisux
+      ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBFhOPgv2mw/KZh852AczFWFjmV5+/1vqEg4xqKNZTGpHwb3OIYcFjav8NE4Vo03LHjZKefiIF7MdPB/zBcxeVlNIc4rZwoiL/GO3mpdacpOBsNZRX2cav8DRsVZYQNKJVw== nierdz@oneplus5
 
 # PHP
 php_default_version_debian: "7.3"
