@@ -172,7 +172,7 @@ filebeat_modules:
   - system
 
 # Metricbeat
-metricbeat_version: "7.4.1"
+metricbeat_version: "7.4.2"
 metricbeat_modules:
   - elasticsearch
   - kibana
