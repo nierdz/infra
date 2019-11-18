@@ -182,7 +182,7 @@ metricbeat_modules:
   - redis
 
 # Packetbet
-packetbeat_version: "7.4.1"
+packetbeat_version: "7.4.2"
 
 # Kibana
 kibana_version: "7.4.1"
