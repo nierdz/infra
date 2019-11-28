@@ -1,7 +1,5 @@
 .env
 .git
-adplusplus
 madrabbit
-mail.env
+mailu.env
 mnttech
-webminerpool
