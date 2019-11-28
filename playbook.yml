@@ -62,27 +62,6 @@
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
     - { role: mysql-backup, tags: ['mysql-backup'] }
-#  post_tasks:
-#    - name: Install docker python dependencies
-#      pip:
-#        name:
-#          - docker
-#          - docker-compose
-#        state: present
-#    - name: Start compose projects
-#      become: true
-#      docker_compose:
-#        project_name: "{{ item.name }}"
-#        project_src: /infra-docker
-#        files: "{{ item.file }}"
-#        state: present
-#        debug: true
-#      with_items:
-#        - { name: 'adplusplus', file: 'docker-compose-adplusplus.yml' }
-#        - { name: 'igln', file: 'docker-compose-igln.yml' }
-#        - { name: 'madrabbit', file: 'docker-compose-madrabbit.yml' }
-#        - { name: 'mnttech', file: 'docker-compose-mnttech.yml' }
-#        - { name: 'mailu', file: 'docker-compose-mailu.yml' }
 
 - name: Configure ip failover
   become: true
