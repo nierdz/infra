@@ -86,15 +86,6 @@
   when: (version.stdout.find(xmr_stack_release) != 0) or
         (not dir.stat.exists)
 
-- name: Configuring xmr-stak donation # noqa 503
-  lineinfile:
-    dest: "{{ xmr_stak_dir }}/{{ item.dest }}"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  with_items:
-    - { "dest": "xmrstak/donate-level.hpp", "regexp": "^constexpr double fDevDonationLevel =.*", "line": "{{ xmr_stak_donation_value }}" }
-  when: update.changed
-
 - name: Create {{ xmr_stak_build_dir }} directory # noqa 503
   file:
     path: "{{ xmr_stak_build_dir }}"
