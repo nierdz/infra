@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 [Unit]
-Description=Running xmr-stak miner daemon
+Description=Running xmr-stak-rx miner daemon
 After=network.target
 
 [Service]
@@ -9,7 +9,7 @@ WorkingDirectory={{ xmr_stak_config_dir }}
 Type=simple
 User={{ xmr_stak_user }}
 Group={{ xmr_stak_group }}
-ExecStart=/usr/bin/xmr-stak --config {{ xmr_stak_config_dir }}/config.txt --cpu {{ xmr_stak_config_dir }}/cpu.txt --poolconf {{ xmr_stak_config_dir }}/pools.txt
+ExecStart=/usr/bin/xmr-stak-rx --config {{ xmr_stak_config_dir }}/config.txt --cpu {{ xmr_stak_config_dir }}/cpu.txt --poolconf {{ xmr_stak_config_dir }}/pools.txt
 RemainAfterExit=yes
 Restart=always
 TimeoutSec=0
