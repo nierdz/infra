@@ -24,7 +24,7 @@
     paths: "{{ nextcloud_releases_path }}"
     file_type: directory
     recurse: no
-    patterns: "{{ nextcloud_git_branch }}"
+    patterns: "{{ nextcloud_version }}"
   register: current_release
 
 - name: Delete old releases

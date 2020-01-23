@@ -20,5 +20,4 @@ nextcloud_keep_releases: "60d"
 nextcloud_shared_paths: []
 nextcloud_shared_files:
   - config/config.php
-nextcloud_git_repo: "https://github.com/nextcloud/server"
-nextcloud_git_branch: "v16.0.5"
+nextcloud_version: "16.0.7"
