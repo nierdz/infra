@@ -21,3 +21,4 @@ nextcloud_shared_paths: []
 nextcloud_shared_files:
   - config/config.php
 nextcloud_version: "16.0.7"
+nextcloud_instanceid: "oc0dx5wycr89"
