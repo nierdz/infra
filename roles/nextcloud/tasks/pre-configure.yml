@@ -9,6 +9,16 @@
   retries: 10
   delay: 2
 
+- name: Install unzip
+  apt:
+    name: unzip
+    state: present
+    update_cache: true
+  register: unzip_installed
+  until: unzip_installed is success
+  retries: 10
+  delay: 2
+
 - name: Install redis packages
   apt:
     name:
