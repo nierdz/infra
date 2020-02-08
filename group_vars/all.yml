@@ -11,20 +11,20 @@ users:
       ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBFhOPgv2mw/KZh852AczFWFjmV5+/1vqEg4xqKNZTGpHwb3OIYcFjav8NE4Vo03LHjZKefiIF7MdPB/zBcxeVlNIc4rZwoiL/GO3mpdacpOBsNZRX2cav8DRsVZYQNKJVw== nierdz@oneplus5
 
 # PHP
-php_default_version_debian: "7.3"
+php_default_version_debian: "7.4"
 php_packages:
-  - php7.3-common
-  - php7.3-cli
-  - php7.3-dev
-  - php7.3-fpm
+  - php7.4-common
+  - php7.4-cli
+  - php7.4-dev
+  - php7.4-fpm
   - libpcre3-dev
-  - php7.3-gd
-  - php7.3-curl
-  - php7.3-imap
-  - php7.3-json
-  - php7.3-opcache
-  - php7.3-xml
-  - php7.3-mbstring
+  - php7.4-gd
+  - php7.4-curl
+  - php7.4-imap
+  - php7.4-json
+  - php7.4-opcache
+  - php7.4-xml
+  - php7.4-mbstring
   - php-sqlite3
   - php-imagick
 

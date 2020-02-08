@@ -1,26 +1,30 @@
 ---
-- name: Check if nextcloud {{ nextcloud_git_branch }} already exists
+- name: Check if nextcloud {{ nextcloud_version }} already exists
   stat:
-    path: "{{ nextcloud_releases_path }}/nextcloud_git_branch"
+    path: "{{ nextcloud_releases_path }}/{{ nextcloud_version }}"
   register: nextcloud_release
 
-- name: Clone nextcloud git repository if release does not exist
-  git:
-    repo: "{{ nextcloud_git_repo }}"
-    dest: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}"
-    version: "{{ nextcloud_git_branch }}"
-    update: yes
-    force: yes
-    accept_hostkey: yes
-  become: true
-  become_user: "{{ nginx_user }}"
-  register: git_update
+- name: Download nextcloud archive if needed
+  unarchive:
+    remote_src: true
+    src: https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.zip
+    dest: "{{ nextcloud_releases_path }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+  register: zip_update
   when: not nextcloud_release.stat.exists
+
+- name: Move nextcloud folder to {{ nextcloud_version }}
+  command: /bin/mv "{{ nextcloud_releases_path }}/nextcloud" "{{ nextcloud_releases_path }}/{{ nextcloud_version }}"
+  args:
+    creates: "{{ nextcloud_releases_path }}/{{ nextcloud_version }}"
+  when: zip_update.changed # noqa 503
 
 - name: Check nextcloud version
   shell: |
     set -o pipefail
-    sed -rn "s/.*Version = array\((.*)\);/\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/version.php" | sed "s/, /./g"
+    sed -rn "s/.*Version = array\((.*)\);/\1/p" "{{ nextcloud_releases_path }}/{{ nextcloud_version }}/version.php" |
+    sed "s/,/./g"
   args:
     executable: /bin/bash
   register: version_long
@@ -30,7 +34,7 @@
   file:
     state: link
     path: "{{ nextcloud_deploy_to }}/{{ nextcloud_current_dir }}"
-    src: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}"
+    src: "{{ nextcloud_releases_path }}/{{ nextcloud_version }}"
   register: symlink_update
 
 - name: Check if database is installed
@@ -75,7 +79,7 @@
 - name: Create softlinks for shared paths and files
   file:
     state: link
-    path: "{{ nextcloud_releases_path }}/{{ nextcloud_git_branch }}/{{ item }}"
+    path: "{{ nextcloud_releases_path }}/{{ nextcloud_version }}/{{ item }}"
     src: "{{ item | regex_replace('[^\\/]+', '..') }}/../shared/{{ item }}"
   with_flattened:
     - "{{ nextcloud_shared_paths }}"
