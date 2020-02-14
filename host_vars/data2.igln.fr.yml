@@ -61,7 +61,7 @@ nextcloud_admin_password: !vault |
 
 # Elasticsearch
 es_major_version: "7.x"
-es_version: "7.4.2"
+es_version: "7.6.0"
 es_heap_size: "2g"
 es_config:
   node.name: "{{inventory_hostname}}"
@@ -162,7 +162,7 @@ es_api_basic_auth_username: elastic
 es_api_basic_auth_password: "{{ elastic_password }}"
 
 # Filebeat
-filebeat_version: "7.4.2"
+filebeat_version: "7.6.0"
 filebeat_modules:
   - elasticsearch
   - kibana
@@ -172,7 +172,7 @@ filebeat_modules:
   - system
 
 # Metricbeat
-metricbeat_version: "7.4.2"
+metricbeat_version: "7.6.0"
 metricbeat_modules:
   - elasticsearch
   - kibana
@@ -182,10 +182,10 @@ metricbeat_modules:
   - redis
 
 # Packetbet
-packetbeat_version: "7.4.2"
+packetbeat_version: "7.6.0"
 
 # Kibana
-kibana_version: "7.4.2"
+kibana_version: "7.6.0"
 
 # MySQL backup
 mysql_backup:
