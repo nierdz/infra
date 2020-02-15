@@ -10,11 +10,13 @@ hv2.igln.fr
 data2.igln.fr
 data.atelierasap.com
 backup.atelierasap.com
+srv1.igln.fr
 
 [xmrstak]
 hv2.igln.fr
 data2.igln.fr
 backup.atelierasap.com
+srv1.igln.fr
 
 [hv]
 hv2.igln.fr
@@ -22,6 +24,7 @@ hv2.igln.fr
 [nextcloud]
 data2.igln.fr
 data.atelierasap.com
+srv1.igln.fr
 
 [asap]
 data.atelierasap.com
