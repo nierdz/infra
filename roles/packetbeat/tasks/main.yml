@@ -34,6 +34,8 @@
     /usr/bin/packetbeat
     keystore add PACKETBEAT_PASSWORD
     --stdin --force
+  args:
+    executable: /bin/bash
   when: '"PACKETBEAT_PASSWORD" not in packetbeat_keystore_list.stdout'
 
 - name: Create /etc/packetbeat/packetbeat.yml
