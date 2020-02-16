@@ -46,6 +46,8 @@
     {{ kibana_home }}/bin/kibana-keystore
     add elasticsearch.password
     --stdin --force
+  args:
+    executable: /bin/bash
   when: '"elasticsearch.password" not in kibana_keystore_list.stdout'
 
 - name: Create /etc/kibana/kibana.yml
