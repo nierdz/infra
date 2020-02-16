@@ -29,8 +29,8 @@ php_packages:
   - php-imagick
 
 # Elasticsearch
-es_ip_address: 46.105.122.24
-kibana_server: data2.igln.fr
+es_ip_address: 176.31.229.228
+kibana_server: srv1.igln.fr
 
 # BackupPC
 backuppc_server: backup.atelierasap.com
