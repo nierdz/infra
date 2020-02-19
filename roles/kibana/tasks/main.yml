@@ -17,6 +17,14 @@
     group: kibana
     mode: 0755
 
+- name: Fix permission on /etc/kibana directory
+  file:
+    path: /etc/kibana
+    state: directory
+    owner: kibana
+    group: kibana
+    mode: 0755
+
 - name: Check if kibana keystore already exists
   stat:
     path: /var/lib/kibana/kibana.keystore
