@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - "/mailu/redis:/data"
- 
+
   front:
     container_name: mailu-nginx
     image: mailu/nginx:1.7
