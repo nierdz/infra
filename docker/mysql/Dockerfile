@@ -4,6 +4,7 @@ RUN apt-get update \
   && apt-get install -y \
   --no-install-recommends \
   ca-certificates \
+  gnupg2 \
   lsb-release \
   wget \
   && apt-get clean \
