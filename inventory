@@ -1,7 +1,7 @@
 [all:children]
 physical
 xmrstak
-hv
+docker
 nextcloud
 asap
 
@@ -17,8 +17,8 @@ data2.igln.fr
 backup.atelierasap.com
 srv1.igln.fr
 
-[hv]
-hv2.igln.fr
+[docker]
+srv1.igln.fr
 
 [nextcloud]
 data.atelierasap.com
