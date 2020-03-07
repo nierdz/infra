@@ -230,7 +230,7 @@ certbot_certs:
   - email: "{{ my_email }}"
     path: "/var/www/certbot"
     state: "present"
-    post_hook: "/bin/systemctl restart nginx.service; cp -Lrf /etc/letsencrypt/live/{{ nextcloud_domain }}/ /etc/kibana/; chown -R kibana:kibana /etc/kibana/{{ nextcloud_domain }}/"
+    post_hook: "/bin/systemctl restart nginx.service; cp -Lrf /etc/letsencrypt/live/{{ nextcloud_domain }}/ /etc/kibana/; chmod 700 /etc/kibana/{{ nextcloud_domain }}/; chown -R kibana:kibana /etc/kibana/{{ nextcloud_domain }}/"
     domains:
       - "{{ nextcloud_domain }}"
 
