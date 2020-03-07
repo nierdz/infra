@@ -34,6 +34,8 @@
     /usr/bin/metricbeat
     keystore add METRICBEAT_PASSWORD
     --stdin --force
+  args:
+    executable: /bin/bash
   when: '"METRICBEAT_PASSWORD" not in metricbeat_keystore_list.stdout'
 
 - name: Create /etc/metricbeat/metricbeat.yml

@@ -34,6 +34,8 @@
     /usr/bin/filebeat
     keystore add FILEBEAT_PASSWORD
     --stdin --force
+  args:
+    executable: /bin/bash
   when: '"FILEBEAT_PASSWORD" not in filebeat_keystore_list.stdout'
 
 - name: Create /etc/filebeat/filebeat.yml

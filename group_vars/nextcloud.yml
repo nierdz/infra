@@ -29,37 +29,50 @@ nginx_vhosts:
   - server_names:
       - "{{ nextcloud_domain }}"
     state: "present"
+    ip: "{{ ansible_default_ipv4.address }}"
     root: "/var/www/{{ nextcloud_domain }}/current"
     index: index.php
     extra_parameters: |
-      add_header X-Robots-Tag none;
-      add_header X-Download-Options noopen;
-      add_header X-Permitted-Cross-Domain-Policies none;
-      add_header Referrer-Policy no-referrer;
+      add_header Referrer-Policy "no-referrer" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-Download-Options "noopen" always;
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Permitted-Cross-Domain-Policies "none" always;
+      add_header X-Robots-Tag "none" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+
       fastcgi_hide_header X-Powered-By;
+
       location = /.well-known/carddav {
         return 301 $scheme://$host/remote.php/dav;
       }
+
       location = /.well-known/caldav {
         return 301 $scheme://$host/remote.php/dav;
       }
+
       client_max_body_size 512M;
       fastcgi_buffers 64 4K;
+
+
       location / {
         rewrite ^ /index.php;
       }
+
       location ~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/ {
-        deny all;
+          deny all;
       }
-      location ~ ^\/(?:autotest|occ|issue|indie|db_|console) {
-        deny all;
+      location ~ ^\/(?:\.|autotest|occ|issue|indie|db_|console) {
+          deny all;
       }
+
       location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+)\.php(?:$|\/) {
         fastcgi_split_path_info ^(.+?\.php)(\/.*|)$;
+        set $path_info $fastcgi_path_info;
         try_files $fastcgi_script_name =404;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_INFO $path_info;
         fastcgi_param HTTPS on;
         fastcgi_param modHeadersAvailable true;
         fastcgi_param front_controller_active true;
@@ -67,22 +80,26 @@ nginx_vhosts:
         fastcgi_intercept_errors on;
         fastcgi_request_buffering off;
       }
+
       location ~ ^\/(?:updater|oc[ms]-provider)(?:$|\/) {
         try_files $uri/ =404;
         index index.php;
       }
-      location ~ \.(?:css|js|woff2?|svg|gif)$ {
+
+      location ~ \.(?:css|js|woff2?|svg|gif|map)$ {
         try_files $uri /index.php$request_uri;
         add_header Cache-Control "public, max-age=15778463";
-        add_header X-Content-Type-Options nosniff;
-        add_header X-XSS-Protection "1; mode=block";
-        add_header X-Robots-Tag none;
-        add_header X-Download-Options noopen;
-        add_header X-Permitted-Cross-Domain-Policies none;
-        add_header Referrer-Policy no-referrer;
+        add_header Referrer-Policy "no-referrer" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Download-Options "noopen" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Permitted-Cross-Domain-Policies "none" always;
+        add_header X-Robots-Tag "none" always;
+        add_header X-XSS-Protection "1; mode=block" always;
         access_log off;
       }
-      location ~ \.(?:png|html|ttf|ico|jpg|jpeg)$ {
+
+      location ~ \.(?:png|html|ttf|ico|jpg|jpeg|bcmap)$ {
         try_files $uri /index.php$request_uri;
         access_log off;
       }

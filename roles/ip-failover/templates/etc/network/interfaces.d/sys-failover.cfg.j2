@@ -1,0 +1,6 @@
+{% for failover in ip_failover %}
+auto {{ ansible_default_ipv4.interface }}.{{ loop.index }}
+iface {{ ansible_default_ipv4.interface }}.{{ loop.index }} inet static
+address {{ failover.ip }}
+
+{% endfor %}

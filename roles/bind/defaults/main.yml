@@ -5,6 +5,5 @@ resolv_config:
       - "213.186.33.99"
       - "9.9.9.9"
   - search:
-      - "mnt-tech.fr"
       - "igln.fr"
       - "ovh.net"

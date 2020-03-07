@@ -25,7 +25,7 @@
 
 - name: Provision hypervisors
   become: true
-  hosts: hv
+  hosts: docker
   vars_files:
     - vault_vars/all.yml
   pre_tasks:
@@ -39,14 +39,14 @@
         update: false
     - name: Push /infra-docker/.env
       template:
-        src: vault_files/hv.env
+        src: vault_files/docker.env
         dest: /infra-docker/.env
         mode: 0400
         owner: root
         group: root
     - name: Push /infra-docker/mailu.env
       template:
-        src: vault_files/hv.mailu.env
+        src: vault_files/docker.mailu.env
         dest: /infra-docker/mailu.env
         mode: 0400
         owner: root
@@ -99,7 +99,7 @@
 
 - name: Provision transmission
   become: true
-  hosts: data2.igln.fr
+  hosts: srv1.igln.fr
   vars_files:
     - vault_vars/transmission.yml
   roles:
@@ -107,7 +107,7 @@
 
 - name: Provision Elasticsearch & Kibana
   become: true
-  hosts: data2.igln.fr
+  hosts: srv1.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
@@ -127,7 +127,7 @@
 
 - name: Provision beats
   become: true
-  hosts: data2.igln.fr
+  hosts: srv1.igln.fr
   vars_files:
     - vault_vars/es.yml
   roles:
