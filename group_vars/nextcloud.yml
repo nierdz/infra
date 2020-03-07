@@ -29,6 +29,7 @@ nginx_vhosts:
   - server_names:
       - "{{ nextcloud_domain }}"
     state: "present"
+    ip: "{{ ansible_default_ipv4.address }}"
     root: "/var/www/{{ nextcloud_domain }}/current"
     index: index.php
     extra_parameters: |
