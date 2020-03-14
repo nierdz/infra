@@ -1,6 +1,6 @@
 ---
 - src: https://github.com/geerlingguy/ansible-role-php
-  version: 3.7.0
+  version: 4.2.0
   name: php
 
 - src: https://github.com/geerlingguy/ansible-role-mysql
