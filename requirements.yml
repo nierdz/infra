@@ -4,7 +4,7 @@
   name: php
 
 - src: https://github.com/geerlingguy/ansible-role-mysql
-  version: 2.9.5
+  version: 3.0.0
   name: mysql
 
 - src: https://github.com/elastic/ansible-elasticsearch
