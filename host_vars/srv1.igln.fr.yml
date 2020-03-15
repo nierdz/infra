@@ -207,7 +207,7 @@ packetbeat_version: "7.6.0"
 kibana_version: "7.6.0"
 
 # MySQL backup
-mysql_backup:
+mysql_backup_host:
   time_to_keep: "60"
 
 ## Mysql backup
@@ -221,7 +221,7 @@ crontabs:
   mysql backup:
     user: root
     state: present
-    job: /usr/local/bin/mysql_backup.sh
+    job: /usr/local/bin/mysql_backup_host.sh
     minute: 00
     hour: 1
 
