@@ -1,8 +1,18 @@
 ---
-- name: Create /usr/local/bin/mysql_backup.sh
+- name: Create /usr/local/bin/mysql_backup_host.sh
   template:
-    src: usr/local/bin/mysql_backup.sh.j2
-    dest: /usr/local/bin/mysql_backup.sh
+    src: usr/local/bin/mysql_backup_host.sh.j2
+    dest: /usr/local/bin/mysql_backup_host.sh
     owner: root
     group: root
     mode: 0700
+  when: mysql_backup_host is defined
+
+- name: Create /usr/local/bin/mysql_backup_docker.sh
+  template:
+    src: usr/local/bin/mysql_backup_docker.sh.j2
+    dest: /usr/local/bin/mysql_backup_docker.sh
+    owner: root
+    group: root
+    mode: 0700
+  when: mysql_backup_docker is defined
