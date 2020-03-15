@@ -210,18 +210,16 @@ kibana_version: "7.6.0"
 mysql_backup_host:
   time_to_keep: "60"
 
-## Mysql backup
-#mysql_backup:
-#  docker: true
-#  container: madrabbit-mysql
-#  time_to_keep: "60"
+mysql_backup_docker:
+  container: madrabbit-mysql
+  time_to_keep: "60"
 
 # Crontabs
 crontabs:
   mysql backup:
     user: root
     state: present
-    job: /usr/local/bin/mysql_backup_host.sh
+    job: /usr/local/bin/mysql_backup_host.sh; /usr/local/bin/mysql_backup_docker.sh
     minute: 00
     hour: 1
 
