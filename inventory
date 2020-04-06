@@ -7,7 +7,6 @@ asap
 
 [physical]
 hv2.igln.fr
-data.atelierasap.com
 backup.atelierasap.com
 srv1.igln.fr
 
@@ -21,9 +20,7 @@ srv1.igln.fr
 srv1.igln.fr
 
 [nextcloud]
-data.atelierasap.com
 srv1.igln.fr
 
 [asap]
-data.atelierasap.com
 backup.atelierasap.com
