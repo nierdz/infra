@@ -49,6 +49,17 @@
     - check packetbeat configuration
     - restart packetbeat
 
+- name: Create /etc/packetbeat/ilm.json
+  template:
+    src: etc/packetbeat/ilm.json.j2
+    dest: /etc/packetbeat/ilm.json
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check packetbeat configuration
+    - restart packetbeat
+
   # Bit dirty but didn't find proper way to get this
 - name: Get system dashboard id
   command: >
