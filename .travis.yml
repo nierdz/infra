@@ -1,6 +1,12 @@
 ---
 sudo: required
 language: generic
+python: 3.8
+addons:
+  apt:
+    update: true
+    packages:
+      - python3-pip
 
 before_install:
   - make install

@@ -49,6 +49,17 @@
     - check filebeat configuration
     - restart filebeat
 
+- name: Create /etc/filebeat/ilm.json
+  template:
+    src: etc/filebeat/ilm.json.j2
+    dest: /etc/filebeat/ilm.json
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check filebeat configuration
+    - restart filebeat
+
 - name: Enable filebeat modules
   file:
     src: "/etc/filebeat/modules.d/{{ item }}.yml.disabled"
