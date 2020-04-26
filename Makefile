@@ -28,3 +28,7 @@ rsync-pull: ## Pull files from server
 rsync-push: ## Push files to server
 	$(info --> Push files to server)
 	@rsync -avz --exclude-from "rsync-exclude.list" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra-docker/
+
+build: ##Build all images in docker folder
+	$(info --> Build all images in docker folder)
+	@scripts/docker-build.sh
