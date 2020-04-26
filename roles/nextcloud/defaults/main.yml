@@ -20,5 +20,5 @@ nextcloud_keep_releases: "60d"
 nextcloud_shared_paths: []
 nextcloud_shared_files:
   - config/config.php
-nextcloud_version: "18.0.3"
+nextcloud_version: "18.0.4"
 nextcloud_instanceid: "oc0dx5wycr89"
