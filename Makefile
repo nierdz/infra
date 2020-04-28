@@ -1,4 +1,6 @@
 SHELL := /usr/bin/env bash
+MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
 SERVER := srv1.igln.fr
@@ -32,3 +34,17 @@ rsync-push: ## Push files to server
 build: ##Build all images in docker folder
 	$(info --> Build all images in docker folder)
 	@scripts/docker-build.sh
+
+venv: ## Create python virtualenv if not exists
+	@[[ -d $(VIRTUALENV_DIR) ]] || virtualenv --system-site-packages $(VIRTUALENV_DIR)
+
+pip-install: ## Install pip dependencies
+	$(info --> Install pip dependencies)
+	@$(MAKE) venv
+	@( \
+		source $(VIRTUALENV_DIR)/bin/activate; \
+		pip install --upgrade setuptools; \
+		pip install -r requirements.txt; \
+	)
+
+install: pip-install ## Install everything
