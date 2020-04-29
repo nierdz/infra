@@ -11,6 +11,8 @@ jobs:
       run: sudo apt install -y python-pip python-virtualenv
     - name: install check tools
       run: make install
+    - name: run all checks
+      run: make tests
   build:
     runs-on: ubuntu-latest
     steps:
