@@ -48,3 +48,13 @@ pip-install: ## Install pip dependencies
 	)
 
 install: pip-install ## Install everything
+
+pre-commit: ## Run pre-commit tests
+	$(info --> Run pre-commit)
+	@( \
+		source $(VIRTUALENV_DIR)/bin/activate; \
+		pre-commit run --all-files; \
+	)
+
+tests: pre-commit ## Run all tests
+	$(info --> Run all tests)
