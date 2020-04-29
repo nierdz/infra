@@ -43,8 +43,8 @@ pip-install: ## Install pip dependencies
 	@$(MAKE) venv
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
-		pip install --upgrade setuptools; \
-		pip install -r requirements.txt; \
+		pip3 install --upgrade setuptools; \
+		pip3 install -r requirements.txt; \
 	)
 
 install: pip-install ## Install everything
