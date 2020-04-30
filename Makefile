@@ -36,7 +36,7 @@ build: ##Build all images in docker folder
 	@scripts/docker-build.sh
 
 venv: ## Create python virtualenv if not exists
-	@[[ -d $(VIRTUALENV_DIR) ]] || virtualenv --system-site-packages $(VIRTUALENV_DIR)
+	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
 
 pip-install: ## Install pip dependencies
 	$(info --> Install pip dependencies)
