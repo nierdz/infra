@@ -4,6 +4,7 @@ VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
 SERVER := srv1.igln.fr
+SHELLCHECK_VERSION=0.7.1
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -47,7 +48,15 @@ pip-install: ## Install pip dependencies
 		pip3 install -r requirements.txt; \
 	)
 
-install: pip-install ## Install everything
+binaries-install: ## Download and install binaries for CI
+	$(info --> Download and install binaries for CI)
+	@( \
+		wget -qO- 'https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v$(SHELLCHECK_VERSION).linux.x86_64.tar.xz' | tar -xJv; \
+		sudo mv "shellcheck-v$(SHELLCHECK_VERSION)/shellcheck" /usr/bin/shellcheck; \
+		sudo chmod +x /usr/bin/shellcheck; \
+	)
+
+install: pip-install binaries-install## Install everything
 
 pre-commit: ## Run pre-commit tests
 	$(info --> Run pre-commit)
@@ -56,5 +65,10 @@ pre-commit: ## Run pre-commit tests
 		pre-commit run --all-files; \
 	)
 
-tests: pre-commit ## Run all tests
+shellcheck: ## Run shellcheck on all scripts
+	$(info --> Run shellcheck on all scripts)
+	@find scripts/ -type f | xargs -n 1 shellcheck
+
+
+tests: pre-commit shellcheck ## Run all tests
 	$(info --> Run all tests)
