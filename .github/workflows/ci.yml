@@ -17,7 +17,7 @@ jobs:
       run: make install
     - name: run all checks
       run: make tests
-  build:
+  build-push:
     needs: check
     runs-on: ubuntu-latest
     steps:
@@ -26,3 +26,7 @@ jobs:
       run: docker system prune --all --force --volumes
     - name: build all images
       run: make build
+    - name: push images on docker hub if necessary
+      run: bash scripts/docker-push.sh
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
