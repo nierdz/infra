@@ -1,6 +1,7 @@
 FROM mysql:8.0
 ARG MYSQL_ROOT_PASSWORD
 LABEL version=1.0.0
+# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
   --no-install-recommends \
@@ -13,6 +14,7 @@ RUN apt-get update \
 RUN wget "https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb" \
   && dpkg -i "percona-release_latest.$(lsb_release -sc)_all.deb" \
   && rm "percona-release_latest.$(lsb_release -sc)_all.deb"
+# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
   --no-install-recommends \
