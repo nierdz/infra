@@ -69,6 +69,9 @@ shellcheck: ## Run shellcheck on all scripts
 	$(info --> Run shellcheck on all scripts)
 	@find scripts/ -type f | xargs -n 1 shellcheck
 
+docker-lint: ## Run hadolint on docker files
+	$(info --> Run hadolint on docker files)
+	@scripts/docker-lint.sh
 
-tests: pre-commit shellcheck ## Run all tests
+tests: pre-commit shellcheck docker-lint ## Run all tests
 	$(info --> Run all tests)
