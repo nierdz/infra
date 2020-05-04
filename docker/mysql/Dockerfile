@@ -1,6 +1,6 @@
 FROM mysql:8.0
 ARG MYSQL_ROOT_PASSWORD
-LABEL version=1.0.0
+LABEL version=1.0.1
 # hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
@@ -21,5 +21,3 @@ RUN apt-get update \
   percona-toolkit\
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-RUN printf "[client]\\nuser=root\\npassword=%s" ${MYSQL_ROOT_PASSWORD} > /root/.my.cnf \
-  && chmod 400 /root/.my.cnf
