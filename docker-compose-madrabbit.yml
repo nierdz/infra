@@ -42,7 +42,7 @@ services:
 
   madrabbit-php-fpm:
     container_name: madrabbit-php-fpm
-    image: nierdz/php-fpm-7.3:1.0.0
+    image: nierdz/php-fpm-7.4:1.0.0
     restart: always
     volumes:
       - ./madrabbit/www:/madrabbit/www:rw

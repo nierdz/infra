@@ -26,7 +26,7 @@ jobs:
       run: docker system prune --all --force --volumes
     - name: build all images
       run: make build
-    - name: push images on docker hub if necessary
+    - name: push images and README.md on docker hub
       run: bash scripts/docker-push.sh
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
