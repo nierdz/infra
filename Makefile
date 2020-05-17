@@ -53,7 +53,7 @@ ansible-galaxy-install: ## Install ansible galaxy dependencies
 run-ansible: ## Run ansible on all servers
 	$(info --> Run ansible on all servers)
 	@export \
-		ANSIBLE_STRATEGY_PLUGINS=venv/lib/python2.7/site-packages/ansible_mitogen/plugins/strategy \
+		ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy \
 		&& ANSIBLE_STRATEGY=mitogen_linear \
 		&& source $(VIRTUALENV_DIR)/bin/activate \
 		&& ansible-playbook --diff playbook.yml
