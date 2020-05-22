@@ -1,6 +1,5 @@
 FROM mysql:8.0
-ARG MYSQL_ROOT_PASSWORD
-LABEL version=1.0.1
+LABEL version=1.0.2
 # hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
