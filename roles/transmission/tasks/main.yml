@@ -21,6 +21,7 @@
     owner: debian-transmission
     group: debian-transmission
     mode: 0600
+  no_log: true
 
 - name: Start transmission
   service:
