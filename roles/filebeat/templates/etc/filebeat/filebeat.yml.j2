@@ -17,3 +17,6 @@ processors:
   - add_cloud_metadata: ~
 setup.ilm.policy_file: "/etc/filebeat/ilm.json"
 setup.ilm.overwrite: true
+filebeat.inputs:
+- type: docker
+  containers.ids: '*'
