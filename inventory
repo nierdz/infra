@@ -21,3 +21,4 @@ srv1.igln.fr
 
 [asap]
 backup.atelierasap.com
+atelier-asap.pro.dns-orange.fr ansible_host=192.168.1.10
