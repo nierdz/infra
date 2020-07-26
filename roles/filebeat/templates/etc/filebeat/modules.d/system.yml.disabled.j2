@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# Module: system
+# Docs: https://www.elastic.co/guide/en/beats/filebeat/7.8/filebeat-module-system.html
+
+- module: system
+  syslog:
+    enabled: true
+    var.paths: ["/var/log/syslog"]
+  auth:
+    enabled: true
+    var.paths: ["/var/log/auth.log"]
