@@ -6,7 +6,7 @@ This image is made to provide **php-fpm 7.4** with some PHP extensions installed
 
 -	**Where to file issues**: [open issue in infra-docker](https://github.com/nierdz/infra-docker/issues)
 
-- **Dockerfile**: [Dockerfile](https://github.com/nierdz/infra-docker/blob/master/docker/php-fpm-7.3/Dockerfile)
+- **Dockerfile**: [Dockerfile](https://github.com/nierdz/infra-docker/blob/master/docker/php-fpm-7.4/Dockerfile)
 
 # Usage
 
