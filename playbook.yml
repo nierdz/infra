@@ -44,13 +44,6 @@
         mode: 0400
         owner: root
         group: root
-    - name: Push /infra-docker/mailu.env
-      template:
-        src: vault_files/docker.mailu.env
-        dest: /infra-docker/mailu.env
-        mode: 0400
-        owner: root
-        group: root
     - name: Create certbot directory
       file:
         path: /infra-docker/certbot
