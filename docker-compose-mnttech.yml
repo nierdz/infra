@@ -25,7 +25,7 @@ services:
 
   mnttech-php-fpm:
     container_name: mnttech-php-fpm
-    image: php:7.3-fpm
+    image: php:7.4-fpm
     restart: always
     volumes:
       - ./mnttech/www:/mnttech/www:ro
