@@ -27,3 +27,21 @@ filebeat.inputs:
       - /var/log/dpkg.log
       - /var/log/fail2ban.log
       - /var/log/php7.4-fpm.log
+filebeat:
+  autodiscover.providers:
+    - type: docker
+      templates:
+        - condition.contains:
+            docker.container.image: nginx
+          config:
+            - module: nginx
+              access:
+                input:
+                  type: container
+                  paths:
+                    - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              error:
+                input:
+                  type: container
+                  paths:
+                    - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
