@@ -14,6 +14,11 @@ mysql_users:
     password: "{{ nextcloud_dbpassword }}"
     priv: "nextcloud.*:ALL"
     state: present
+  - name: metricbeat
+    host: "localhost"
+    password: "{{ metricbeat_dbpassword }}"
+    priv: "*.*:SELECT,PROCESS,SUPER,REPLICATION CLIENT"
+    state: present
 
 # Certbot
 certbot_certs:
