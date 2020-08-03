@@ -60,6 +60,17 @@
     - check metricbeat configuration
     - restart metricbeat
 
+- name: Create /etc/metricbeat/modules.d/mysql.yml.disabled
+  template:
+    src: etc/metricbeat/modules.d/mysql.yml.disabled.j2
+    dest: /etc/metricbeat/modules.d/mysql.yml.disabled
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check metricbeat configuration
+    - restart metricbeat
+
 - name: Create /etc/metricbeat/ilm.json
   template:
     src: etc/metricbeat/ilm.json.j2

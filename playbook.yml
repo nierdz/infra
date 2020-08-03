@@ -123,6 +123,7 @@
   hosts: srv1.igln.fr
   vars_files:
     - vault_vars/es.yml
+    - vault_vars/all.yml
   roles:
     - { role: filebeat, tags: ['filebeat'] }
     - { role: metricbeat, tags: ['metricbeat'] }
