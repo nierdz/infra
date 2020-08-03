@@ -80,7 +80,7 @@ nextcloud_admin_password: !vault |
 
 # Elasticsearch
 es_major_version: "7.x"
-es_version: "7.8.0"
+es_version: "7.8.1"
 es_heap_size: "2g"
 es_config:
   node.name: "{{inventory_hostname}}"
