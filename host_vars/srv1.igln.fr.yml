@@ -204,7 +204,7 @@ metricbeat_modules:
 packetbeat_version: "7.8.1"
 
 # Kibana
-kibana_version: "7.8.0"
+kibana_version: "7.8.1"
 
 # MySQL backup
 mysql_backup_host:
