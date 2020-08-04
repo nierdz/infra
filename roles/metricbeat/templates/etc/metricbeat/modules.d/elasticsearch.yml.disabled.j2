@@ -6,4 +6,4 @@
   period: 10s
   hosts: ["http://{{ es_ip_address}}:9200"]
   username: "metricbeat"
-  password: "{{ metricbeat_password }}"
+  password: "${METRICBEAT_PASSWORD}"
