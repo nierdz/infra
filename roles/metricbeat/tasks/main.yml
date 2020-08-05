@@ -27,6 +27,13 @@
   register: metricbeat_keystore_list
   changed_when: false
 
+- name: Check if metricbeat password for mysql is already stored
+  command: >
+    /usr/bin/metricbeat
+    keystore list
+  register: metricbeat_keystore_list
+  changed_when: false
+
 - name: Store metricbeat password if needed
   shell: >
     set -o pipefail &&
@@ -37,6 +44,17 @@
   args:
     executable: /bin/bash
   when: '"METRICBEAT_PASSWORD" not in metricbeat_keystore_list.stdout'
+
+- name: Store metricbeat password for mysql if needed
+  shell: >
+    set -o pipefail &&
+    echo {{ metricbeat_dbpassword }} |
+    /usr/bin/metricbeat
+    keystore add METRICBEAT_DBPASSWORD
+    --stdin --force
+  args:
+    executable: /bin/bash
+  when: '"METRICBEAT_DBPASSWORD" not in metricbeat_keystore_list.stdout'
 
 - name: Create /etc/metricbeat/metricbeat.yml
   template:
@@ -64,6 +82,17 @@
   template:
     src: etc/metricbeat/modules.d/mysql.yml.disabled.j2
     dest: /etc/metricbeat/modules.d/mysql.yml.disabled
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - check metricbeat configuration
+    - restart metricbeat
+
+- name: Create /etc/metricbeat/modules.d/php_fpm.yml.disabled
+  template:
+    src: etc/metricbeat/modules.d/php_fpm.yml.disabled.j2
+    dest: /etc/metricbeat/modules.d/php_fpm.yml.disabled
     owner: root
     group: root
     mode: 0644

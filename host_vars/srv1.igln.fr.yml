@@ -106,8 +106,7 @@ es_users:
       roles:
         - filebeat
         - ingest_admin
-        - kibana_dashboard_only_user
-        - kibana_user
+        - kibana_admin
         - monitoring_user
     kibana:
       password: "{{ kibana_password }}"
@@ -118,8 +117,7 @@ es_users:
       roles:
         - metricbeat
         - ingest_admin
-        - kibana_dashboard_only_user
-        - kibana_user
+        - kibana_admin
         - monitoring_user
     nierdz:
       password: "{{ nierdz_password }}"
@@ -129,8 +127,7 @@ es_users:
       password: "{{ packetbeat_password }}"
       roles:
         - packetbeat
-        - kibana_dashboard_only_user
-        - kibana_user
+        - kibana_admin
     remote_monitoring_user:
       password: "{{ remote_monitoring_user_password }}"
 es_roles:
@@ -194,7 +191,6 @@ filebeat_modules:
 metricbeat_version: "7.8.1"
 metricbeat_modules:
   - elasticsearch
-  - kibana
   - mysql
   - nginx
   - php_fpm

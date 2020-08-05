@@ -18,3 +18,17 @@ processors:
   - add_cloud_metadata: ~
 setup.ilm.policy_file: "/etc/metricbeat/ilm.json"
 setup.ilm.overwrite: true
+metricbeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.image: mysql
+          config:
+            - module: mysql
+              metricsets: ["status", "galera_status"]
+              period: 10s
+              hosts: ["tcp(${data.host}:3306)/"]
+              username: metricbeat
+              password: ${METRICBEAT_DBPASSWORD}
