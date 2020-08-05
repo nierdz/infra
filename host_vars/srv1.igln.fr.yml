@@ -191,7 +191,6 @@ filebeat_modules:
 metricbeat_version: "7.8.1"
 metricbeat_modules:
   - elasticsearch
-  - kibana
   - mysql
   - nginx
   - php_fpm
