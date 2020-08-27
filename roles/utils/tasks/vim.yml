@@ -12,6 +12,8 @@
     path: /usr/share/vim/vim81/defaults.vim
     regexp: '^  set mouse=a'
     replace: '"  set mouse=a'
+    mode: 0644
+    owner: root
   ignore_errors: true
 
 - name: Set vim as default editor

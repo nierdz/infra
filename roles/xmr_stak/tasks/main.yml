@@ -90,6 +90,8 @@
   file:
     path: "{{ xmr_stak_build_dir }}"
     state: directory
+    mode: 0755
+    owner: root
   when: update.changed
 
 - name: Compile and install xmr-stak # noqa 503
@@ -106,6 +108,8 @@
   template:
     src: lib/systemd/system/xmr-stak.service.j2
     dest: /lib/systemd/system/xmr-stak.service
+    mode: 0644
+    owner: root
   notify:
     - reload systemd
     - restart xmr-stak
