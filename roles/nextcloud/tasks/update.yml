@@ -11,6 +11,7 @@
     dest: "{{ nextcloud_releases_path }}"
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
+    mode: 0644
   register: zip_update
   when: not nextcloud_release.stat.exists
 

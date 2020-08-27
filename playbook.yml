@@ -21,7 +21,7 @@
   become: true
   hosts: xmrstak
   roles:
-    - { role: xmr-stak, tags: ['xmr-stak'] }
+    - { role: xmr_stak, tags: ['xmr_stak'] }
 
 - name: Provision hypervisors
   become: true
@@ -54,13 +54,13 @@
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
-    - { role: mysql-backup, tags: ['mysql-backup'] }
+    - { role: mysql_backup, tags: ['mysql_backup'] }
 
 - name: Configure ip failover
   become: true
   hosts: physical
   roles:
-    - { role: ip-failover, tags: ['ip-failover'] }
+    - { role: ip_failover, tags: ['ip_failover'] }
 
 - name: Configure nextcloud servers
   become: true
@@ -77,7 +77,7 @@
     - { role: php, tags: ['php'] }
     - { role: percona, tags: ['percona'] }
     - { role: nextcloud, tags: ['nextcloud'] }
-    - { role: mysql-backup, tags: ['mysql-backup'] }
+    - { role: mysql_backup, tags: ['mysql_backup'] }
   pre_tasks:
     - name: Install sury key
       apt_key:
@@ -114,6 +114,8 @@
         create: true
         insertafter: "^SuccessExitStatus=143"
         line: "LimitMEMLOCK=infinity"
+        mode: 0644
+        owner: root
     - name: Systemctl daemon-reload
       systemd:
         daemon_reload: yes
