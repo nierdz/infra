@@ -4,14 +4,13 @@
     path: "{{ nextcloud_releases_path }}/{{ nextcloud_version }}"
   register: nextcloud_release
 
-- name: Download nextcloud archive if needed
+- name: Download nextcloud archive if needed # noqa 208
   unarchive:
     remote_src: true
     src: https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.zip
     dest: "{{ nextcloud_releases_path }}"
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
-    mode: 0644
   register: zip_update
   when: not nextcloud_release.stat.exists
 
