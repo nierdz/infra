@@ -21,3 +21,5 @@ RUN apt-get update \
   percona-toolkit\
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+COPY docker-healthcheck /usr/local/bin/
+HEALTHCHECK CMD ["docker-healthcheck"]
