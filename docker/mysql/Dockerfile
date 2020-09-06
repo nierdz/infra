@@ -1,10 +1,11 @@
 FROM mysql:8.0
-LABEL version=1.0.2
+LABEL version=1.1.0
 # hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
   --no-install-recommends \
   ca-certificates \
+  curl \
   gnupg2 \
   lsb-release \
   wget \
@@ -20,3 +21,5 @@ RUN apt-get update \
   percona-toolkit\
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+COPY docker-healthcheck /usr/local/bin/
+HEALTHCHECK CMD ["docker-healthcheck"]
