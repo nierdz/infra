@@ -1,5 +1,5 @@
 FROM mysql:8.0
-LABEL version=1.1.0
+LABEL version=1.1.1
 # hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
