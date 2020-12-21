@@ -8,7 +8,7 @@
   name: mysql
 
 - src: https://github.com/elastic/ansible-elasticsearch
-  version: 7.9.0
+  version: v7.10.1
   name: elasticsearch
 
 - src: https://github.com/nierdz/ansible-role-docker
