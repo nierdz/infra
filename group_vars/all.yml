@@ -28,9 +28,5 @@ php_packages:
   - php-sqlite3
   - php-imagick
 
-# Elasticsearch
-es_ip_address: 176.31.229.228
-kibana_server: srv1.igln.fr
-
 # BackupPC
 backuppc_server: backup.atelierasap.com

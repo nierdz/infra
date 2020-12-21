@@ -92,39 +92,6 @@
   roles:
     - { role: transmission, tags: ['transmission'] }
 
-- name: Provision Elasticsearch & Kibana
-  become: true
-  hosts: srv1.igln.fr
-  vars_files:
-    - vault_vars/es.yml
-  roles:
-    - { role: elasticsearch, tags: ['elasticsearch'] }
-    - { role: kibana, tags: ['kibana'] }
-  pre_tasks:
-    - name: Fix this damn elasticsearch systemd service unit
-      lineinfile:
-        path: /usr/lib/systemd/system/elasticsearch.service
-        state: present
-        create: true
-        insertafter: "^SuccessExitStatus=143"
-        line: "LimitMEMLOCK=infinity"
-        mode: 0644
-        owner: root
-    - name: Systemctl daemon-reload
-      systemd:
-        daemon_reload: yes
-
-- name: Provision beats
-  become: true
-  hosts: srv1.igln.fr
-  vars_files:
-    - vault_vars/es.yml
-    - vault_vars/all.yml
-  roles:
-    - { role: filebeat, tags: ['filebeat'] }
-    - { role: metricbeat, tags: ['metricbeat'] }
-    - { role: packetbeat, tags: ['packetbeat'] }
-
 - name: Provision backuppc
   become: true
   hosts: backup.atelierasap.com

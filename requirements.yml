@@ -7,10 +7,6 @@
   version: 3.3.0
   name: mysql
 
-- src: https://github.com/elastic/ansible-elasticsearch
-  version: v7.10.1
-  name: elasticsearch
-
 - src: https://github.com/nierdz/ansible-role-docker
   version: v1.0.4
   name: docker
