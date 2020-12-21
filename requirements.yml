@@ -1,18 +1,14 @@
 ---
 - src: https://github.com/geerlingguy/ansible-role-php
-  version: 4.5.0
+  version: 4.5.1
   name: php
 
 - src: https://github.com/geerlingguy/ansible-role-mysql
   version: 3.3.0
   name: mysql
 
-- src: https://github.com/elastic/ansible-elasticsearch
-  version: 7.9.0
-  name: elasticsearch
-
 - src: https://github.com/nierdz/ansible-role-docker
-  version: v1.0.4
+  version: v1.0.5
   name: docker
 
 - src: https://github.com/nierdz/ansible-role-nginx

@@ -14,10 +14,9 @@
 - name: Add host to /etc/backuppc/hosts in backuppc_server
   delegate_to: "{{ backuppc_server }}"
   lineinfile:
-    dest: /etc/backuppc/hosts
+    path: /etc/backuppc/hosts
     regexp: '^{{ inventory_hostname }}'
     line: '{{ inventory_hostname }} 0 root'
-    force: no
   notify:
     - restart backuppc
 

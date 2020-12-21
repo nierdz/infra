@@ -26,6 +26,7 @@ mysql_root_password: !vault |
           38356561333131613934333439326434373136646132663165633166313039663930656663666531
           6538346663643365650a393830396631343933353531343663353435626662623363616331643939
           33316237346235323331383638646562383264373732303432393335333237323530
+mysql_bind_address: 127.0.0.1
 nextcloud_dbpassword: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           32336433326436623833303662303839383061343132643965313136303436336130633438313333
@@ -77,130 +78,6 @@ nextcloud_admin_password: !vault |
           62373131313362626662333338656261343035653761313866653861653337666634653536396331
           3262316164303330380a373338616365366463643661306433326530396530346166366564643866
           62303838323934306138373334323062326639333932323831653962303439646435
-
-# Elasticsearch
-es_major_version: "7.x"
-es_version: "7.9.0"
-es_heap_size: "2g"
-es_config:
-  node.name: "{{inventory_hostname}}"
-  cluster.name: "elasticsearch"
-  network.host: "{{ ansible_default_ipv4.address }}"
-  http.port: 9200
-  bootstrap.memory_lock: true
-  discovery.type: single-node
-# Unless I found a way to manage certs in ansible, I disable boostrap check for now
-#es_jvm_custom_parameters:
-#  - "-Des.enforce.bootstrap.checks=true"
-es_api_host: "{{ ansible_default_ipv4.address }}"
-es_users:
-  native:
-    apm_system:
-      password: "{{ apm_system_password }}"
-    beats_system:
-      password: "{{ beats_system_password }}"
-    elastic:
-      password: "{{ elastic_password }}"
-    filebeat:
-      password: "{{ filebeat_password }}"
-      roles:
-        - filebeat
-        - ingest_admin
-        - kibana_admin
-        - monitoring_user
-    kibana:
-      password: "{{ kibana_password }}"
-    logstash_system:
-      password: "{{ logstash_system_password }}"
-    metricbeat:
-      password: "{{ metricbeat_password }}"
-      roles:
-        - metricbeat
-        - ingest_admin
-        - kibana_admin
-        - monitoring_user
-    nierdz:
-      password: "{{ nierdz_password }}"
-      roles:
-        - superuser
-    packetbeat:
-      password: "{{ packetbeat_password }}"
-      roles:
-        - packetbeat
-        - kibana_admin
-    remote_monitoring_user:
-      password: "{{ remote_monitoring_user_password }}"
-es_roles:
-  native:
-    filebeat:
-      cluster:
-        - manage_ilm
-        - manage_index_templates
-        - manage_ml
-        - manage_pipeline
-        - monitor
-      indices:
-        - names: 'filebeat-*'
-          privileges:
-            - create_index
-            - index
-            - manage
-            - read
-    metricbeat:
-      cluster:
-        - manage_ilm
-        - manage_index_templates
-        - manage_ml
-        - manage_pipeline
-        - monitor
-      indices:
-        - names: 'metricbeat-*'
-          privileges:
-            - create_index
-            - index
-            - manage
-            - read
-    packetbeat:
-      cluster:
-        - manage_ilm
-        - manage_index_templates
-        - manage_ml
-        - monitor
-      indices:
-        - names: 'packetbeat-*'
-          privileges:
-            - create_index
-            - index
-            - manage
-            - read
-es_enable_xpack: true
-es_api_basic_auth_username: elastic
-es_api_basic_auth_password: "{{ elastic_password }}"
-
-# Filebeat
-filebeat_version: "7.9.0"
-filebeat_modules:
-  - elasticsearch
-  - kibana
-  - mysql
-  - nginx
-  - redis
-  - system
-
-# Metricbeat
-metricbeat_version: "7.9.0"
-metricbeat_modules:
-  - elasticsearch
-  - mysql
-  - nginx
-  - php_fpm
-  - redis
-
-# Packetbet
-packetbeat_version: "7.9.0"
-
-# Kibana
-kibana_version: "7.9.0"
 
 # MySQL backup
 mysql_backup_host:
