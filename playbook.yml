@@ -9,13 +9,7 @@
       file:
         path: /etc/sudoers.d/kmet
         state: absent
-    # use this ugly hack cause meta: reset_connection does not work
-    - name: Remove local control_path to force login again to load group
-      local_action: # noqa 504
-        module: file
-        path: /home/{{ ansible_user }}/.ssh/{{ ansible_env.SUDO_USER }}@{{ inventory_hostname }}:22
-        state: absent
-      changed_when: false
+    - meta: reset_connection
 
 - name: Provision xmr-stak
   become: true
