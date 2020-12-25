@@ -8,9 +8,42 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
       - id: check-symlinks
-      - id: check-yaml
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v4.3.7
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.25.0
+    hooks:
+      - id: yamllint
+        name: Run yamllint
+        description: Lint yaml files
+        exclude: >
+          (?x)^(
+            ansible/host_vars|
+            ansible/vendor|
+            venv
+          )
+  - repo: local
+    hooks:
+      - id: docker-hadolint
+        name: Run hadolint with docker
+        language: docker_image
+        entry: hadolint/hadolint hadolint
+        files: Dockerfile
+      - id: docker-shell-lint
+        name: Run shellcheck with docker
+        language: docker_image
+        entry: koalaman/shellcheck:stable
+        types: [shell]
+      - id: docker-shell-shfmt
+        name: Run shfmt with docker
+        language: docker_image
+        entry: mvdan/shfmt -w -d -i 2 -ci
+        types: [shell]

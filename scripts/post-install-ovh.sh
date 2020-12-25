@@ -22,7 +22,7 @@ apt-get -y install sudo python3-apt
 apt-get -y autoremove
 
 # Give me some power!
-echo "kmet ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kmet
+echo "kmet ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/kmet
 
 # Fix permissions
 chown -R kmet:kmet /home/kmet

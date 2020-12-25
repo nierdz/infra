@@ -4,7 +4,6 @@ VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
 SERVER := srv1.igln.fr
-SHELLCHECK_VERSION=0.7.1
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -32,31 +31,22 @@ rsync-push: ## Push files to server
 	$(info --> Push files to server)
 	@rsync -avz --exclude-from "rsync-exclude.list" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra-docker/
 
-build: ##Build all images in docker folder
+docker-build: ##Build all images in docker folder
 	$(info --> Build all images in docker folder)
 	@scripts/docker-build.sh
 
 venv: ## Create python virtualenv if not exists
 	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
 
-pip-install: ## Install pip dependencies
-	$(info --> Install pip dependencies)
+install: ## Install pip and ansible dependencies
+	$(info --> Install pip and ansible dependencies)
 	@$(MAKE) venv
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
 		pip3 install --upgrade setuptools; \
 		pip3 install -r requirements.txt; \
+		ansible-galaxy install -f -r ansible/requirements.yml -p ansible/vendor/roles; \
 	)
-
-binaries-install: ## Download and install binaries for CI
-	$(info --> Download and install binaries for CI)
-	@( \
-		wget -qO- 'https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v$(SHELLCHECK_VERSION).linux.x86_64.tar.xz' | tar -xJv; \
-		sudo mv "shellcheck-v$(SHELLCHECK_VERSION)/shellcheck" /usr/bin/shellcheck; \
-		sudo chmod +x /usr/bin/shellcheck; \
-	)
-
-install: pip-install binaries-install## Install everything
 
 pre-commit: ## Run pre-commit tests
 	$(info --> Run pre-commit)
@@ -65,13 +55,11 @@ pre-commit: ## Run pre-commit tests
 		pre-commit run --all-files; \
 	)
 
-shellcheck: ## Run shellcheck on all scripts
-	$(info --> Run shellcheck on all scripts)
-	@find scripts/ -type f | xargs -n 1 shellcheck
-
-docker-lint: ## Run hadolint on docker files
-	$(info --> Run hadolint on docker files)
-	@scripts/docker-lint.sh
-
-tests: pre-commit shellcheck docker-lint ## Run all tests
-	$(info --> Run all tests)
+run-ansible: ## Run ansible on all servers
+	$(info --> Run ansible on all servers)
+	@export \
+		ANSIBLE_CONFIG=ansible/ansible.cfg \
+		&& ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy \
+		&& ANSIBLE_STRATEGY=mitogen_linear \
+		&& source $(VIRTUALENV_DIR)/bin/activate \
+		&& ansible-playbook --diff ansible/playbook.yml

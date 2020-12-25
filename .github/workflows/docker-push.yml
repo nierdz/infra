@@ -1,0 +1,21 @@
+---
+name: DOCKER-PUSH
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docker-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: start on fresh docker installation
+        run: docker system prune --all --force --volumes
+      - name: build all images
+        run: make build
+      - name: push images and README.md on docker hub
+        run: bash scripts/docker-push.sh
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
