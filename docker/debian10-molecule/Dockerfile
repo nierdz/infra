@@ -2,7 +2,7 @@ FROM debian:buster
 
 ENV DEBIAN_FRONTEND noninteractive
 
-LABEL version=1.0.0
+LABEL version=1.0.1
 
 # Install dependencies.
 # hadolint ignore=DL3008
@@ -24,7 +24,7 @@ RUN apt-get update && \
     && apt-get clean
 
 # Install Ansible via pip.
-RUN pip3 install ansible==2.9.7
+RUN pip3 install --no-cache-dir ansible==2.10.4
 
 COPY initctl_faker .
 RUN chmod +x initctl_faker && \
@@ -33,7 +33,7 @@ RUN chmod +x initctl_faker && \
 
 # Install Ansible inventory file.
 RUN mkdir -p /etc/ansible
-RUN printf "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+RUN printf "[local]\\nlocalhost ansible_connection=local" > /etc/ansible/hosts
 
 # Make sure systemd doesn't start agettys on tty[1-6].
 RUN rm -f /lib/systemd/system/multi-user.target.wants/getty.target

@@ -7,6 +7,7 @@ This role deploy [xmr-stak](https://github.com/fireice-uk/xmr-stak) to mine with
 - Download this role
 
 - Add this in your `playbook.yml`:
+
 ```
 - name: Provision xmr-stak
   hosts: xmr-stak
