@@ -4,7 +4,6 @@ VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
 SERVER := srv1.igln.fr
-SHELLCHECK_VERSION=0.7.1
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
