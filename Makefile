@@ -39,13 +39,14 @@ build: ##Build all images in docker folder
 venv: ## Create python virtualenv if not exists
 	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
 
-install: ## Install pip dependencies in a virtualenv
-	$(info --> Install pip dependencies in a virtualenv)
+install: ## Install pip and ansible dependencies
+	$(info --> Install pip and ansible dependencies)
 	@$(MAKE) venv
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
 		pip3 install --upgrade setuptools; \
 		pip3 install -r requirements.txt; \
+		ansible-galaxy install -f -r ansible/requirements.yml -p ansible/vendor/roles; \
 	)
 
 pre-commit: ## Run pre-commit tests
@@ -54,3 +55,12 @@ pre-commit: ## Run pre-commit tests
 		source $(VIRTUALENV_DIR)/bin/activate; \
 		pre-commit run --all-files; \
 	)
+
+run-ansible: ## Run ansible on all servers
+	$(info --> Run ansible on all servers)
+	@export \
+		ANSIBLE_CONFIG=ansible/ansible.cfg \
+		&& ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy \
+		&& ANSIBLE_STRATEGY=mitogen_linear \
+		&& source $(VIRTUALENV_DIR)/bin/activate \
+		&& ansible-playbook --diff ansible/playbook.yml

@@ -2,3 +2,5 @@
 /madrabbit
 /mnttech
 venv
+vendor
+.vault_pass.txt
