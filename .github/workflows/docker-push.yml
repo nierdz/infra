@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  build-push:
+  docker-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
