@@ -1,0 +1,21 @@
+version: '3'
+
+networks:
+  igln-network:
+
+services:
+  igln:
+    container_name: igln
+    image: nierdz/igln.fr:v1.0.3
+    restart: always
+    ports:
+      - ${IGLN_IP}:80:80
+      - ${IGLN_IP}:443:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf:/etc/nginx/conf:ro
+      - ./nginx/igln.conf.d/:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./certbot:/var/www/certbot:rw
+    networks:
+      - igln-network
