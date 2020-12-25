@@ -13,5 +13,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: start on fresh docker installation
       run: docker system prune --all --force --volumes
-    - name: build all images
-      run: make build
+    - name: build all docker images
+      run: make docker-build
