@@ -39,8 +39,8 @@ build: ##Build all images in docker folder
 venv: ## Create python virtualenv if not exists
 	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
 
-pip-install: ## Install pip dependencies
-	$(info --> Install pip dependencies)
+install: ## Install pip dependencies in a virtualenv
+	$(info --> Install pip dependencies in a virtualenv)
 	@$(MAKE) venv
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
@@ -48,30 +48,9 @@ pip-install: ## Install pip dependencies
 		pip3 install -r requirements.txt; \
 	)
 
-binaries-install: ## Download and install binaries for CI
-	$(info --> Download and install binaries for CI)
-	@( \
-		wget -qO- 'https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v$(SHELLCHECK_VERSION).linux.x86_64.tar.xz' | tar -xJv; \
-		sudo mv "shellcheck-v$(SHELLCHECK_VERSION)/shellcheck" /usr/bin/shellcheck; \
-		sudo chmod +x /usr/bin/shellcheck; \
-	)
-
-install: pip-install binaries-install## Install everything
-
 pre-commit: ## Run pre-commit tests
 	$(info --> Run pre-commit)
 	@( \
 		source $(VIRTUALENV_DIR)/bin/activate; \
 		pre-commit run --all-files; \
 	)
-
-shellcheck: ## Run shellcheck on all scripts
-	$(info --> Run shellcheck on all scripts)
-	@find scripts/ -type f | xargs -n 1 shellcheck
-
-docker-lint: ## Run hadolint on docker files
-	$(info --> Run hadolint on docker files)
-	@scripts/docker-lint.sh
-
-tests: pre-commit shellcheck docker-lint ## Run all tests
-	$(info --> Run all tests)

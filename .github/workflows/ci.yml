@@ -1,9 +1,10 @@
-name: BUILD
+---
+name: CI
 
 on: push
 
 jobs:
-  check:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,13 +17,4 @@ jobs:
     - name: install check tools
       run: make install
     - name: run all checks
-      run: make tests
-  build:
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: start on fresh docker installation
-      run: docker system prune --all --force --volumes
-    - name: build all images
-      run: make build
+      run: make pre-commit
