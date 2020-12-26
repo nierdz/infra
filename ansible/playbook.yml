@@ -23,24 +23,24 @@
   vars_files:
     - vault_vars/all.yml
   pre_tasks:
-    - name: Clone infra-docker repository
+    - name: Clone infra repository
       git:
-        repo: git@github.com:nierdz/infra-docker.git
+        repo: git@github.com:nierdz/infra.git
         version: "master"
-        dest: /infra-docker
+        dest: /infra
         accept_hostkey: true
         track_submodules: true
         update: false
-    - name: Push /infra-docker/.env
+    - name: Create /infra/.env
       template:
         src: vault_files/docker.env
-        dest: /infra-docker/.env
+        dest: /infra/.env
         mode: 0400
         owner: root
         group: root
     - name: Create certbot directory
       file:
-        path: /infra-docker/certbot
+        path: /infra/certbot
         state: directory
         mode: 0755
         owner: root
