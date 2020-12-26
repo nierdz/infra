@@ -1,4 +1,6 @@
 SHELL := /usr/bin/env bash
+ANSIBLE_INVENTORY_GROUP ?= all
+ANSIBLE_TAGS ?= all
 MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
@@ -62,4 +64,4 @@ run-ansible: ## Run ansible on all servers
 		&& ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy \
 		&& ANSIBLE_STRATEGY=mitogen_linear \
 		&& source $(VIRTUALENV_DIR)/bin/activate \
-		&& ansible-playbook --diff ansible/playbook.yml
+		&& ansible-playbook -l $(ANSIBLE_INVENTORY_GROUP) -t $(ANSIBLE_TAGS) --diff ansible/playbook.yml
