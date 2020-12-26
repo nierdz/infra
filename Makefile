@@ -47,7 +47,7 @@ install: ## Install pip and ansible dependencies
 		source $(VIRTUALENV_DIR)/bin/activate; \
 		pip3 install --upgrade setuptools; \
 		pip3 install -r requirements.txt; \
-		ansible-galaxy install -f -r ansible/requirements.yml -p ansible/vendor/roles; \
+		ansible-galaxy install -r ansible/requirements.yml -p ansible/vendor/roles; \
 	)
 
 pre-commit: ## Run pre-commit tests
