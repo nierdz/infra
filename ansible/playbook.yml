@@ -45,6 +45,21 @@
         mode: 0755
         owner: root
         group: root
+    - name: Create /etc/systemd/system/docker-compose@.service
+      template:
+        src: docker-compose@.service.j2
+        dest: /etc/systemd/system/docker-compose@.service
+        mode: 0644
+        owner: root
+        group: root
+    - name: Enable docker-compose services
+      service:
+        name: "docker-compose@{{ item }}"
+        enabled: true
+      with_items:
+        - igln
+        - madrabbit
+        - mnttech
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }

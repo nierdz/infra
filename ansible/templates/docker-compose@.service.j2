@@ -1,0 +1,14 @@
+[Unit]
+Description=%i service with docker compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory=/infra
+ExecStart=/usr/local/bin/docker-compose -f docker-compose-%i.yml -p %i up -d
+ExecStop=/usr/local/bin/docker-compose -f docker-compose-%i.yml -p %i down
+
+[Install]
+WantedBy=multi-user.target
