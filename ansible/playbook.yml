@@ -81,12 +81,13 @@
   hosts: nextcloud
   vars_files:
     - vault_vars/all.yml
-  # First nginx will only create a vhost for certbot
-  # Then, second one will create actual vhost
   roles:
-    - { role: nginx, tags: ['nginx'], dummy: 'first' }
     - { role: certbot, tags: ['certbot'] }
-    - { role: nginx, tags: ['nginx'], dummy: 'second' }
+    - { role: nginx,
+        tags: ['nginx'],
+        nginx_default_vhost_path: '/etc/nginx/conf.d/default.conf',
+        nginx_vhost_path: '/etc/nginx/conf.d'
+    }
     - { role: mysql, tags: ['mysql'] }
     - { role: php, tags: ['php'] }
     - { role: percona, tags: ['percona'] }
@@ -102,7 +103,31 @@
         repo: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
         state: present
         update_cache: yes
-        filename: 'sury'
+        filename: sury
+    - name: Install nginx apt key
+      apt_key:
+        url: "https://nginx.org/keys/nginx_signing.key"
+        state: present
+    - name: Add nginx Repository
+      apt_repository:
+        repo: "deb http://nginx.org/packages/mainline/debian {{ ansible_distribution_release }} nginx"
+        state: present
+        update_cache: true
+        filename: nginx
+    - name: Copy specific nginx configuration files
+      copy:
+        src: "{{ item }}"
+        dest: /etc/nginx/conf/
+        owner: root
+        mode: 0644
+      with_fileglob:
+        - nginx/*.conf
+    - name: Copy /etc/nginx/dh4096.pem
+      copy:
+        src: nginx/dh4096.pem
+        dest: /etc/nginx/dh4096.pem
+        owner: "{{ nginx_user }}"
+        mode: 0400
 
 - name: Provision transmission
   become: true

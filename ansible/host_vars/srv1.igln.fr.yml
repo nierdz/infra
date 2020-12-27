@@ -45,7 +45,6 @@ nextcloud_passwordsalt: !vault |
           32653261356433666130323066376231326236373438386435336330303039653438613737616432
           6133626139656164330a643865353361343238326535636264386331386632393933346136636230
           65353933396531356662396663643339376565656662613763323564616337613537
-
 nextcloud_secret: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           38656231303831343562376462333339383166396437626633326261393938643435656361623635
@@ -78,6 +77,22 @@ nextcloud_admin_password: !vault |
           62373131313362626662333338656261343035653761313866653861653337666634653536396331
           3262316164303330380a373338616365366463643661306433326530396530346166366564643866
           62303838323934306138373334323062326639333932323831653962303439646435
+
+# MySQL
+mysql_packages:
+  - mariadb-client
+  - mariadb-server
+  - python-mysqldb
+mysql_databases:
+  - name: nextcloud
+    encoding: utf8mb4
+    collation: utf8mb4_general_ci
+mysql_users:
+  - name: nextcloud
+    host: "localhost"
+    password: "{{ nextcloud_dbpassword }}"
+    priv: "nextcloud.*:ALL"
+    state: present
 
 # MySQL backup
 mysql_backup_host:
@@ -123,8 +138,141 @@ certbot_certs:
       - www.mnt-tech.fr
 
   - email: "{{ my_email }}"
-    post_hook: "systemctl restart docker-compose@nextcloud"
+    post_hook: "systemctl restart nginx"
     stop_services:
       - nginx
     domains:
       - "{{ nextcloud_domain }}"
+
+# Nginx
+nginx_vhosts:
+  - listen: "{{ ansible_default_ipv4.address }}:443 ssl http2 default_server"
+    server_name: "{{ nextcloud_domain }}"
+    state: "present"
+    root: "/var/www/{{ nextcloud_domain }}/current"
+    index: index.php
+    extra_parameters: |
+      add_header Referrer-Policy "no-referrer" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-Download-Options "noopen" always;
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Permitted-Cross-Domain-Policies "none" always;
+      add_header X-Robots-Tag "none" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+
+      ssl_certificate     /etc/letsencrypt/live/{{ nextcloud_domain }}/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/{{ nextcloud_domain }}/privkey.pem;
+      include /etc/nginx/conf/generic.conf;
+      include /etc/nginx/conf/gzip.conf;
+      include /etc/nginx/conf/security.conf;
+      include /etc/nginx/conf/ssl.conf;
+
+      location = /.well-known/carddav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+
+      location = /.well-known/caldav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+
+      client_max_body_size 512M;
+      fastcgi_buffers 64 4K;
+
+      location / {
+        rewrite ^ /index.php;
+      }
+
+      location ~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/ {
+          deny all;
+      }
+      location ~ ^\/(?:\.|autotest|occ|issue|indie|db_|console) {
+          deny all;
+      }
+
+      location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+)\.php(?:$|\/) {
+        fastcgi_split_path_info ^(.+?\.php)(\/.*|)$;
+        set $path_info $fastcgi_path_info;
+        try_files $fastcgi_script_name =404;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $path_info;
+        fastcgi_param HTTPS on;
+        fastcgi_param modHeadersAvailable true;
+        fastcgi_param front_controller_active true;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_intercept_errors on;
+        fastcgi_request_buffering off;
+      }
+
+      location ~ ^\/(?:updater|oc[ms]-provider)(?:$|\/) {
+        try_files $uri/ =404;
+        index index.php;
+      }
+
+      location ~ \.(?:css|js|woff2?|svg|gif|map)$ {
+        try_files $uri /index.php$request_uri;
+        add_header Cache-Control "public, max-age=15778463";
+        add_header Referrer-Policy "no-referrer" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Download-Options "noopen" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Permitted-Cross-Domain-Policies "none" always;
+        add_header X-Robots-Tag "none" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        access_log off;
+      }
+
+      location ~ \.(?:png|html|ttf|ico|jpg|jpeg|bcmap)$ {
+        try_files $uri /index.php$request_uri;
+        access_log off;
+      }
+
+# PHP
+php_enable_webserver: false
+php_enable_php_fpm: true
+php_enable_apc: false
+php_use_managed_ini: true
+php_fpm_listen: "127.0.0.1:9000"
+php_fpm_listen_allowed_clients: "127.0.0.1"
+php_fpm_pm_max_children: 50
+php_fpm_pm_start_servers: 5
+php_fpm_pm_min_spare_servers: 5
+php_fpm_pm_max_spare_servers: 5
+php_fpm_pool_user: "nginx"
+php_fpm_pool_group: "nginx"
+php_memory_limit: "521M"
+php_max_execution_time: "60"
+php_max_input_time: "60"
+php_max_input_vars: "1000"
+php_realpath_cache_size: "32K"
+php_file_uploads: "On"
+php_upload_max_filesize: "512M"
+php_max_file_uploads: "20"
+php_post_max_size: "512M"
+php_date_timezone: "Europe/Paris"
+php_allow_url_fopen: "On"
+php_sendmail_path: "/usr/sbin/sendmail -t -i"
+php_output_buffering: "4096"
+php_short_open_tag: false
+php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
+php_display_errors: "Off"
+php_display_startup_errors: "On"
+php_expose_php: "On"
+php_session_cookie_lifetime: 0
+php_session_gc_probability: 1
+php_session_gc_divisor: 1000
+php_session_gc_maxlifetime: 1440
+php_session_save_handler: files
+php_session_save_path: ''
+php_disable_functions: []
+php_opcache_zend_extension: "opcache.so"
+php_opcache_enable: "1"
+php_opcache_enable_cli: "0"
+php_opcache_memory_consumption: "128"
+php_opcache_interned_strings_buffer: "8"
+php_opcache_max_accelerated_files: "10000"
+php_opcache_max_wasted_percentage: "5"
+php_opcache_validate_timestamps: "0"
+php_opcache_revalidate_path: "0"
+php_opcache_revalidate_freq: "1"
+php_opcache_max_file_size: "0"

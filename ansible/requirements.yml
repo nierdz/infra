@@ -16,6 +16,6 @@
   version: v1.0.5
   name: docker
 
-- src: https://github.com/nierdz/ansible-role-nginx
-  version: v1.1.2
+- src: https://github.com/geerlingguy/ansible-role-nginx
+  version: 2.8.0
   name: nginx
