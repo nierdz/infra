@@ -14,11 +14,11 @@ help: ## Print this help
 
 rsync-pull: ## Pull files from server
 	$(info --> Pull files from server)
-	@rsync -avz --exclude-from "rsync-exclude.list" $(USER)@$(SERVER):/infra/ .
+	@rsync -avz --exclude-from ".gitignore" --exclude ".git" $(USER)@$(SERVER):/infra/ .
 
 rsync-push: ## Push files to server
 	$(info --> Push files to server)
-	@rsync -avz --exclude-from "rsync-exclude.list" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra/
+	@rsync -avz --exclude-from ".gitignore" --exclude ".git" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra/
 
 docker-build: ##Build all images in docker folder
 	$(info --> Build all images in docker folder)
