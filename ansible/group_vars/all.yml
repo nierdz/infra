@@ -30,3 +30,17 @@ php_packages:
 
 # BackupPC
 backuppc_server: backup.atelierasap.com
+
+# Certbot
+certbot_create_if_missing: true
+certbot_create_standalone_stop_services: []
+certbot_auto_renew: false # renew is already done by a cron inside certbot package
+certbot_create_command: >-
+  {{ certbot_script }} certonly
+    --non-interactive
+    --email "{{ cert_item.email }}"
+    --agree-tos
+    --dns-ovh
+    --dns-ovh-credentials /infra/.ovh
+    --post-hook "{{ cert_item.post_hook }}"
+    --domains "{{ cert_item.domains | join(',') }}"

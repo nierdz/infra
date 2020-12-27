@@ -99,16 +99,13 @@ crontabs:
 # Certbot
 certbot_certs:
   - email: "{{ my_email }}"
-    path: "/var/www/certbot"
-    state: "present"
-    post_hook: "/bin/systemctl restart nginx.service; cp -Lrf /etc/letsencrypt/live/{{ nextcloud_domain }}/ /etc/kibana/; chmod 700 /etc/kibana/{{ nextcloud_domain }}/; chown -R kibana:kibana /etc/kibana/{{ nextcloud_domain }}/"
+    post_hook: "systemctl restart docker-compose@igln"
     domains:
-      - "{{ nextcloud_domain }}"
+      - igln.fr
+      - www.igln.fr
 
   - email: "{{ my_email }}"
-    path: "/infra/certbot"
-    state: "present"
-    post_hook: "pushd /infra && /usr/local/bin/docker-compose -p madrabbit -f /infra/docker-compose-madrabbit.yml restart madrabbit-nginx"
+    post_hook: "systemctl restart docker-compose@madrabbit"
     domains:
       - mad-rabbit.com
       - www.mad-rabbit.com
@@ -120,17 +117,14 @@ certbot_certs:
       - static.tenminutestokill.com
 
   - email: "{{ my_email }}"
-    path: "/infra/certbot"
-    state: "present"
-    post_hook: "pushd /infra && /usr/local/bin/docker-compose -p mnttech -f /infra/docker-compose-mnttech.yml restart mnttech-nginx"
+    post_hook: "systemctl restart docker-compose@mnttech"
     domains:
       - mnt-tech.fr
       - www.mnt-tech.fr
 
   - email: "{{ my_email }}"
-    path: "/infra/certbot"
-    state: "present"
-    post_hook: "pushd /infra && /usr/local/bin/docker-compose -p igln -f /infra/docker-compose-igln.yml restart igln"
+    post_hook: "systemctl restart docker-compose@nextcloud"
+    stop_services:
+      - nginx
     domains:
-      - igln.fr
-      - www.igln.fr
+      - "{{ nextcloud_domain }}"

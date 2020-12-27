@@ -31,20 +31,17 @@
         accept_hostkey: true
         track_submodules: true
         update: false
-    - name: Create /infra/.env
+    - name: Create /infra/.env and /infra/.ovh
       template:
-        src: vault_files/docker.env
-        dest: /infra/.env
+        src: vault_files/{{ item.value }}
+        dest: "{{ item.key }}"
         mode: 0400
         owner: root
         group: root
-    - name: Create certbot directory
-      file:
-        path: /infra/certbot
-        state: directory
-        mode: 0755
-        owner: root
-        group: root
+      with_dict: {
+        "/infra/.env": "docker.env",
+        "/infra/.ovh": "ovh.secret"
+      }
     - name: Create /etc/systemd/system/docker-compose@.service
       template:
         src: docker-compose@.service.j2
@@ -56,10 +53,18 @@
       service:
         name: "docker-compose@{{ item }}"
         enabled: true
+        daemon_reload: true
       with_items:
         - igln
         - madrabbit
         - mnttech
+    - name: Install python3-certbot-dns-ovh package
+      apt:
+        name: python3-certbot-dns-ovh
+      register: common_packages_installed
+      until: common_packages_installed is success
+      retries: 10
+      delay: 2
   roles:
     - { role: docker, tags: ['docker'] }
     - { role: certbot, tags: ['certbot'] }
