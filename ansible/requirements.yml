@@ -12,8 +12,8 @@
   version: feat/more-specific-stop-services
   name: certbot
 
-- src: https://github.com/nierdz/ansible-role-docker
-  version: v1.0.5
+- src: https://github.com/geerlingguy/ansible-role-docker
+  version: 3.0.0
   name: docker
 
 - src: https://github.com/geerlingguy/ansible-role-nginx

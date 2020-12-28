@@ -51,3 +51,7 @@ certbot_create_command: >-
     --dns-ovh-credentials /infra/.ovh
     --post-hook "{{ cert_item.post_hook }}"
     --domains "{{ cert_item.domains | join(',') }}"
+
+# Docker
+docker_install_compose: true
+docker_compose_version: "1.27.4"
