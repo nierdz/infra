@@ -3,7 +3,8 @@
 users:
   - name: kmet
     comment: 'Kevin MET'
-    groups: admin
+    groups:
+      - admin
     shell: /bin/bash
     state: present
     ssh_key: |
