@@ -1,5 +1,5 @@
 FROM php:7.4-fpm
-LABEL version=1.0.1
+LABEL version=1.0.2
 RUN docker-php-ext-install mysqli \
   && pecl install redis-4.2.0 \
   && docker-php-ext-enable redis \
