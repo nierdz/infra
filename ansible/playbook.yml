@@ -9,7 +9,7 @@
       file:
         path: /etc/sudoers.d/kmet
         state: absent
-    # use this ugly hack cause meta: reset_connection does not work
+    # Keep this because of my control_path in ssh local configuration
     - name: Remove local control_path to force login again to load group
       local_action: # noqa 504
         module: file
