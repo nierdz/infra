@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+/var/log/nginx/*.log {
+  daily
+  dateext
+  dateyesterday
+  missingok
+  rotate 9
+  compress
+  delaycompress
+  notifempty
+  create 0640 root www-data
+  sharedscripts
+  postrotate
+    [ -s /run/nginx.pid ] && kill -USR1 `cat /run/nginx.pid`
+  endscript
+}

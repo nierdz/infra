@@ -102,3 +102,7 @@
 
 - name: Import backuppc tasks
   import_tasks: backuppc.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml
+  when: nginx_vhosts is defined
