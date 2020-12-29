@@ -25,7 +25,7 @@ rules:
     level: warning
   indentation:
     level: warning
-    indent-sequences: consistent
+    indent-sequences: whatever
   line-length:
     max: 600
     level: warning
