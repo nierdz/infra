@@ -1,6 +1,6 @@
 # Quick reference
 
-This image is made to provide **debian 10** in a molecule pipeline. It includes everything to run **ansible** locally and a fake init system to allow service module to work.
+This image is made to provide **debian 10** in a molecule pipeline. It provides **systemd** to allow **ansible** service module to work.
 
 -	**Main repository containing all my docker images**: [nierdz docker images](https://github.com/nierdz/infra/tree/master/docker)
 
@@ -12,8 +12,8 @@ This image is made to provide **debian 10** in a molecule pipeline. It includes 
 
 An example of a molecule pipeline using this image can be found here:
 
-- [ansible-role-docker](https://github.com/nierdz/ansible-role-nginx/)
+- [ansible-role-nextcloud](https://github.com/nierdz/ansible-role-netxcloud/)
 
 As you can see in this example, you need to **bind mount** `/sys/fs/cgroup` to make it work:
 
-- [molecule.yml](https://github.com/nierdz/ansible-role-nginx/blob/master/molecule/default/molecule.yml)
+- [molecule.yml](https://github.com/nierdz/ansible-role-nextcloud/blob/master/molecule/default/molecule.yml)

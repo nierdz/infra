@@ -2,41 +2,26 @@ FROM debian:buster
 
 ENV DEBIAN_FRONTEND noninteractive
 
-LABEL version=1.0.1
+LABEL version=2.0.0
 
 # Install dependencies.
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      build-essential \
-      gnupg \
-      libffi-dev \
-      libssl-dev \
-      python3-dev \
-      python3-pip \
-      python3-setuptools \
-      python3-wheel \
-      sudo \
+      python3 \
       systemd \
       systemd-sysv \
-      wget \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install Ansible via pip.
-RUN pip3 install --no-cache-dir ansible==2.10.4
-
-COPY initctl_faker .
-RUN chmod +x initctl_faker && \
-    rm -fr /sbin/initctl && \
-    ln -s /initctl_faker /sbin/initctl
-
-# Install Ansible inventory file.
-RUN mkdir -p /etc/ansible
-RUN printf "[local]\\nlocalhost ansible_connection=local" > /etc/ansible/hosts
-
-# Make sure systemd doesn't start agettys on tty[1-6].
-RUN rm -f /lib/systemd/system/multi-user.target.wants/getty.target
+# Remove all systemd targets
+RUN rm -f /lib/systemd/system/multi-user.target.wants/* \
+      /etc/systemd/system/*.wants/* \
+      /lib/systemd/system/local-fs.target.wants/* \
+      /lib/systemd/system/sockets.target.wants/*udev* \
+      /lib/systemd/system/sockets.target.wants/*initctl* \
+      /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
+      /lib/systemd/system/systemd-update-utmp*
 
 VOLUME ["/sys/fs/cgroup"]
 CMD ["/lib/systemd/systemd"]
