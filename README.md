@@ -1,6 +1,6 @@
 [![CI Status](https://github.com/nierdz/infra/workflows/CI/badge.svg?branch=master)](https://github.com/nierdz/infra/actions?query=workflow%3ACI)
 [![DOCKER-BUILD Status](https://github.com/nierdz/infra/workflows/DOCKER-BUILD/badge.svg?branch=master)](https://github.com/nierdz/infra/actions?query=workflow%3ADOCKER-BUILD)
-[![DOCKER-PUSH Status](https://github.com/nierdz/infra/workflows/DOCKER-PUSH/badge.svg?branch=master)](https://github.com/nierdz/infra/actions?query=workflow%3ACIDOCKER-PUSH)
+[![DOCKER-PUSH Status](https://github.com/nierdz/infra/workflows/DOCKER-PUSH/badge.svg?branch=master)](https://github.com/nierdz/infra/actions?query=workflow%3ADOCKER-PUSH)
 
 # Infra
 All my personal infrastructure as code is here
