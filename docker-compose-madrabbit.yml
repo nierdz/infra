@@ -27,7 +27,7 @@ services:
 
   madrabbit-mysql:
     container_name: madrabbit-mysql
-    image: nierdz/mysql:1.1.2
+    image: nierdz/mysql:1.1.3
     restart: always
     command: '--default-authentication-plugin=mysql_native_password'
     volumes:
@@ -42,7 +42,7 @@ services:
 
   madrabbit-php-fpm:
     container_name: madrabbit-php-fpm
-    image: nierdz/php-fpm-7.4:1.0.2
+    image: nierdz/php-fpm-7.4:1.0.3
     restart: always
     volumes:
       - ./madrabbit/www:/madrabbit/www:rw
