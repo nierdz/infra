@@ -34,7 +34,7 @@ for image in */; do
   pushd "$image"
   version=$(sed -n '/LABEL/s/LABEL version=//p' Dockerfile)
   echo "$DOCKER_PASSWORD" | docker login -u "nierdz" --password-stdin
-  docker tag "nierdz/$image:latest" "nierdz/$image:$version"
+  docker tag "nierdz/$image:$version" "nierdz/$image:latest"
   docker push "nierdz/$image:$version"
   docker push "nierdz/$image:latest"
   push_readme
