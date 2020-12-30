@@ -7,7 +7,6 @@ set -o nounset
 DEBUG=${DEBUG:=0}
 [[ $DEBUG -eq 1 ]] && set -o xtrace
 DOCKER_PASSWORD=${DOCKER_PASSWORD:-}
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 # Generate token to interact with docker hub API
 DOCKER_TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d "{\"username\": \"nierdz\", \"password\": \"$DOCKER_PASSWORD\"}" "https://hub.docker.com/v2/users/login/" | jq -r .token)
@@ -34,7 +33,7 @@ function push_readme() {
   fi
 }
 
-pushd "$DIR/../docker"
+pushd "$GITHUB_WORKSPACE/docker"
 for image in */; do
   image="${image%/}"
   pushd "$image"
@@ -44,8 +43,11 @@ for image in */; do
   else
     echo "$image:$version does not exists on docker hub, let's push it !"
     echo "$DOCKER_PASSWORD" | docker login -u "nierdz" --password-stdin
+    docker tag "nierdz/$image:latest" "nierdz/$image:$version"
     docker push "nierdz/$image:$version"
+    docker push "nierdz/$image:latest"
   fi
   push_readme
   popd
 done
+popd
