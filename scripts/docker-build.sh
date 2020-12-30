@@ -17,3 +17,4 @@ for image in */; do
   docker build -t "nierdz/$image:$version" .
   popd
 done
+popd
