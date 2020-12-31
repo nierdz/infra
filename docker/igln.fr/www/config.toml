@@ -1,0 +1,30 @@
+languageCode = "fr-fr"
+DefaultContentLanguage = "fr"
+title = "Blog IGLN"
+theme = "hugo-theme-bootstrap4-blog"
+enableRobotsTXT = true
+enableEmoji = true
+paginate = 10
+copyright = "coucou, c'est la fin de la page ! Fait avec [hugo](https://gohugo.io/)"
+
+[permalinks]
+  posts = "/:slug/"
+  page = "/:slug/"
+
+[params]
+  author = "Kévin Met"
+  description = "Blog autour de l'univers SysAdmin/DevOps/SRE."
+  date_format = "02 Mon Jan 2006"
+  google_verify_meta = "toadd"
+  bing_verify_meta = "toadd"
+  yandex_verify_meta = "toadd"
+  sharingicons = true
+
+  [params.sidebar]
+    about = "J'écris des articles autour de l'univers SysAdmin/DevOps/SRE quand j'en ai le temps et l'envie."
+    num_recent_posts = 5
+
+  [params.social]
+    twitter = "mnttech"
+
+[languages.fr]
