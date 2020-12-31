@@ -5,3 +5,5 @@
 venv
 vendor
 .vault_pass.txt
+certs/igln.local-key.pem
+certs/igln.local.pem

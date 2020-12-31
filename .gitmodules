@@ -1,0 +1,3 @@
+[submodule "docker/igln.fr/www/themes/hugo-theme-bootstrap4-blog"]
+	path = docker/igln.fr/www/themes/hugo-theme-bootstrap4-blog
+	url = git@github.com:alanorth/hugo-theme-bootstrap4-blog.git
