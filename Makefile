@@ -52,6 +52,17 @@ install: ## Install pip and ansible dependencies
 		ansible-galaxy install -r ansible/requirements.yml -p ansible/vendor/roles; \
 	)
 
+mkcert: ## Create certs if needed
+	$(info --> Create certs if needed)
+	@if [[ -e $(MAIN_DIR)/certs/igln.local-key.pem ]] && [[ -e $(MAIN_DIR)/certs/igln.local.pem ]]; then \
+		openssl verify -CAfile ~/.local/share/mkcert/rootCA.pem $(MAIN_DIR)/certs/igln.local.pem; \
+	else \
+		mkcert \
+			-cert-file $(MAIN_DIR)/certs/igln.local.pem \
+			-key-file $(MAIN_DIR)/certs/igln.local-key.pem \
+			"igln.local"; \
+	fi; \
+
 pre-commit: ## Run pre-commit tests
 	$(info --> Run pre-commit)
 	@( \
