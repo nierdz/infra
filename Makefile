@@ -20,9 +20,24 @@ rsync-push: ## Push files to server
 	$(info --> Push files to server)
 	@rsync -avz --exclude-from ".gitignore" --exclude ".git" --rsync-path="sudo rsync" . $(USER)@$(SERVER):/infra/
 
-docker-build: ##Build all images in docker folder
+docker-build: ## Build all images in docker folder
 	$(info --> Build all images in docker folder)
 	@scripts/docker-build.sh
+
+docker-run-igln-local: ## Build and run igln.fr container locally
+	$(info --> Build and run igln.fr container locally)
+	@docker rm -f igln-local
+	@docker build \
+		--build-arg LOCAL=1 \
+		-t igln.fr:local \
+		$(MAIN_DIR)/docker/igln.fr
+	@docker run -d \
+		-p 127.0.0.1:443:443 \
+		--name igln-local \
+		-v $(MAIN_DIR)/docker/igln.fr/igln.conf:/etc/nginx/conf.d/igln.conf:ro \
+		-v $(MAIN_DIR)/certs/igln.local-key.pem:/etc/ssl/certs/igln.local-key.pem:ro \
+		-v $(MAIN_DIR)/certs/igln.local.pem:/etc/ssl/certs/igln.local.pem:ro \
+		igln.fr:local
 
 venv: ## Create python virtualenv if not exists
 	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
