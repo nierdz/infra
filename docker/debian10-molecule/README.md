@@ -10,10 +10,20 @@ This image is made to provide **debian 10** in a molecule pipeline. It provides 
 
 # Usage
 
-An example of a molecule pipeline using this image can be found here:
+## Molecule
+
+An example of a role using a molecule pipeline and this image can be found here:
 
 - [ansible-role-nextcloud](https://github.com/nierdz/ansible-role-netxcloud/)
 
-As you can see in this example, you need to **bind mount** `/sys/fs/cgroup` to make it work:
+## Docker
 
-- [molecule.yml](https://github.com/nierdz/ansible-role-nextcloud/blob/master/molecule/default/molecule.yml)
+When using this image with docker you need ton run in **privileges** mode and to **bind mount** `/sys/fs/cgroup`.
+
+`docker run --name debian10-molecule -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro nierdz/debian10-molecule`
+
+## Podman
+
+When using podman, you just run it without any particular privileges.
+
+`podman run --name debian10-molecule -d docker.io/nierdz/debian10-molecule`
