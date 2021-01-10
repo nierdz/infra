@@ -2,21 +2,26 @@ FROM debian:buster
 
 ENV DEBIAN_FRONTEND noninteractive
 
-LABEL version=2.1.0
+LABEL version=2.0.2
 
 # Install dependencies.
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      ca-certificates \
-      curl \
       python3 \
+      systemd \
+      systemd-sysv \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install docker-systemctl-replacement
-RUN curl -o /bin/systemctl \
-      -SL "https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/v1.5.4505/files/docker/systemctl3.py" \
-    && chmod 0755 /bin/systemctl
+# Remove all systemd targets
+RUN rm -f /lib/systemd/system/multi-user.target.wants/* \
+      /etc/systemd/system/*.wants/* \
+      /lib/systemd/system/local-fs.target.wants/* \
+      /lib/systemd/system/sockets.target.wants/*udev* \
+      /lib/systemd/system/sockets.target.wants/*initctl* \
+      /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup* \
+      /lib/systemd/system/systemd-update-utmp*
 
-CMD ["/bin/bash"]
+VOLUME ["/sys/fs/cgroup"]
+CMD ["/lib/systemd/systemd"]
