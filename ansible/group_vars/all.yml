@@ -9,48 +9,5 @@ users:
     state: present
     ssh_key: https://github.com/nierdz.keys
 
-# PHP
-php_default_version_debian: "7.4"
-php_packages:
-  - php7.4-common
-  - php7.4-cli
-  - php7.4-dev
-  - php7.4-fpm
-  - libpcre3-dev
-  - php7.4-gd
-  - php7.4-curl
-  - php7.4-imap
-  - php7.4-json
-  - php7.4-opcache
-  - php7.4-xml
-  - php7.4-mbstring
-  - php-sqlite3
-  - php-imagick
-
-# Nginx
-nginx_remove_default_vhost: true
-nginx_service_enabled: true
-nginx_service_state: started
-nginx_user: nginx
-nginx_pidfile: /run/nginx.pid
-
 # BackupPC
 backuppc_server: backup.atelierasap.com
-
-# Certbot
-certbot_create_if_missing: true
-certbot_create_standalone_stop_services: []
-certbot_auto_renew: false # renew is already done by a cron inside certbot package
-certbot_create_command: >-
-  {{ certbot_script }} certonly
-    --non-interactive
-    --email "{{ cert_item.email }}"
-    --agree-tos
-    --dns-ovh
-    --dns-ovh-credentials /infra/.ovh
-    --post-hook "{{ cert_item.post_hook }}"
-    --domains "{{ cert_item.domains | join(',') }}"
-
-# Docker
-docker_install_compose: true
-docker_compose_version: "1.27.4"
