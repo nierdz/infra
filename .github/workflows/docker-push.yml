@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: start on fresh docker installation
         run: docker system prune --all --force --volumes
       - name: build all docker images
