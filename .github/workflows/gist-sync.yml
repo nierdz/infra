@@ -3,8 +3,8 @@ name: GIST-SYNC
 
 on:
   push:
-#    branches:
-#      - master
+    branches:
+      - master
 
 jobs:
   gist-sync:
