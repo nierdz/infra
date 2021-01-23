@@ -6,7 +6,7 @@ on:
     branches:
       - master
     paths:
-      - 'docker/*/Dockerfile'
+      - 'docker/*'
 
 jobs:
   docker-push:
