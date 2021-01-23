@@ -4,7 +4,7 @@ name: DOCKER-BUILD
 on:
   push:
     paths:
-      - 'docker/*'
+      - 'docker/**'
 
 jobs:
   docker-build:
