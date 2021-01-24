@@ -37,6 +37,7 @@
         accept_hostkey: true
         track_submodules: true
         update: true
+        force: true
     - name: Create /infra/.env and /infra/.ovh
       template:
         src: vault_files/{{ item.value }}
