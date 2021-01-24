@@ -7,11 +7,6 @@
   version: 3.3.0
   name: mysql
 
-# Change this when https://github.com/geerlingguy/ansible-role-certbot/pull/139 is merged
-- src: https://github.com/nierdz/ansible-role-certbot
-  version: feat/more-specific-stop-services
-  name: certbot
-
 - src: https://github.com/geerlingguy/ansible-role-docker
   version: 3.0.0
   name: docker

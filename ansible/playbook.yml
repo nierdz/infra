@@ -64,16 +64,9 @@
         - igln
         - madrabbit
         - mnttech
-    - name: Install python3-certbot-dns-ovh package
-      apt:
-        name: python3-certbot-dns-ovh
-      register: common_packages_installed
-      until: common_packages_installed is success
-      retries: 10
-      delay: 2
   roles:
     - { role: docker, tags: ['docker'] }
-    - { role: certbot, tags: ['certbot'] }
+    - { role: acme_sh, tags: ['acme_sh'] }
     - { role: mysql_backup, tags: ['mysql_backup'] }
 
 - name: Configure ip failover
@@ -88,7 +81,7 @@
   vars_files:
     - vault_vars/all.yml
   roles:
-    - { role: certbot, tags: ['certbot'] }
+    - { role: acme_sh, tags: [acme_sh'] }
     - { role: nginx,
         tags: ['nginx'],
         nginx_default_vhost_path: '/etc/nginx/conf.d/default.conf',
@@ -149,7 +142,5 @@
   vars_files:
     - vault_vars/all.yml
   roles:
-    - { role: nginx, tags: ['nginx'], dummy: 'first' }
-    - { role: certbot, tags: ['certbot'] }
-    - { role: nginx, tags: ['nginx'], dummy: 'second' }
+    - { role: nginx, tags: ['nginx'] }
     - { role: backuppc, tags: ['backuppc'] }

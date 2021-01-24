@@ -7,15 +7,6 @@ resolv_config:
   - search:
       - "atelierasap.com"
 
-# Certbot
-certbot_certs:
-  - email: "{{ my_email }}"
-    path: "/var/www/certbot"
-    state: "present"
-    post_hook: "/bin/systemctl restart nginx.service"
-    domains:
-      - backup.atelierasap.com
-
 # Nginx
 nginx_vhosts:
   - server_names:
