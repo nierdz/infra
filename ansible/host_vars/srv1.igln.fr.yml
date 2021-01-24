@@ -160,8 +160,8 @@ nginx_vhosts:
       add_header X-Robots-Tag "none" always;
       add_header X-XSS-Protection "1; mode=block" always;
 
-      ssl_certificate     /etc/letsencrypt/live/{{ nextcloud_domain }}/fullchain.pem;
-      ssl_certificate_key /etc/letsencrypt/live/{{ nextcloud_domain }}/privkey.pem;
+      ssl_certificate /root/.acme.sh/{{ nextcloud_domain }}/fullchain.cer;
+      ssl_certificate_key /root/.acme.sh/{{ nextcloud_domain }}/{{ nextcloud_domain }}.key;
       include /etc/nginx/conf/generic.conf;
       include /etc/nginx/conf/gzip.conf;
       include /etc/nginx/conf/security.conf;

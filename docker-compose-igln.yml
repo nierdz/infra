@@ -15,7 +15,6 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf:/etc/nginx/conf:ro
       - ./nginx/igln.conf.d/:/etc/nginx/conf.d:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./certbot:/var/www/certbot:rw
+      - /root/.acme.sh/igln.fr/:/etc/nginx/igln.fr:ro
     networks:
       - igln-network
