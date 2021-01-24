@@ -23,7 +23,7 @@
   roles:
     - { role: xmr_stak, tags: ['xmr_stak'] }
 
-- name: Provision hypervisors
+- name: Provision docker server
   become: true
   hosts: docker
   vars_files:
