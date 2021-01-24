@@ -70,7 +70,7 @@ pre-commit: ## Run pre-commit tests
 		pre-commit run --all-files; \
 	)
 
-run-ansible: ## Run ansible on all servers
+ansible-run: ## Run ansible on all servers
 	$(info --> Run ansible on all servers)
 	@export \
 		ANSIBLE_CONFIG=ansible/ansible.cfg \

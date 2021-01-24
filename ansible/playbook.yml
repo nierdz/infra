@@ -35,9 +35,8 @@
         version: "master"
         dest: /infra
         accept_hostkey: true
-        track_submodules: true
         update: true
-        force: true
+        recursive: false
     - name: Create /infra/.env and /infra/.ovh
       template:
         src: vault_files/{{ item.value }}
@@ -92,7 +91,6 @@
     - { role: php, tags: ['php'] }
     - { role: percona, tags: ['percona'] }
     - { role: nextcloud, tags: ['nextcloud'] }
-    - { role: mysql_backup, tags: ['mysql_backup'] }
   pre_tasks:
     - name: Install sury key
       apt_key:

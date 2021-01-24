@@ -98,20 +98,12 @@ mysql_users:
     priv: "nextcloud.*:ALL"
     state: present
 
-# MySQL backup
-mysql_backup_host:
-  time_to_keep: "60"
-
-mysql_backup_docker:
-  container: madrabbit-mysql
-  time_to_keep: "60"
-
 # Crontabs
 crontabs:
   mysql backup:
     user: root
     state: present
-    job: /usr/local/bin/mysql_backup_host.sh; /usr/local/bin/mysql_backup_docker.sh
+    job: /usr/local/bin/mysql_backup.sh
     minute: 00
     hour: 1
 
