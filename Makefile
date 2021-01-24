@@ -5,7 +5,7 @@ MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
-SERVER := srv1.igln.fr
+SERVER := srv2.igln.fr
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -70,7 +70,7 @@ pre-commit: ## Run pre-commit tests
 		pre-commit run --all-files; \
 	)
 
-run-ansible: ## Run ansible on all servers
+ansible-run: ## Run ansible on all servers
 	$(info --> Run ansible on all servers)
 	@export \
 		ANSIBLE_CONFIG=ansible/ansible.cfg \
@@ -78,3 +78,10 @@ run-ansible: ## Run ansible on all servers
 		&& ANSIBLE_STRATEGY=mitogen_linear \
 		&& source $(VIRTUALENV_DIR)/bin/activate \
 		&& ansible-playbook -l $(ANSIBLE_INVENTORY_GROUP) -t $(ANSIBLE_TAGS) --diff ansible/playbook.yml
+
+ansible-lint: ## Run ansible-lint
+	$(info --> Run ansible-lint)
+	@( \
+		source $(VIRTUALENV_DIR)/bin/activate; \
+		ansible-lint ansible/playbook.yml; \
+	)

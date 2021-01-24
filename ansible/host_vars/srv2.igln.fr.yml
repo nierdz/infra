@@ -18,6 +18,10 @@ ip_failover:
   - ip: 5.39.49.30/28
   - ip: 5.39.49.31/28
 
+# Docker
+docker_install_compose: true
+docker_compose_version: "1.27.4"
+
 # Nextcloud
 mysql_root_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -94,34 +98,22 @@ mysql_users:
     priv: "nextcloud.*:ALL"
     state: present
 
-# MySQL backup
-mysql_backup_host:
-  time_to_keep: "60"
-
-mysql_backup_docker:
-  container: madrabbit-mysql
-  time_to_keep: "60"
-
 # Crontabs
 crontabs:
   mysql backup:
     user: root
     state: present
-    job: /usr/local/bin/mysql_backup_host.sh; /usr/local/bin/mysql_backup_docker.sh
+    job: /usr/local/bin/mysql_backup.sh
     minute: 00
     hour: 1
 
-# Certbot
-certbot_certs:
-  - email: "{{ my_email }}"
-    post_hook: "systemctl restart docker-compose@igln"
-    domains:
+# Acme.sh
+acme_sh_certificates:
+  - domains:
       - igln.fr
       - www.igln.fr
-
-  - email: "{{ my_email }}"
-    post_hook: "systemctl restart docker-compose@madrabbit"
-    domains:
+    renew_hook: "systemctl restart docker-compose@igln"
+  - domains:
       - mad-rabbit.com
       - www.mad-rabbit.com
       - media.mad-rabbit.com
@@ -130,23 +122,23 @@ certbot_certs:
       - www.tenminutestokill.com
       - media.tenminutestokill.com
       - static.tenminutestokill.com
-
-  - email: "{{ my_email }}"
-    post_hook: "systemctl restart docker-compose@mnttech"
-    domains:
+    renew_hook: "systemctl restart docker-compose@madrabbit"
+  - domains:
       - mnt-tech.fr
       - www.mnt-tech.fr
-
-  - email: "{{ my_email }}"
-    post_hook: "systemctl restart nginx"
-    stop_services:
-      - nginx
-    domains:
+    renew_hook: "systemctl restart docker-compose@mnttech"
+  - domains:
       - "{{ nextcloud_domain }}"
+    renew_hook: "systemctl restart nginx"
 
 # Nginx
+nginx_remove_default_vhost: true
+nginx_service_enabled: true
+nginx_service_state: started
+nginx_user: nginx
+nginx_pidfile: /run/nginx.pid
 nginx_vhosts:
-  - listen: "{{ ansible_default_ipv4.address }}:443 ssl http2 default_server"
+  - listen: 5.39.49.20:443 ssl http2 default_server
     server_name: "{{ nextcloud_domain }}"
     state: "present"
     root: "/var/www/{{ nextcloud_domain }}/current"
@@ -160,8 +152,8 @@ nginx_vhosts:
       add_header X-Robots-Tag "none" always;
       add_header X-XSS-Protection "1; mode=block" always;
 
-      ssl_certificate     /etc/letsencrypt/live/{{ nextcloud_domain }}/fullchain.pem;
-      ssl_certificate_key /etc/letsencrypt/live/{{ nextcloud_domain }}/privkey.pem;
+      ssl_certificate /root/.acme.sh/{{ nextcloud_domain }}/fullchain.cer;
+      ssl_certificate_key /root/.acme.sh/{{ nextcloud_domain }}/{{ nextcloud_domain }}.key;
       include /etc/nginx/conf/generic.conf;
       include /etc/nginx/conf/gzip.conf;
       include /etc/nginx/conf/security.conf;
@@ -228,6 +220,22 @@ nginx_vhosts:
       }
 
 # PHP
+php_default_version_debian: "7.4"
+php_packages:
+  - php7.4-common
+  - php7.4-cli
+  - php7.4-dev
+  - php7.4-fpm
+  - libpcre3-dev
+  - php7.4-gd
+  - php7.4-curl
+  - php7.4-imap
+  - php7.4-json
+  - php7.4-opcache
+  - php7.4-xml
+  - php7.4-mbstring
+  - php-sqlite3
+  - php-imagick
 php_enable_webserver: false
 php_enable_php_fpm: true
 php_enable_apc: false

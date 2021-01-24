@@ -7,7 +7,7 @@ asap
 
 [physical]
 backup.atelierasap.com
-srv1.igln.fr
+srv2.igln.fr
 
 [xmrstak]
 backup.atelierasap.com
@@ -15,10 +15,10 @@ srv1.igln.fr
 srv2.igln.fr
 
 [docker]
-srv1.igln.fr
+srv2.igln.fr
 
 [nextcloud]
-srv1.igln.fr
+srv2.igln.fr
 
 [asap]
 backup.atelierasap.com
