@@ -6,8 +6,8 @@
 All my personal infrastructure as code is here
 
 ### Run ansible
-For example to run only on `srv1.igln.fr` and to target `mysql` tag:
+For example to run only on `srv2.igln.fr` and to target `mysql` tag:
 
 ```
-ANSIBLE_INVENTORY_GROUP=srv1.igln.fr ANSIBLE_TAGS=mysql make ansible-run
+ANSIBLE_INVENTORY_GROUP=srv2.igln.fr ANSIBLE_TAGS=mysql make ansible-run
 ```

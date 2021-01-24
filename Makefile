@@ -5,7 +5,7 @@ MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
 PROJECT_NAME ?= none
 USER := kmet
-SERVER := srv1.igln.fr
+SERVER := srv2.igln.fr
 
 help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
