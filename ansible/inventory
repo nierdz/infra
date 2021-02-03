@@ -3,15 +3,11 @@ physical
 xmrstak
 docker
 nextcloud
-asap
 
 [physical]
-backup.atelierasap.com
 srv2.igln.fr
 
 [xmrstak]
-backup.atelierasap.com
-srv1.igln.fr
 srv2.igln.fr
 
 [docker]
@@ -19,6 +15,3 @@ srv2.igln.fr
 
 [nextcloud]
 srv2.igln.fr
-
-[asap]
-backup.atelierasap.com
