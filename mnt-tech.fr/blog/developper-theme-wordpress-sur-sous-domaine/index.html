@@ -1,0 +1,429 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Comment développer un thème WordPress sur un sous-domaine | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Comment développer un thème WordPress sur un sous-domaine Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Voici un tutoriel clair sur le développement d'un thème WordPress sur un sous-domaine en utilisant la même installation que le site principal." />
+		<meta property="og:title" content="Comment développer un thème WordPress sur un sous-domaine" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/developper-theme-wordpress-sur-sous-domaine/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Voici un tutoriel clair sur le développement d'un thème WordPress sur un sous-domaine en utilisant la même installation que le site principal." />
+		<meta property="article:tag" content="wordpress" />
+		<meta property="article:tag" content="php" />
+		<meta property="article:published_time" content="2017-01-17T15:24:32+00:00" />
+		<meta property="article:modified_time" content="2017-01-18T22:35:56+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Comment développer un thème WordPress sur un sous-domaine | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Voici un tutoriel clair sur le développement d'un thème WordPress sur un sous-domaine en utilisant la même installation que le site principal." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Comment développer un thème WordPress sur un sous-domaine"><img src="../../images/logo.png" alt="Comment développer un thème WordPress sur un sous-domaine" title="Comment développer un thème WordPress sur un sous-domaine"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Comment développer un thème WordPress sur un sous-domaine</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 17 01 2017</div>
+
+				<div class="callout alert" data-closable>
+	<p>DISCLAIMER : Ce tutoriel est écrit par un sysadmin, si certaines façons de faire vous choquent, vous pouvez le dire en commentaire tout en gardant à l’esprit que je suis ouvert à la critique mais que le développement n’est pas mon métier de base 😉</p>
+	<button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<h4>Introduction</h4>
+<p>Je fais un petit retour aux sources avec ce billet sur <strong>Wordpress</strong>, un sujet que j’affectionnais particulièrement il y a de ça 3/4 ans mais qui me plaît moins maintenant même si j’aime toujours autant ce CMS. On va dire que je ne l’utilise plus à toutes les sauces comme à cette époque, la preuve, le blog sur lequel vous êtes était auparavant sur WordPress et il est maintenant sur une solution php que j’ai développé en partant d’un thème basé sur <strong>Foundation</strong>. Bon, trêve de blabla, nous allons voir comment faire pour développer un <strong>thème WordPress sur un sous-domaine</strong> du site de prod. En gros, le dev du thème permettra d’utiliser la base de données de prod et le même <strong>DocumentRoot</strong> sous apache ou le même <strong>root</strong> sous nginx (en gros, le même dossier contenant les fichiers WordPress).</p>
+<p>Dans la suite du tutoriel je vais utiliser le site <a href="https://mad-rabbit.com/">mad-rabbit.com</a> comme exemple car c’est sur ce site que je fais du développement WordPress et le sous-domaine est <strong>dev.mad-rabbit.com</strong> (ne cherchez pas à voir cette version, elle est protégée par un htpasswd comme je l’expliquerai plus tard).</p>
+<h5>UPDATE DU 18/01/2017 :</h5>
+<p>En me relisant je me suis dit que ce que je proposais n'était pas vraiment très clair dans ce dernier paragraphe donc pour donner un exemple concret, quand je vais sur mad-rabbit.com, c'est le thème TMTK qui se charge alors qu'en allant sur dev.mad-rabbit.com qui pointe sur le même dossier que le site en prod, c'est le thème TMTKdev qui se charge.</p>
+
+<h4>Avantages</h4>
+<p>Cette méthode a plusieurs avantages :</p>
+<ul>
+<li>Pas besoin de dupliquer la base de données</li>
+<li>Pas besoin de dupliquer le dossier contenant WordPress</li>
+<li>Rapidité à mettre en œuvre</li>
+</ul>
+
+<h4>Mise en place coté serveur</h4>
+<p>Il suffit de mettre en place un <strong>nouveau vhost</strong> qui pointe sur votre <strong>sous-domaine de développement</strong> avec une <strong>protection par htpasswd</strong> pour éviter que Google n’indexe le site en dev et passe le contenu du domaine principal en <strong>duplicate content</strong>. Pour l’exemple, sur nginx, voici le vhost que j’ai sur la dev de mad-rabbit.com :</p>
+
+<pre><code>
+server {
+	listen 443 ssl http2;
+	server_name dev.mad-rabbit.com;
+	auth_basic "Zone de dev"; # Protection par htpasswd
+	auth_basic_user_file /etc/nginx/htpasswd.dev;
+
+
+	root /home/madrabbit/www; # Même dossier que la prod
+
+	index index.html index.php;
+	access_log /var/log/nginx/dev.mad-rabbit.com-ssl_access.log;
+	error_log /var/log/nginx/dev.mad-rabbit.com-ssl_error.log;
+	ssl_certificate /etc/nginx/ssl/mad-rabbit.chain.pem;
+	ssl_certificate_key /etc/nginx/ssl/mad-rabbit.key;
+	ssl_trusted_certificate /etc/nginx/ssl/gandi-standardssl-2.chain.pem;
+
+
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+	location ~ \.php$ {
+		fastcgi_pass unix:/run/php/php7.0-fpm-madrabbit.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+}
+</code></pre>
+
+<h4>Mise en place coté WordPress</h4>
+<p>Une fois le vhost mis en place, on va pouvoir s’attaquer à la partie PHP. Pour commencer il faut <strong>dupliquer le dossier thème que vous utilisez actuellement</strong>. Par exemple dans mon cas, le dossier en prod se nomme <strong>TMTK</strong> et le dossier en dev se nomme <strong>TMTKdev</strong>.</p>
+
+<p>Ensuite, il suffit d’utiliser ce petit <strong>plugin WordPress</strong> en le plaçant dans un dossier du nom de votre choix dans le dossier <strong>plugins</strong> de WordPress. Il faut simplement changer les <strong>domaines</strong> et les <strong>noms de dossiers des thèmes</strong> pour que cela colle avec votre propre installation. Le fonctionnement est assez simple, le plugin intercepte la variable <strong>$_SERVER['HTTP_HOST']</strong> et si elle correspond à votre domaine de développement, le thème de dev sera chargé au détriment du thème normal.</p>
+
+<pre><code>
+&lt;?php
+/*
+Plugin Name: Development Theme Switcher
+Plugin URI: https://mnt-tech.fr/
+Description: Map theme to specific domain name
+Version: 0.1
+Author: nierdz
+Author URI: https://mnt-tech.fr/
+License: GPL
+*/
+
+//Ajout du support du theme de dev
+if ($_SERVER['HTTP_HOST'] === 'dev.mad-rabbit.com') {
+	add_filter( 'pre_option_siteurl', 'siteurl' );
+	add_filter( 'pre_option_home', 'home' );
+	add_filter( 'template', 'TMTKdev' );
+	add_filter( 'stylesheet', 'TMTKdev' );
+	add_filter( 'option_template', 'TMTKdev' );
+	add_filter( 'option_stylesheet', 'TMTKdev' );
+}
+
+function TMTKdev() {
+	return 'TMTKdev';
+}
+
+function siteurl() {
+	return 'http://dev.mad-rabbit.com';
+}
+
+function home() {
+	return 'http://dev.mad-rabbit.com';
+}
+?&gt;
+</code></pre>
+
+<p>Vous pouvez ainsi faire vos modifications <strong>sans impacter la prod et en gardant le contenu de la base de données qui est en prod</strong>. Cette solution ne conviendra pas à tous les sites mais à une grande majorité des utilisateurs de WordPress. Je l’utilise sur mad-rabbit.com depuis environ deux ans et cela me convient parfaitement. Pour mettre en prod mes modifications je fais un diff sur les deux dossiers des thèmes pour voir les fichiers qui ont changés et je les copie sur le thème en production. Voilà un procédé simple mais très efficace 😃 </p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/developper-theme-wordpress-sur-sous-domaine/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/developper-theme-wordpress-sur-sous-domaine/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/developper-theme-wordpress-sur-sous-domaine/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/developper-theme-wordpress-sur-sous-domaine/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

@@ -1,0 +1,360 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>RTFM ! - RPM (Red Hat Packet Manager) | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="RTFM ! - RPM (Red Hat Packet Manager) Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Premier billet de la série RTFM ! je présente RPM, le gestionnaire de paquet de Red Hat et ses dérivées (centos, suze, etc.)" />
+		<meta property="og:title" content="RTFM ! - RPM (Red Hat Packet Manager)" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/rtfm-rpm-red-hat-packet-manager/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Premier billet de la série RTFM ! je présente RPM, le gestionnaire de paquet de Red Hat et ses dérivées (centos, suze, etc.)" />
+		<meta property="article:tag" content="redhat" />
+		<meta property="article:tag" content="rtfm" />
+		<meta property="article:tag" content="rpm" />
+		<meta property="article:published_time" content="2013-05-17T06:14:29+00:00" />
+		<meta property="article:modified_time" content="2016-09-16T08:52:23+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="RTFM ! - RPM (Red Hat Packet Manager) | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Premier billet de la série RTFM ! je présente RPM, le gestionnaire de paquet de Red Hat et ses dérivées (centos, suze, etc.)" />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="RTFM ! - RPM (Red Hat Packet Manager)"><img src="../../images/logo.png" alt="RTFM ! - RPM (Red Hat Packet Manager)" title="RTFM ! - RPM (Red Hat Packet Manager)"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>RTFM ! - RPM (Red Hat Packet Manager)</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 17 05 2013</div>
+
+				<p>Premier billet d'une série qui, je l'espère, sera longue. Elle s'intitule RTFM ! (avec un point d'exclamation). Je vais revenir rapidement et très subjectivement sur l'utilisation basique des outils que l'on utilise au quotidien lorsqu'on est admin système et réseaux. Ces billets seront donc assez courts et je parlerai des options que j'utilise souvent et qui me semblent les plus utiles. Pour commencer, nous allons parler de <strong>RPM</strong></p>
+<p>RPM est le gestionnaire de paquet bas niveau de Red Hat et de toutes les distributions en dérivant. On l'utilise donc pour installer ou désinstaller des paquets <strong>.rpm</strong> comme nous allons le voir dans ce tutoriel. On commence par le basique <strong>-i</strong> qui permet d'installer un paquet rpm. On peut également utiliser le wildcard <strong>*</strong> qui va permettre, entre autres, d'installer plusieurs paquets en même temps. Dans ce cas on peut l'utiliser en complément de l'option <strong>-v</strong> (pour verbose) qui va nous permettre d'obtenir le nom des paquets que l'on installe (ainsi qu'un tas d'autres infos).</p>
+<p>Exemple de l'installation de plusieurs paquets simultanément :</p>
+<pre><code>
+# ls -lh
+total 46M
+-rw-r--r-- 1 nierdz nierdz 6.3M May 16 22:28 Percona-XtraDB-Cluster-client-5.5.30-23.7.4.406.rhel6.x86_64.rpm
+-rw-r--r-- 1 nierdz nierdz  36M May 16 22:28 Percona-XtraDB-Cluster-debuginfo-5.5.30-23.7.4.406.rhel6.x86_64.rpm
+-rw-r--r-- 1 nierdz nierdz 2.9M May 16 22:28 Percona-XtraDB-Cluster-devel-5.5.30-23.7.4.406.rhel6.x86_64.rpm
+-rw-r--r-- 1 nierdz nierdz 1.2M May 16 22:28 Percona-XtraDB-Cluster-galera-2.5-1.150.rhel6.x86_64.rpm
+
+# rpm -iv Percona-XtraDB-Cluster-*
+...
+</code></pre>
+<p>Pour ceux qui utilisent beaucoup RPM la vraie star, c'est la combinaison <strong>-Uvh</strong>. L'option <strong>-U</strong> permet de faire une mise à jour mais elle permet également de faire une installation ce qui fait que l'option <strong>-i</strong> présente beaucoup moins d’intérêt (mais comme ça vous savez qu'elle existe). Quand vous utilisez <strong>-U</strong> les fichiers de configurations qui sont remplacés ont l'extension <strong>.rpmsave</strong>. L'option -h permet de connaitre l'avancement de l'installation avec des #</p>
+<p>La désinstallation se fait avec <strong>-e</strong>. Voici deux options qui me semblent assez utiles :</p>
+<ul>
+	<li><strong>--force</strong> qui force l'installation même en cas de conflit. Dans le cas par exemple ou un fichier proposé par un paquet écrase un fichier déjà installé par un autre paquet.</li>
+	<li><strong>--nodeps</strong> qui permet d'installer le paquet même si il existe des problèmes de dépendances. Cela peut être utiles lorsque les dépendances ont été installées via compilation manuelle (même si il est beaucoup plus propre dans ce cas de faire appel à un dummy package)</li>
+</ul>
+<p>Comme apt, RPM dispose d'une base de données répertoriant les paquets installés, non-installés, les dépendances, les fichiers installée, etc dans <strong>/var/lib/rpm</strong>. RPM permet de requeter cette base de données via plusieurs options. Pour faire une requête il faut ajouter l'option <strong>-q</strong> devant le paramètre. Voici une liste d'options qui à mon avis sont les plus utiles :</p>
+<ul>
+	<li><strong>-i</strong> permet d'avoir des informations générales sur le paquet. Cette option peut être utilisé sur un paquet téléchargé ou un paquet installé via le gestionnaire de paquet.</li>
+	<li><strong>-a</strong> liste tous les paquets installés sur le système.</li>
+	<li><strong>-l</strong> liste les fichiers installés par le paquet.</li>
+	<li><strong>--requires</strong> indique les dépendances du paquets.</li>
+</ul>
+<p>Il existe un tas d'autres options et je vous invite à lire <strong>man rpm</strong> pour les découvrir toutes.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/rtfm-rpm-red-hat-packet-manager/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/rtfm-rpm-red-hat-packet-manager/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/rtfm-rpm-red-hat-packet-manager/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/rtfm-rpm-red-hat-packet-manager/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

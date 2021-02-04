@@ -1,0 +1,573 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation de HAProxy pour un cluster MySQL utilisant Galera | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation de HAProxy pour un cluster MySQL utilisant Galera Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Ce tutoriel explique le fonctionnement et la mise en place de HAProxy pour faire du load-balancing sur un cluster MySQL utilisant Galera comme système de replication." />
+		<meta property="og:title" content="Installation de HAProxy pour un cluster MySQL utilisant Galera" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-de-haproxy-pour-un-cluster-mysql-utilisant-galera/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Ce tutoriel explique le fonctionnement et la mise en place de HAProxy pour faire du load-balancing sur un cluster MySQL utilisant Galera comme système de replication." />
+		<meta property="article:tag" content="load-balancing" />
+		<meta property="article:tag" content="haproxy" />
+		<meta property="article:tag" content="mysql" />
+		<meta property="article:published_time" content="2013-05-02T18:24:38+00:00" />
+		<meta property="article:modified_time" content="2013-05-02T18:24:38+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation de HAProxy pour un cluster MySQL utilisant Galera | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Ce tutoriel explique le fonctionnement et la mise en place de HAProxy pour faire du load-balancing sur un cluster MySQL utilisant Galera comme système de replication." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation de HAProxy pour un cluster MySQL utilisant Galera"><img src="../../images/logo.png" alt="Installation de HAProxy pour un cluster MySQL utilisant Galera" title="Installation de HAProxy pour un cluster MySQL utilisant Galera"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation de HAProxy pour un cluster MySQL utilisant Galera</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 02 05 2013</div>
+
+				<h4>Fonctionnement</h4>
+<p>Lorsque vous avez mis en place un cluster MySQL utilisant Galera (cela peut être un cluster percona, MariaDB ou MySQL community) vous pouvez configurer vos applications pour écrire et lire sur chacun de vos nœuds mais dans la plupart des applications web vous ne pouvez indiquer l'adresse que d'une seule base de données. HAProxy va donc vous permettre de faire du load-balancing sur tous vos nodes en conservant une seule ip (celle du serveur HAProxy) pour effectuer vos connexions.</p>
+<p>HAProxy permet donc de faire du load-balancing en vérifiant que les nœuds sur lesquels il envoie les requête sont disponibles. Pour cela nous allons utiliser xinetd ainsi que des scripts bash pour surveiller que les nodes sont bien UP.</p>
+<h4>Installation</h4>
+<p>Dans notre exemple nous utlisons les machines suivantes :</p>
+<ul>
+<li>192.168.1.1 node1.mnt-tech.fr : Percona XtraDB Cluster</li>
+<li>192.168.1.2 node2.mnt-tech.fr : Percona XtraDB Cluster</li>
+<li>192.168.1.3 node3.mnt-tech.fr : Percona XtraDB Cluster</li>
+<li>192.168.1.4 node4.mnt-tech.fr : HAProxy</li>
+</ul>
+<p>Dans cette configuration tous les requêtes seront envoyées sur 192.168.1.4 qui les transmettra sur les 3 nœuds Percona. Pour l'installation d'un cluster MySQL Percona je vous renvoie à ce <a href="../installation-de-percona-cluster-xtradb/index.html">tutoriel sur le sujet</a>. Nous démarrons donc notre installation sur 192.168.1.4 qui porte HAProxy.</p>
+<pre><code>
+# apt-get install haproxy
+</code></pre>
+<p>Une fois que c'est installé, il faut le configurer. Je vous balance direct la config et je vous explique ensuite :</p>
+<pre><code>
+# cat /etc/haproxy/haproxy.cfg
+global
+log 127.0.0.1 local0
+maxconn 4096
+user haproxy
+group haproxy
+daemon
+
+defaults
+log global
+mode http
+option tcplog
+option dontlognull
+retries 3
+maxconn 2000
+contimeout 5000
+clitimeout 50000
+srvtimeout 50000
+
+frontend pxc-front
+bind *:3306
+mode tcp
+default_backend pxc-back
+
+frontend stats-front
+bind *:8282
+mode http
+default_backend stats-back
+
+frontend pxc-onenode-front
+bind *:3307
+mode tcp
+default_backend pxc-onenode-back
+
+backend pxc-back
+mode tcp
+balance leastconn
+option httpchk
+server node5 192.168.1.1:3306 check port 9200 inter 12000 rise 3 fall 3
+server node6 192.168.1.2:3306 check port 9200 inter 12000 rise 3 fall 3
+server node7 192.168.1.3:3306 check port 9200 inter 12000 rise 3 fall 3
+
+backend stats-back
+mode http
+option httpchk
+balance roundrobin
+stats uri /
+stats auth pxcstats:secret
+stats refresh 10s
+
+backend pxc-onenode-back
+mode tcp
+balance leastconn
+option httpchk
+server node5 192.168.1.1:3306 check port 9200 inter 12000 rise 3 fall 3
+server node6 192.168.1.2:3306 check port 9200 inter 12000 rise 3 fall 3 backup
+</code></pre>
+<p>Comme vous pouvez le constater, tout est assez explicite dans cette configuration. Je ne vais donc pas rentrer dans les détails car le manuel est très bien détaillé. On utilise <strong>balance leastconn</strong> qui permet de garder un équilibrage du nombre de connexion. Chaque nouvelle connexion sera effectuée sur le nœud ayant le moins de connexions actives. On peut remarquer <strong>check port 9200</strong> qui indique que l'on va tester l'état des nœuds via le port 9200 (ixnetd). Nous avons configuré deux connexions :</p>
+<ul>
+	<li>Une qui écoute sur 3306 et qui renvoie sur les trois nœuds</li>
+	<li>Une autre sur 3307 qui renvoie uniquement sur un nœud avec un deuxième nœud en backup</li>
+</ul>
+<p>Enfin, on a ajouté une partie "gui" <strong>stats-back et stats-front</strong> qui nous permettra en nous connectant sur http://192.168.1.4:8282 d'avoir une belle interface avec l'état de nos nœuds. Nous allons passer à la configuration de xinetd sur les nodes percona.</p>
+<p>On commence par installer xinetd :</p>
+<pre><code>
+apt-get install xinetd
+</code></pre>
+<p>Ensuite on édite <strong>/etc/xinetd.d/mysqlchk</strong> qui doit déjà être créé car il est dans les dépots de percona :</p>
+<pre><code>
+vim /etc/xinetd.d/mysqlchk
+</code></pre>
+<pre><code>
+# default: on
+# description: mysqlchk
+service mysqlchk
+{
+# this is a config for xinetd, place it in /etc/xinetd.d/
+        disable = no
+        flags           = REUSE
+        socket_type     = stream
+        port            = 9200
+        wait            = no
+        user            = nobody
+        server          = /usr/bin/clustercheck
+        log_on_failure  += USERID
+        only_from       = 0.0.0.0/0
+        # recommended to put the IPs that need
+        # to connect exclusively (security purposes)
+        per_source      = UNLIMITED
+}
+</code></pre>
+<p>On ajoute le port dans <strong>/etc/services</strong> :</p>
+<pre><code>
+mysqlchk        9200/tcp                        # mysqlchk
+</code></pre>
+<p>Il ne reste plus qu'à modifier le script <strong>/usr/bin/clustercheck</strong> en changeant les valeurs de MYSQL_USERNAME et MYSQL_PASSWORD pour les adapter à votre situation :</p>
+<pre><code>
+#!/bin/bash
+#
+# Script to make a proxy (ie HAProxy) capable of monitoring Percona XtraDB Cluster nodes properly
+#
+# Author: Olaf van Zandwijk &lt;olaf.vanzandwijk@nedap.com&gt;
+# Documentation and download: https://github.com/olafz/percona-clustercheck
+#
+# Based on the original script from Unai Rodriguez
+#
+
+if [[ $1 == '-h' || $1 == '--help' ]];then
+    echo "Usage: $0 &lt;user&gt; &lt;pass&gt; &lt;available_when_donor=0|1&gt; &lt;log_file&gt;"
+    exit
+fi
+
+MYSQL_USERNAME="mysql"
+MYSQL_PASSWORD="password"
+AVAILABLE_WHEN_DONOR=${3:-0}
+ERR_FILE="${4:-/dev/null}"
+#Timeout exists for instances where mysqld may be hung
+TIMEOUT=10
+
+#
+# Perform the query to check the wsrep_local_state
+#
+WSREP_STATUS=`mysql -nNE --connect-timeout=$TIMEOUT --user=${MYSQL_USERNAME} --password=${MYSQL_PASSWORD} \
+-e "SHOW STATUS LIKE 'wsrep_local_state';" 2&gt;${ERR_FILE} | tail -1 2&gt;&gt;${ERR_FILE}`
+
+if [[ "${WSREP_STATUS}" == "4" ]] || [[ "${WSREP_STATUS}" == "2" &amp;&amp; ${AVAILABLE_WHEN_DONOR} == 1 ]]
+then
+    # Percona XtraDB Cluster node local state is 'Synced' =&gt; return HTTP 200
+    # Shell return-code is 0
+    echo -en "HTTP/1.1 200 OK\r\n"
+    echo -en "Content-Type: text/plain\r\n"
+    echo -en "Connection: close\r\n"
+    echo -en "Content-Length: 40\r\n"
+    echo -en "\r\n"
+    echo -en "Percona XtraDB Cluster Node is synced.\r\n"
+    exit 0
+else
+    # Percona XtraDB Cluster node local state is not 'Synced' =&gt; return HTTP 503
+    # Shell return-code is 1
+    echo -en "HTTP/1.1 503 Service Unavailable\r\n"
+    echo -en "Content-Type: text/plain\r\n"
+    echo -en "Connection: close\r\n"
+    echo -en "Content-Length: 44\r\n"
+    echo -en "\r\n"
+    echo -en "Percona XtraDB Cluster Node is not synced.\r\n"
+    exit 1
+fi
+</code></pre>
+<p>Vous devez faire cela sur chacun des nodes percona. Et ensuite relancer xinetd pour prendre en compte les modifications.</p>
+<pre><code>
+/etc/init.d/xinetd restart
+</code></pre>
+<p>Il faut ensuite "activer" haproxy en éditant le fichier <strong>/etc/default/haproxy</strong> et en changer la valeur de <strong>ENABLED</strong> pour la mettre à 1</p>
+<pre><code>
+ENABLED=1
+</code></pre>
+<p>Il ne vous reste plus qu'à démarrer HAProxy :</p>
+<pre><code>
+/etc/init.d/haproxy start
+</code></pre>
+<p>Et voilà, vous avez une configuration basique mais fonctionnelle pour faire du load-balancing entre vos différents nœuds. Vous pouvez lancer un sysbench sur HAProxy et vous amusez à faire tomber un des nodes pour voir le comportement de HAProxy. Le mieux est de voir le résultat graphiquement directement dans l'interface de statistiques. (sur le port 8282 dans notre exemple)</p>
+<h4>Informations complémentaires</h4>
+<p>Pour activer les logs de HAproxy il faut modifier la conf de <strong>rsyslog</strong>, en effet tous les logs sont envoyés sur le rsyslog local via la local0. Nous allons donc ajouter ces lignes dans <strong>/etc/rsyslog.conf</strong> :</p>
+<pre><code>
+$ModLoad imudp
+$UDPServerAddress 127.0.0.1
+$UDPServerRun 514
+
+# HAproxy
+local0.* -/var/log/haproxy.log
+&amp; ~
+</code></pre>
+<p>.Le <strong>&amp; ~</strong> permet de spécifier que tout ce qui match avec la ligne précédente ne doit pas terminer dans une autre règle qui pourrait matcher avec cette règle. On indique également à rsyslog d'écouter uniquement sur 127.0.0.1 pour éviter qu'il écoute les requêtes en provenance d'internet. Il ne faut pas oublier de relancer rsyslog</p>
+<pre><code>
+/etc/init.d/rsyslog restart
+</code></pre>
+<p>Voici également un petit script logrotate qui garde 365 jours de logs et qui tournent une fois par nuit à mettre dans <strong>/etc/logrotate.d/haproxy</strong> </p>
+<pre><code>
+/var/log/haproxy.log {
+        copytruncate
+        daily
+        dateext
+        missingok
+        rotate 365
+        compress
+        notifempty
+}
+</code></pre>
+<p>Il y a également quelques petits truc coté système qui peuvent s'avérer utile. En effet, la façon dont un client MySQL ferme sa connexion vers le serveur n'est pas propre. Du coup la connexion reste en <strong>TIME_WAIT</strong> pendant un certain temps. Sur un HAproxy très chargé on peut donc vite arriver à saturer le nombre de ports utilisables pour une même adresse IP. Avant de faire ce genre de manip il vaut mieux vérifier que l'on utilise un grand nombre de ports avec netstat par exemple :</p>
+<pre><code>
+netstat -ntulape | grep -c 3306
+</code></pre>
+<p>Si le nombre est supérieur à 15000 ou 20000  avec beaucoup de socket en <strong>TIME_WAIT</strong>, alors il faut envisager les manips suivantes. Par défaut sur une debian le nombre de ports disponibles est de 28232. Pour le vérifier :</p>
+<pre><code>
+cat /proc/sys/net/ipv4/ip_local_port_range
+32768	61000
+</code></pre>
+<p>On va donc commencer par augmenter cette plage de port pour en avoir 64000 de disponible :</p>
+<pre><code>
+sysctl net.ipv4.ip_local_port_range="1025 65000"
+</code></pre>
+<p>On oublie pas de mettre à jour <strong>/etc/sysctl.conf</strong> pour que la modification soit fonctionnelle au prochain reboot :</p>
+<pre><code>
+net.ipv4.ip_local_port_range="1025 65000"
+</code></pre>
+<p>On peut ensuite activer <strong>net.ipv4.tcp_tw_reuse</strong> qui permet de réutiliser les sockets qui sont en état <strong>TIME_WAIT</strong></p>
+<pre><code>
+sysctl net.ipv4.tcp_tw_reuse=1
+</code></pre>
+<p>Sinon on peut essayer de jouer sur la valeur de net.ipv4.tcp_fin_timeout en la passant à 30 secondes par exemple :</p>
+<pre><code>
+sysctl net.ipv4.tcp_fin_timeout
+</code></pre>
+<p>Il ne faut pas oublier d'utiliser <strong>net.ipv4.tcp_tw_reuse</strong> sur les serveurs web et MySQL si ils en ont également besoin.</p>
+<p>On peut ajouter à cette liste le nombre de fichier q'un utilisateur peut ouvrir simultanément. Dernièrement en faisant quelques benchs avec percona-playback j'ai été confronté à ce problème. J'essayais de rejouer des logs avec 2000 threads et j'obtenais cette erreur : <strong>Can't create TCP/IP socket (24)</strong>. Cela venait du nombre de fichiers que root pouvait ouvrir simultanément qui est par défaut à 1024. On vérifie ça avec :</p>
+<pre><code>
+ulimit -n
+1024
+</code></pre>
+<p>Et on change cette valeur en faisant :</p>
+<pre><code>
+ulimit -n 8192
+</code></pre>
+<p>On n'oublie pas de modifier également le fichier <strong>/etc/security/limits.conf</strong> pour que la modification soit de nouveau effective après un reboot.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-de-haproxy-pour-un-cluster-mysql-utilisant-galera/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-de-haproxy-pour-un-cluster-mysql-utilisant-galera/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-de-haproxy-pour-un-cluster-mysql-utilisant-galera/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-de-haproxy-pour-un-cluster-mysql-utilisant-galera/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

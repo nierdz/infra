@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr" >
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<meta property="og:title" content="Fonctionnement et configuration d&#39;OPcache" />
+<meta property="og:description" content="Fonctionnement et configuration d&#39;OPcache de PHP." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://igln.fr/opcache-configuration-et-fonctionnement/" />
+<meta property="article:published_time" content="2017-02-01T14:54:37+02:00" />
+<meta property="article:modified_time" content="2017-02-01T14:54:37+02:00" />
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Fonctionnement et configuration d&#39;OPcache"/>
+<meta name="twitter:description" content="Fonctionnement et configuration d&#39;OPcache de PHP."/>
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fonctionnement et configuration d'OPcache",
+  "url": "https://igln.fr/opcache-configuration-et-fonctionnement/",
+  "wordCount": "3057",
+  "datePublished": "2017-02-01T14:54:37+02:00",
+  "dateModified": "2017-02-01T14:54:37+02:00",
+  "author": {
+    "@type": "Person",
+    "name": "Kévin Met"
+  },
+  "keywords": "blog, php, opcache",
+  "description": "Fonctionnement et configuration d'OPcache de PHP."
+}
+</script>
+
+
+
+    <link rel="canonical" href="index.html">
+
+    <title>Fonctionnement et configuration d&rsquo;OPcache | Blog IGLN</title>
+
+
+    <!-- combined, minified CSS -->
+
+    <link href="https://igln.fr/css/style.16633182cd803b52b9bf9e29ea1ef4b2e3d460deee0ded49466d7e16e449c158.css" rel="stylesheet" integrity="sha256-FmMxgs2AO1K5v54p6h70suPUYN7uDe1JRm1&#43;FuRJwVg=" crossorigin="anonymous">
+
+
+    <!-- minified Font Awesome for SVG icons -->
+
+    <script defer src="https://igln.fr/js/fontawesome.min.4ed405d7c7002b970d34cbe6026ff44a556b0808cb98a9db4008752110ed964b.js" integrity="sha256-TtQF18cAK5cNNMvmAm/0SlVrCAjLmKnbQAh1IRDtlks=" crossorigin="anonymous"></script>
+
+    <!-- RSS 2.0 feed -->
+
+
+
+
+  </head>
+
+  <body>
+
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="nav blog-nav">
+          <a class="nav-link " href="https://igln.fr/">Accueil</a>
+        </nav>
+      </div>
+    </div>
+
+
+
+
+    <header class="blog-header">
+      <div class="container">
+        <h1 class="blog-title" dir="auto"><a href="https://igln.fr/" rel="home">Blog IGLN</a></h1>
+        <p class="lead blog-description" dir="auto">Blog autour de l&rsquo;univers SysAdmin/DevOps/SRE.</p>
+      </div>
+    </header>
+
+
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 blog-main">
+
+
+
+
+<article class="blog-post">
+  <header>
+    <h2 class="blog-post-title" dir="auto"><a href="index.html">Fonctionnement et configuration d&rsquo;OPcache</a></h2>
+    <p class="blog-post-meta">
+<time datetime="2017-02-01T14:54:37+02:00">01 Wed Feb 2017</time>
+ in
+<span class="fas fa-folder" aria-hidden="true"></span>&nbsp;<a href="https://igln.fr/categories/blog/" rel="category tag">blog</a>
+
+
+<span class="fas fa-tag" aria-hidden="true"></span>&nbsp;<a href="https://igln.fr/tags/php/" rel="tag">php</a>, <a href="https://igln.fr/tags/opcache/" rel="tag">opcache</a>
+
+</p>
+  </header>
+  <p>Aujourd’hui on va parler de <strong>Zend OPcache</strong>, un sujet qui peut sembler un peu fade car c’est quelque chose qu’on manipule assez régulièrement depuis qu’il est inclus dans PHP mais finalement, j’ai quand même trouvé pas mal de chose à raconter et je vais essayer d’aller un peu en profondeur au long de cet article. C’est bien d’avoir de l’ambition en début d’article, on verra si je tiens mes promesses&hellip; 😉</p>
+<h3 id="historique">Historique</h3>
+<p>A la base, OPcache se nommait <strong>Zend Optimizer+</strong> et était payant donc assez peu utilisé surtout qu’il avait des concurrents gratuits et qui fonctionnaient très bien. Il y avait, entre autres <strong>APC</strong>, <strong>eAccelerator</strong>, <strong>Xcache</strong> et j’en oublie volontairement d’autres&hellip; APC devait même être intégré à la version 6 de PHP qui n’a jamais vu le jour. Par la suite Zend Optimizer+ a été rendu open source et intégré à partir de la <strong>version 5.5</strong> dans le core de PHP ce qui fait qu’il domine maintenant très largement le marché.</p>
+<h3 id="différences-entre-apc-et-opcache">Différences entre APC et OPcache</h3>
+<p>Pour poursuivre un peu avec le dernier paragraphe on a souvent présenté OPcache comme le remplaçant direct d’APC, ce qui n’est pas tout à fait vrai car il ne reprend pas les même fonctionnalités. En effet, APC permettait de <strong>cacher l’opcode</strong> généré par PHP et de <strong>gérer un cache utilisateur</strong>, le <strong>data store</strong>, alors que Zend OPcache permet <strong>d’optimiser et de cacher</strong> l’opcode généré par PHP. La différence est donc de taille car on ne retrouve pas la fonction de data store dans OPcache et c’est pourquoi il existe une nouvelle extension PHP nommé <a href="http://php.net/manual/en/book.apcu.php">APCu</a> qui reprend le code d’APC en ne conservant que la partie cache utilisateur. Par contre APC ne faisait pas d&rsquo;optimisation du bytecode ce qu&rsquo;ajoute OPcache.</p>
+<h3 id="principe-de-fonctionnement-de-zend-opcache">Principe de fonctionnement de Zend OPcache</h3>
+<p>Maintenant qu’on a vu ces différences on va rentrer un peu plus en détail dans le fonctionnement d’OPcache. Comme je l’expliquais précédemment, il permet de faire deux choses bien distinctes, une partie <strong>optimise le bytecode</strong> et l’autre le <strong>met en cache dans la mémoire partagée</strong>. Ces deux fonctions permettent donc d’apporter un gain non négligeable à votre applicatif PHP. Mais qu’est-ce que l’opcode exactement ? Et bien lorsque PHP interprète un fichier source il passe par plusieurs phases. Il commence par faire une <strong>analyse syntaxique</strong> (parser + lexer) du code source en PHP, il <strong>compile ensuite en opcode</strong> (la liste complète des opcodes <a href="http://php.net/manual/en/internals2.opcodes.php">ici</a>) et enfin il <strong>exécute cet opcode</strong> qui donne le résultat.</p>
+<p>Voici un superbe schéma que j’ai réalisé sur mon beau tableau blanc pour représenter tout cela et vous allez voir que mes talents de dessinateurs sont dignes de Van Gogh 😄</p>
+
+
+
+
+
+
+
+
+<figure>
+    <img
+
+
+            src="https://igln.fr/2017/02/php-opcode-compilation.jpg"
+
+            alt="php opcode compilation"/> <figcaption>
+            <h4>php opcode compilation</h4>
+        </figcaption>
+</figure>
+
+<p>Maintenant que j’ai perdu toute crédibilité grâce à ce schéma on va voir où intervient le Zend OPcache avec&hellip; un autre schéma !</p>
+
+
+
+
+
+
+
+
+<figure>
+    <img
+
+
+            src="https://igln.fr/2017/02/php-opcache-opcode.jpg"
+
+            alt="php opcache opcode"/> <figcaption>
+            <h4>php opcache opcode</h4>
+        </figcaption>
+</figure>
+
+<p>Bon, promis, j’arrête avec mes schémas dégueulasses. On voit donc qu’OPcache intervient <strong>après la compilation en optimisant l’opcode et en le cachant en mémoire partagée</strong>. Lors du prochain appel à ce script PHP, Zend Engine sera donc capable d’aller vérifier si le <strong>bytecode</strong> est dans la mémoire et directement l’exploiter si c’est le cas, ce qui représente un gain assez important car on s’évite une lecture du fichier sur le disque, une analyse syntaxique et une compilation. Dans la suite de l&rsquo;article j&rsquo;utiliserai <strong>bytecode ou opcode</strong> car c&rsquo;est la même chose, du <strong>code intermédiaire</strong></p>
+<h3 id="la-partie-optimisation">La partie optimisation</h3>
+<p>L’optimisation est la partie qui ne demande aucun réglage car elle est activée par défaut au plus haut niveau et elle fonctionne parfaitement. En gros, cette partie s’occupe de <strong>virer tout les opcodes inutiles</strong> après que Zend Engine soit passé. Par exemple, les conditions qui ne seront jamais vraies, les exit superflus et tout un tas d’autres trucs. Si jamais vous avez envie de faire du tuning sur cette partie cela passe par l’utilisation de cette variable de configuration : <strong>opcache.optimization_level</strong>. Il faut également savoir que de nombreuses optimisations présentes dans OPcache sont directement passées dans Zend Engine dans la version 7 de PHP.</p>
+<p>Concrètement cela donne quoi ? On va voir un petit exemple avec un script assez basique et l’extension <a href="https://pecl.php.net/package/vld">vld</a> qui permet de dumper le bytecode avant qu’il soit exécuté. Voici le script en question :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+<span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">true</span>) {
+  <span style="color:#66d9ef">echo</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>;
+} <span style="color:#66d9ef">else</span> {
+  <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;KO&#34;</span>;
+}
+<span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Voici le bytecode sans utilisation d’OPcache :</p>
+<pre><code>line     #* E I O op                           fetch          ext  return  operands
+-------------------------------------------------------------------------------------
+   2     0  E &gt; &gt; JMPZ                                                     &lt;true&gt;, -&gt;3
+   3     1    &gt;   ECHO                                                     3
+         2      &gt; JMP                                                      -&gt;4
+   5     3    &gt;   ECHO                                                     'KO'
+   8     4    &gt; &gt; RETURN                                                   1
+</code></pre><p>On voit qu’on a des opcodes qui ne servent à rien, le JPMZ, le JMP et le ECHO &lsquo;KO&rsquo;. Voici la version avec OPcache activé :</p>
+<pre><code>    line     #* E I O op                           fetch          ext  return  operands
+    -------------------------------------------------------------------------------------
+       3     0  E &gt;   ECHO                                                     3
+       8     1      &gt; RETURN                                                   1
+</code></pre><p>On peut voir le <strong>gain en efficacité qu’apporte OPcache</strong> dans ce genre de situation assez caricaturale. En situation réelle, on s’accorde à dire que la partie optimisation n’apporte qu’un gain de 10 % (cf pas de sources mais tu peux me croire sur parole). Tout cela dépend bien évidemment de la façon dont votre code est écrit et optimisé à la base.</p>
+<p>Il y a une seconde optimisation qui est faite via OPcache et qui concerne les <strong>chaînes de caractères</strong> dans votre code. Toutes les chaînes identiques vont être <strong>stockées en mémoire dans un seul pointeur</strong> et celui-ci sera appelé à chaque fois que le code utilise cette chaîne. Cela évite de faire une allocation mémoire à chaque fois qu’une chaîne similaire est détectée.</p>
+<h3 id="la-partie-cache">La partie cache</h3>
+<p>Là on attaque le gros du sujet car c’est là que la configuration par défaut est vraiment moisie et qu’il faut faire le plus de changements. En plus de cela il faut faire des choix sur la façon dont on va fonctionner pour invalider le cache. Déjà on va bien distinguer entre la dev et la prod car on ne veut évidemment pas que les devs nous tombent dessus car l’environnement de dev ne reflète pas les changements qui sont apportés aux sources de l’applicatif. On va donc commencer par voir les différents mécanismes d’invalidation en listant quelques options de configuration relatives à ce sujet.</p>
+<p>Il faut savoir qu’au lancement d’OPcache, que ce soit via le <strong>mod_php d’apache</strong> ou via un <strong>pool php-fpm</strong>, celui-ci va allouer une partie de la mémoire qu’il <strong>divisera en plusieurs segments</strong> lui même et qui ne sera <strong>jamais libéré durant la vie du processus</strong>. La taille de ce morceau de mémoire est défini par le paramètre <strong>opcache.memory_consumption</strong> et est donc invariable durant toute la vie du processus php mais on en reparlera plus en détail par la suite.</p>
+<h3 id="revalidation-via-timestamp">Revalidation via timestamp</h3>
+<p>Ce type de revalidation du cache fonctionne avec deux paramètres :</p>
+<ul>
+<li><strong>opcache.validate_timestamps</strong></li>
+<li><strong>opcache.revalidate_freq</strong></li>
+</ul>
+<p><strong>opcache.validate_timestamps</strong> est un booléen qui active ou non la revalidation via timestamp (par défaut à true) et <strong>opcache.revalidate_freq</strong> est le temps en secondes avant lequel un script doit être revalidé (par défaut deux secondes). Si on met la valeur de opcache.revalidate_freq à zéro le fichier PHP sera revalidé à chaque requête.</p>
+<p>Si je résume, par défaut, OPcache va vérifier au maximum 2 fois par secondes si le timestamp du fichier a changé avant de l’exécuter. Ce type de mécanisme n’est pas idéal en production et ce même si on met une grande valeur à <strong>opcache.revalidate_freq</strong> car on utilise des accès disques pour vérifier les timestamp des fichiers. Dans un environnement qu’on connaît bien, c’est à dire dans lequel on travaille avec les développeurs qui poussent en prod les mises à jour, il faut totalement <strong>désactiver ce mécanisme de revalidation par timestamp</strong> et recharger le cache via un autre mécanisme qu’on verra plus tard dans l’article.</p>
+<p>Si par contre on est dans un environnement très hétérogène dans lequel on ne sait pas quand les majs seront poussées ni ce qui tourne sur le serveur, c’est typiquement le cas lorsqu’on bosse avec une agence web par exemple, qui a un tas de sites en prod, il est plus prudent de laisser <strong>opcache.validate_timestamps</strong> activé et de monter la valeur de <strong>opcache.revalidate_freq</strong>. On va perdre un peu en performances mais les mises à jour seront visibles en un maximum de <strong>opcache.revalidate_freq secondes</strong>.</p>
+<p>Pour l’environnement de dev, on peut être tenter de désactiver complètement OPcache mais il est souvent intéressant de rester iso avec la prod pour éviter un bug qui lui serait lié. Dans ce cas on peut partir sur un <strong>opcache.revalidate_freq</strong> à 0 qui revalidera le fichier à chaque requête.</p>
+<p>Dans la suite de l’article on va passer en revue les différents paramètres de configuration et voir comment ils fonctionnent et comment les adapter en fonction de la situation.</p>
+<h3 id="opcacheenable">opcache.enable</h3>
+<p>Là, c’est simple c’est ce qui indique si OPcache va être actif ou non. En effet, il ne suffit pas de charger l’extension dans votre <strong>php.ini</strong> pour que OPcache soit actif. (Depuis la version 7 de PHP c’est le contraire et <strong>opcache.enable</strong> est par défaut sur <strong>1</strong>.</p>
+<p>Je conseille de laisser cette valeur sur 1 en prod, en dev et en test car on est sur de remonter le plus tôt possible un éventuel bug lié à OPcache.</p>
+<h3 id="opcachememory_consumption">opcache.memory_consumption</h3>
+<p>C’est la mémoire utilisée pour le <strong>cache d’opcode et le cache des clés</strong>. Ça me donne une bonne occasion de vous parlez de la façon interne dont OPcache gère le stockage des chemins de scripts, ce qu’on appelle les clés. Il utilise une <strong>table de hachage</strong>, une hashTable si vous êtes perdu ;), qui contiendra une clé différente en fonction du paramètre <strong>opcache.revalidate_path</strong>. Si sa valeur est définit à 1, le hash contiendra uniquement le chemin complet vers le script PHP alors qu’en le définissant à 0 le hash contiendra également les chemins relatifs vers ce fichier. Mais pas de panique, le script php ne sera mis en cache une seule fois. On reviendra plus tard sur ce paramètre.</p>
+<p>Maintenant que vous savez ce que sont ces fameuses clés, il faut donc prendre en compte ce paramètre lorsque vous allez définir opcache.memory_consumption. La valeur par défaut est de 64 en Mo et il faut généralement compter le double de votre espace en fichier php et y ajouter 50 % pour être tranquille. Par exemple, j’ai 20Mo de fichiers PHP, je compte donc 2x20Mo = 40Mo + 50 % = 50Mo. Ceci est un règle pour un premier réglage qu’il faudra affiner ensuite si besoin. A l’heure actuelle on a la chance d’avoir beaucoup de RAM donc il ne faut pas hésiter à mettre un peu trop sans toutefois exagérer.</p>
+<p>Une chose très importante à avoir en tête lorsqu’on établit cette valeur est que <strong>la mémoire est partagée entre les différents utilisateurs de PHP</strong> ! Ceci est d’une importance CAPITALE car cela veut dire que dans un environnement d’hébergement partagé, le bytecode qui est mis en cache est partagé entre tous les utilisateurs PHP et ce, même si vous utilisez des utilisateurs unix différents pour vos pools php. Dans le contexte d’une agence web dont je parlais plus haut il est donc important de mettre une valeur assez haute et surtout, de <strong>superviser ce cache dans votre outil d’alerting</strong>. On verra plus bas comment procéder et quelles valeurs surveiller.</p>
+<h3 id="opcachemax_accelerated_files">opcache.max_accelerated_files</h3>
+<p>Par défaut sa valeur est à 2000, c’est le nombre de fichier php que Zend OPcache pourra mettre en cache. Il faut faire attention à une petite chose avec ce paramètre, il prendra comme <strong>valeur réelle le premier nombre premier suivant la valeur du paramètre</strong>. Par exemple à 2000, la valeur réelle est de 2069. Il est donc préférable de mettre directement un nombre premier. Une commande basique pour avoir le nombre de fichiers php dans un dossier :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">find /home/mnttech/www/ -type f -name <span style="color:#e6db74">&#34;*.php&#34;</span> | wc -l
+</code></pre></div><h3 id="opcacheinterned_strings_buffer">opcache.interned_strings_buffer</h3>
+<p>Par défaut à 4Mo, c’est la <strong>taille en Mo de la mémoire allouée au stockage des chaînes</strong>. Il est difficile de l’estimer et il vaut donc mieux allouer un peu trop de mémoire que pas assez à ce paramètre. Il faudra de toute façon le superviser et on pourra donc ajuster la taille à la baisse par la suite si nécessaire.</p>
+<h3 id="opcacherevalidate_path">opcache.revalidate_path</h3>
+<p>Comme on l’a vu précédemment ce paramètre impacte la <strong>taille de la table de hachage contenant les index/clés des scripts mis en cache</strong>. Par défaut il est désactivé, cela signifie que lorsqu’un fichier est déjà dans le cache et qu’il utilise <strong>le même include_path et le même nom</strong>, c&rsquo;est le cache qui sera utilisé car OPcache n&rsquo;ira pas vérifier le contenu du fichier source. En production, il est donc préférable de laisser cette valeur à 0 car sinon OPcache devra vérifier qu’il s’agit bien du même fichier et cela consommera des I/O. Dans un environnement partagé il est par contre plus prudent de laisser la valeur à 1.</p>
+<p>Si vous utilisez un outil de déploiement tel que <strong>Capistrano</strong> qui utilise les <strong>liens symboliques</strong> pour faire un changement de release, il faudra donc bien penser à <strong>vider le cache après une mise à jour</strong>. De la même façon, si vous utilisez des liens symboliques dans votre structure, il faudra bien penser à vider OPcache après une nouvelle mise en prod.</p>
+<h3 id="opcachemax_wasted_percentage">opcache.max_wasted_percentage</h3>
+<p>Par défaut à 5 %. Ce paramètre définit le <strong>taux de mémoire gâchée avant de lancer un restart d’OPcache donc de PHP</strong>. Pour comprendre comment ce taux de mémoire gâchée est calculé, il faut comprendre comment OPcache gère sa mémoire. C’est assez simple, pour éviter la <strong>fragmentation de la mémoire</strong>, lorsqu’un script qui est mis est cache est invalidé, OPcache va <strong>reallouer de l’espace pour mettre en cache</strong> la nouvelle version et marquer l’ancien espace mémoire comme wasted. Il suffit ensuite de faire un ratio entre la mémoire globale et la mémoire gâchée.</p>
+<p>Si vous avez suivi les conseils que je vous ai donné précédemment, ce seuil de 5 % ne devrait jamais être un problème car en prod, les fichiers seront invalidés manuellement et non par OPcache. Dans le cas d’un environnement partagé, on peut monter un peu cette valeur pour éviter des redémarrages de PHP. Une fois de plus, il faut <strong>monitorer le nombre de redémarrages</strong> liés à cette variable.</p>
+<h3 id="opcachesave_comments--opcacheload_comments">opcache.save_comments &amp; opcache.load_comments</h3>
+<p>Par défaut ces paramètres sont activés. Ils permettent de définir si les commentaires sont inclus dans le bytecode en cache et si ils sont lus lors de l’exécution. On pourrait se dire qu’il n’est pas nécessaire de les activer mais de nombreux framework font usage des commentaires comme Doctrine ou PHPUnit. On garde donc ces valeurs activées partout, c’est plus sage.</p>
+<h3 id="opcacheenable_file_override">opcache.enable_file_override</h3>
+<p>Ce paramètre qui est par défaut désactivé permet lorsqu’il est activé d’utiliser le cache OPcache lors de l’appel des fonctions <strong>file_exists()</strong>, <strong>is_file()</strong> et <strong>is_readable()</strong>. Une fois de plus un paramètre à activer en prod quand on sait ce qu’on a derrière. Le mieux est donc de définir cela avec les développeurs. Quand on est dans un environnement partagé, on le laisse désactiver.</p>
+<h3 id="file_update_protection">file_update_protection</h3>
+<p>Un paramètre non documenté mais qui a son importance, il s’agit du nombre de secondes qu’un fichier doit avoir avant de pouvoir être mis en cache. Par défaut il est à deux secondes. Pour éviter qu’un script ne soit mis en cache il suffit donc de faire un touch avant de l’inclure. Cela n’est pas très utile mais c’est toujours bon à savoir. Il existe d’autres moyens pour éviter la mise en cache et on va tout de suite voir cela avec le paramètre suivant.</p>
+<h3 id="opcacheblacklist_filename">opcache.blacklist_filename</h3>
+<p>On indique à ce paramètre un fichier (lisible par l’utilisateur PHP évidemment) qui contiendra une liste de fichiers à ne pas mettre en cache. On peut utiliser les <strong>;</strong> pour faire des commentaires dans le fichier et on peut également utiliser le wildcard avec <strong>*</strong></p>
+<p>Par exemple si on veut exclure tous les fichiers qui commencent par player on peut ajouter la ligne suivante dans notre liste :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">/home/plop/player/player*.php
+</code></pre></div><p>Par exemple si je veux exclure mon répertoire de dev qui est dans <strong>/home/mnttech/dev</strong> :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">/home/mnttech/dev/
+</code></pre></div><h3 id="opcachefast_shutdown">opcache.fast_shutdown</h3>
+<p>Sur le papier c’est une bonne idée de l’activer car cela permet de libérer plus rapidement la mémoire après un restart et donc de reprendre de nouvelles requêtes plus rapidement mais il semble que cela soit à l’origine de problèmes divers. Je vous laisse chercher sur le net, on trouve un tas d’exemples&hellip; Mieux vaut laisser cette option désactivée.</p>
+<h3 id="vidage-du-cache">Vidage du cache</h3>
+<p>Maintenant qu’on a fait le tour des paramètres les plus importants, on va voir comment invalider le cache dans une logique de production. Pour faire simple, le mieux et le plus rapide est de reload votre pool fpm ou de faire un graceful d’apache.</p>
+<p>Si vous utilisez mod_php avec apache :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">service apache2 graceful
+</code></pre></div><p>Si vous utilisez un pool fpm :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">service php7.0-fpm reload
+</code></pre></div><p>Il existe également une autre façon de faire en appelant la fonction <strong>opcache_reset()</strong> depuis un curl ou via votre navigateur. Pourquoi je précise via curl ou le navigateur ? Car il faut savoir que <strong>la mémoire en CLI n’est pas partagée avec la mémoire de mod_php ou de votre pool fpm</strong>, et ce, même si vous avez activé <strong>opcache.enable_cli</strong>. Il faut donc impérativement passer par le web pour invalidé le cache. Pour flusher le cache depuis un WordPress, j’ai écrit un plugin qui est disponible ici : <a href="https://fr.wordpress.org/plugins/flush-opcache/">WP-OPcache</a></p>
+<p>Il existe une dernière méthode beaucoup plus fine, qui permet d’invalider le cache pour un unique script, la fonction <strong>opcache_invalidate()</strong>. Elle présente le même inconvénient que <strong>opcache_reset()</strong>, il faut la lancer depuis le web.</p>
+<h3 id="tldr">TL;DR</h3>
+<p><strong>En prod avec un rafraîchissement manuel du cache à chaque déploiement :</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">opcache.enable</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.enable_cli</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.validate_timestamps</span><span style="color:#f92672">=</span><span style="color:#e6db74">0</span>
+<span style="color:#a6e22e">opcache.revalidate_path</span><span style="color:#f92672">=</span><span style="color:#e6db74">0</span>
+<span style="color:#a6e22e">opcache.enable_file_override</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+</code></pre></div><p><strong>En dev :</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">opcache.enable</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.enable_cli</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.validate_timestamps</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.revalidate_freq</span><span style="color:#f92672">=</span><span style="color:#e6db74">0</span>
+<span style="color:#a6e22e">opcache.revalidate_path</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+</code></pre></div><p><strong>Pour un hébergement partagé ou de recette/test :</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">opcache.enable</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.enable_cli</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.validate_timestamps</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.revalidate_freq</span><span style="color:#f92672">=</span><span style="color:#e6db74">300 ;(5 minutes de cache)</span>
+<span style="color:#a6e22e">opcache.revalidate_path</span><span style="color:#f92672">=</span><span style="color:#e6db74">1</span>
+<span style="color:#a6e22e">opcache.max_wasted_percentage</span><span style="color:#f92672">=</span><span style="color:#e6db74">25</span>
+</code></pre></div><h3 id="supervision">Supervision</h3>
+<p>Il y a différents points à superviser pour s’assurer du bon fonctionnement d’OPcache. Tous ces points sont à <strong>ajouter dans votre outil d’alerting</strong> :</p>
+<ul>
+<li>Le ratio de chaînes utilisées / chaînes disponible</li>
+<li>Le ratio de mémoire utilisée / mémoire totale</li>
+<li>Le ratio de hits /misses</li>
+<li>Le nombre de restart (oom_restarts et hash_restarts)</li>
+</ul>
+<p>Dans un prochain article je détaillerai la façon de mettre en place cette supervision via Nagios. Pour la partie métrique, je n’ai encore rien mis en place dans Cacti à ce sujet mais j’ai vu qu’il y avait un template sur github que je testerai à l’occasion de ce futur article.</p>
+<p><strong>Sources et liens utiles :</strong></p>
+<ul>
+<li><a href="http://php.net/manual/en/book.opcache.php">http://php.net/manual/en/book.opcache.php</a></li>
+<li><a href="http://php.net/manual/en/intro.apcu.php">http://php.net/manual/en/intro.apcu.php</a></li>
+</ul>
+
+
+
+
+
+</article>
+
+
+
+        </div> <!-- /.blog-main -->
+
+        <aside class="col-sm-3 ml-auto blog-sidebar">
+
+  <section class="sidebar-module sidebar-module-inset">
+    <h4>À propos</h4>
+    <p dir="auto">J&rsquo;écris des articles autour de l&rsquo;univers SysAdmin/DevOps/SRE quand j&rsquo;en ai le temps et l&rsquo;envie.</p>
+  </section>
+
+
+
+        <section class="sidebar-module">
+    <h4>Derniers billets</h4>
+    <ol class="list-unstyled">
+
+
+<li><a href="https://igln.fr/nouveau-blog-avec-hugo/">Nouveau blog avec hugo</a></li>
+
+<li><a href="index.html">Fonctionnement et configuration d&rsquo;OPcache</a></li>
+
+    </ol>
+  </section>
+
+
+
+
+</aside>
+
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container -->
+
+
+
+    <footer class="blog-footer">
+      <p dir="auto">
+
+      coucou, c&rsquo;est la fin de la page ! Fait avec <a href="https://gohugo.io/">hugo</a>
+
+      </p>
+      <p>
+      <a href="index.html#">Haut de la page</a>
+      </p>
+    </footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,509 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Superviser Opcache avec Nagios et Cacti | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Superviser Opcache avec Nagios et Cacti Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Un tutoriel qui explique comment superviser les points vitaux de PHP Opcache en utilisant Cacti et Nagios." />
+		<meta property="og:title" content="Superviser Opcache avec Nagios et Cacti" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/superviser-opcache-nagios-cacti/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Un tutoriel qui explique comment superviser les points vitaux de PHP Opcache en utilisant Cacti et Nagios." />
+		<meta property="article:tag" content="opcache" />
+		<meta property="article:tag" content="nagios" />
+		<meta property="article:tag" content="cacti" />
+		<meta property="article:published_time" content="2017-03-23T08:50:17+00:00" />
+		<meta property="article:modified_time" content="2017-03-23T08:50:17+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Superviser Opcache avec Nagios et Cacti | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Un tutoriel qui explique comment superviser les points vitaux de PHP Opcache en utilisant Cacti et Nagios." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Superviser Opcache avec Nagios et Cacti"><img src="../../images/logo.png" alt="Superviser Opcache avec Nagios et Cacti" title="Superviser Opcache avec Nagios et Cacti"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Superviser Opcache avec Nagios et Cacti</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 23 03 2017</div>
+
+
+<p>Comme je l’avais dit dans mon article concernant le <a href="../opcache-configuration-et-fonctionnement/index.html">fonctionnement d’Opcache</a>, je devais faire un billet au sujet de la <strong>supervision</strong> de ce dernier en utilisant <strong>Cacti et Nagios</strong> et c’est exactement ce que vous êtes en train de lire. Pour ceux qui se demanderaient pourquoi Cacti ET Nagios et non pas soit l’un soit l’autre, ce sont deux outils complètement différents qui n’ont pas les mêmes fonctions.</p>
+
+<p>Nagios est un <strong>outil d’alerting</strong> et ne devrait donc servir qu’à vous alerter en cas de problème. Même si il existe des plugins comme <strong>PNP4Nagios</strong> qui collecte les métriques je trouve préférable de déléguer la tâche à <strong>Cacti</strong> qui a été conçu pour cela. Cacti permet de <strong>journaliser les métriques sous forme de graphique</strong>, cela va permettre d’analyser très finement (jusqu’à un delta de 5 minutes) vos métriques après un problème. Par exemple, vous ne savez pas pourquoi votre applicatif est devenu lent et en vous connectant sur Cacti vous vous apercevez que le graph des IO a explosé mais que cela ne se voyait pas forcément très bien avec <strong>iotop</strong> ou <strong>iostat</strong> qui relèvent les IO de manière instantanée. Bref, après ce petit plaidoyer en faveur de mes outils de supervision préférés on va commencer avec la partie Cacti.</p>
+
+<h4>Installation sur Cacti</h4>
+<p>Avant de commencer, je tenais à dire que je me suis très fortement inspiré <a href="https://github.com/glenpp/cacti-php-opcache" target="_blank">du template de Glen Pitt-Pladdy</a> auquel j’ai ajouté un graphique concernant les <strong>chaînes en mémoire</strong>, une métrique qui n’est pas souvent supervisée alors que si elle est pleine, elle engendre un <strong>restart de PHP au même titre que la mémoire globale d’Opcache</strong>. J’ai un peu modifié son template pour ajouter les graph templates dans le host template, j’ai ajouté des métriques dans le fichier qui collecte les données et j’ai ajouté weekly, monthly and yearly dans les data templates mais j’ai la flemme de faire un PR...</p>
+
+<p>Pour commencer, vous allez avoir besoin d’un <strong>fichier php à placer sur le serveur à superviser</strong> qui permettra de remonter diverses métriques via la fonction <a href="http://php.net/manual/fr/function.opcache-get-status.php" target="_blank">opcache_get_status</a>. Le fichier est utilisé par nagios également et je rappelle que les <strong>instances d’Opcache ne sont pas partagées entre le CLI et PHP en fpm</strong> ce qui oblige à poser ce fichier sur votre serveur web. Pour apache, je le pose à la racine d’un vhost et pour nginx je le pose dans un dossier opcache à la racine, j’explique pourquoi en fin d’article. Voici son contenu :</p>
+
+<pre><code>
+&lt;?php
+header('Content-Type: text/plain');
+$opcachestat = opcache_get_status( );
+print $opcachestat['memory_usage']['used_memory']."\n";
+print $opcachestat['memory_usage']['free_memory']."\n";
+print $opcachestat['memory_usage']['wasted_memory']."\n";
+print $opcachestat['opcache_statistics']['num_cached_scripts']."\n";
+print $opcachestat['opcache_statistics']['num_cached_keys']."\n";
+print $opcachestat['opcache_statistics']['max_cached_keys']."\n";
+print $opcachestat['opcache_statistics']['hits']."\n";
+print $opcachestat['opcache_statistics']['misses']."\n";
+print $opcachestat['interned_strings_usage']['used_memory']."\n";
+print $opcachestat['interned_strings_usage']['free_memory']."\n";
+print $opcachestat['opcache_statistics']['oom_restarts']."\n";
+print $opcachestat['opcache_statistics']['hash_restarts']."\n";
+?&gt;
+</code></pre>
+
+<p>Le fichier est également disponible sur <a href="https://github.com/nierdz/admintools/blob/master/cacti/opcache/opcache_status.php" target="_blank">github</a>. Dans une troisième partie on verra comment ajouter des directives dans Apache et Nginx afin de <strong>préserver les appels externes</strong> à ce fichier.</p>
+
+<p>En effet, ce fichier sera seulement appelé en local via <strong>snmp</strong> et pour cela on va utiliser la directive <strong>extend</strong> de snmp. Dans votre fichier <strong>snmpd.conf</strong>, il faut ajouter la configuration suivante :</p>
+
+<pre><code>
+# To monitor PHP Opcache
+extend phpopcache /usr/bin/curl --silent https://mnt-tech.fr/opcache_status.php
+</code></pre>
+
+<p>On oublie pas de relancer snmp après avoir fait cette modification puis pour vérifier que tout fonctionne bien, on commence par faire un appel via curl en local :</p>
+
+<pre><code>
+/usr/bin/curl --silent https://mnt-tech.fr/opcache_status.php
+43934560
+90283168
+0
+251
+451
+16229
+38696
+251
+4218680
+12558536
+0
+0
+</code></pre>
+
+<p>C’est bon, on remonte bien nos valeurs on va pouvoir vérifier que les données remontent bien via snmp :</p>
+
+<pre><code>
+snmpwalk -v 2c 127.0.0.1 -c "macommunautesecrete" NET-SNMP-EXTEND-MIB::nsExtendOutLine.\"phpopcache\".10
+NET-SNMP-EXTEND-MIB::nsExtendOutLine."phpopcache".10 = STRING: 12558536
+</code></pre>
+
+<p>On remonte bien la dixième ligne donc cela fonctionne bien. A noter que sous Debian il faut installer le paquet <strong>snmp-mibs-downloader</strong> pour avoir accès à cette <strong>MIB</strong>. On peut ensuite faire le même test depuis le serveur qui héberge Cacti pour être sur que tout fonctionne correctement.</p>
+
+<p>Il faut ensuite <strong>importer le template dans Cacti</strong>. Il est disponible sur <a href="https://github.com/nierdz/admintools/blob/master/cacti/opcache/cacti_host_template_php_opcache.xml" target="_blank">github</a> également. Pour cela, il faut aller dans le menu <strong>Import Templates</strong>. Ensuite, il suffit d’ajouter les graphiques dans le menu <strong>Devices</strong> et pour simplifier la chose, un <strong>host template regroupe tous les graphiques concernant Opcache</strong>.</p>
+
+<p>Pour avoir une idée de ce que vous allez obtenir, voici quelques screenshots du plugin en action sur deux serveurs différents avec un reload de php-fpm histoire de faire bouger un peu les graphiques :</p>
+
+<div class="row">
+    <div class="small-12 columns">
+        <div class="text-center"><img src="../../images/blog/cacti-opcache-ratio-hits-misses.jpg" alt="Cacti graph ratio hits misses"/></div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <div class="text-center"><img src="../../images/blog/cacti-opcache-keys.jpg" alt="Cacti graph keys"/></div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <div class="text-center"><img src="../../images/blog/cacti-opcache-scripts.jpg" alt="Cacti graph cached scripts"/></div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <div class="text-center"><img src="../../images/blog/cacti-opcache-interned-strings-memory.jpg" alt="Cacti graph interned strings memory"/></div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <div class="text-center"><img src="../../images/blog/cacti-opcache-memory.jpg" alt="Cacti graph memory"/></div>
+    </div>
+</div>
+
+<h4>Installation sur Nagios</h4>
+<p>Si vous avez suivi l’installation sur Cacti, vous devriez déjà disposer du fichier <strong>opcache_status.php</strong> permettant de remonter les métriques d’Opcache. Si ce n’est pas le cas, je vous invite à aller lire le passage concerné dans la partie sur Cacti.</p>
+
+<p>J’utilise <strong>NRPE</strong> de manière intensive sur mes serveurs et une fois de plus j’ai fait appel à lui afin de faire le <strong>check en local</strong>. On commence donc par ajouter le script de check sur notre serveur à superviser. Dans le cas d’une installation de NRPE via les paquets Debian ou Ubuntu, il faut placer le fichier dans le dossier <strong>/usr/lib/nagios/plugins/</strong> avec les droits <strong>755 en root:root</strong></p>
+
+<pre><code>
+ls -al /usr/lib/nagios/plugins/check_opcache
+-rwxr-xr-x 1 root root 7219 Mar 22 23:11 /usr/lib/nagios/plugins/check_opcache
+</code></pre>
+
+<p>Comme d’hab, le fichier est disponible sur <a href="https://github.com/nierdz/admintools/blob/master/nagios/plugins/opcache/check_opcache" target="_blank">github</a>. Il reste un peu de refactoring à faire, c’est écrit à la va vite mais ça fait bien le boulot, je n’ai pas eu de problème depuis que je l’utilise.</p>
+
+<p>Pour vérifier que cela fonctionne bien on le lance avec l’utilisateur nrpe qui est bien souvent nagios :</p>
+
+<pre><code>
+sudo -u nagios /usr/lib/nagios/plugins/check_opcache --url https://mnt-tech.fr/opcache_status.php
+OK: Memory 43%, Keys 3%, String Memory 12%, Hits/Misses 6%, Restarts 0
+</code></pre>
+
+<p>OK, ça fonctionne bien avec les valeurs par défaut mais si vous voulez allez plus loin, il y a <strong>quelques options afin de définir des seuils d’alerte</strong>.</p>
+
+<p><strong>--url</strong> ou <strong>-U</strong> : Cette option est obligatoire, c’est l’url vers le fichier opcache_status.php</p>
+
+<p><strong>--keys</strong> ou <strong>-K</strong> : C’est le pourcentage de clés utilisées par rapport à l’option max_accelerated_files. Il faut utiliser des pourcentages. Par défaut, cela applique un warning à 80 % et un critical à 90 %.</p>
+
+<p><strong>--memory</strong> ou <strong>-M</strong> : Mémoire utilisée en pourcentage. Il faut utiliser des pourcentages. Par défaut, cela applique un warning à 80 % et un critical à 90 %.</p>
+
+<p><strong>--string-memory</strong> ou <strong>-S</strong> : Mémoire utilisée par les chaînes internes. Il faut utiliser des pourcentages. Par défaut, cela applique un warning à 80 % et un critical à 90 %.</p>
+
+<p><strong>--ratio</strong> ou <strong>-R</strong> : Ratio de hits/misses. Il faut utiliser des pourcentages. Par défaut, cela applique un warning à 10 % et un critical à 20 %.</p>
+
+<p><strong>--restart</strong> ou <strong>-F</strong> : Nombre de restarts (oom_restarts and hash_restarts). Il faut utiliser des entiers pour fixer des seuils. Par défaut, le warning est à 2 et le critical à 5.</p>
+
+<p>Voici donc un exemple en utilisant toutes les options :</p>
+
+<pre><code>
+check_opcache --url http://example.com/opcache_status.php --keys 70:80 --memory 70:80 --string-memory 70:80 --ratio 5:10 --restart 1:2
+</code></pre>
+
+<p>Il faut ensuite ajouter cela dans la conf de <strong>NRPE</strong>. Dans le cas d’une installation via le gestionnaire de paquet Debian ou Ubuntu, il s’agit du fichier <strong>/etc/nagios/nrpe_local.cfg</strong> :
+
+<pre><code>
+command[check_opcache]=/usr/lib/nagios/plugins/check_opcache --url https://mnt-tech.fr/opcache_status.php
+</code></pre>
+
+<p>Il ne reste plus qu’à modifier la conf de notre serveur sur <strong>nagios</strong> :</p>
+
+<pre><code>
+define service {
+	use					HNO-services
+	host_name			web2.mnt-tech.fr
+	service_description	OPCACHE
+	check_command		check_nrpe!check_opcache
+}
+</code></pre>
+
+<p>On relance NRPE sur le serveur web et Nagios sur le serveur de supervision et c’est tout bon. On va maintenant voir comment protéger l’accès à ce fichier pour qu’il soit seulement accessible en local.</p>
+
+<h4>Protection du fichier opcache_status.php</h4>
+
+<p>Sur <strong>Apache</strong>, il faut ajouter les directives suivantes dans la configuration de votre vhost :</p>
+
+<pre><code>
+&lt;Files "opcache_status.php"&gt;
+	Require local
+&lt;/Files&gt;
+</code></pre>
+
+<p>Sur <strong>Nginx</strong> il faut ajouter les directives suivantes dans la configuration de votre vhost :</p>
+
+<pre><code>
+location /opcache/ {
+	allow 127.0.0.1;
+	allow::1;
+	allow ip.publique.de.votre.serveur;
+	deny all;
+}
+</code></pre>
+
+<p>Sur Nginx, <strong>je pose le fichier opcache_status.php dans un dossier opcache</strong> car sinon je ne peux plus à la fois utiliser un <strong>location</strong> sur les fichiers php pour les exécuter via <strong>php-fpm</strong> et protéger uniquement le fichier opcache_status.php</p>
+
+<p>Voilà, vous devriez avoir de beaux graphiques et des alertes en plus pour vous réveiller la nuit :)</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/superviser-opcache-nagios-cacti/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/superviser-opcache-nagios-cacti/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/superviser-opcache-nagios-cacti/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/superviser-opcache-nagios-cacti/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

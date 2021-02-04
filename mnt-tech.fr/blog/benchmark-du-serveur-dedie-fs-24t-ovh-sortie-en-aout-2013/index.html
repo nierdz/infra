@@ -1,0 +1,670 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013) | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013) Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Benchmark du serveur dédié FS-24T de chez OVH sortie en Aout 2013. Les benchs sont réalisés avec l'outil sysbench et portent sur la partie disque et la partie processeur." />
+		<meta property="og:title" content="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013)" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/benchmark-du-serveur-dedie-fs-24t-ovh-sortie-en-aout-2013/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Benchmark du serveur dédié FS-24T de chez OVH sortie en Aout 2013. Les benchs sont réalisés avec l'outil sysbench et portent sur la partie disque et la partie processeur." />
+		<meta property="article:tag" content="benchmark" />
+		<meta property="article:tag" content="ovh" />
+		<meta property="article:published_time" content="2013-08-19T18:31:54+00:00" />
+		<meta property="article:modified_time" content="2013-08-19T18:31:54+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013) | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Benchmark du serveur dédié FS-24T de chez OVH sortie en Aout 2013. Les benchs sont réalisés avec l'outil sysbench et portent sur la partie disque et la partie processeur." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013)"><img src="../../images/logo.png" alt="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013)" title="Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013)"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Benchmark du serveur dédié FS-24T OVH (sortie en Aout 2013)</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 19 08 2013</div>
+
+				<p>Je vais continuer sur cette série de benchmarks de serveurs OVH. Aujourd'hui, on s'attaque à un serveur de backup qui a 6 disques de 4 To 😃  Bref, y'a de la place mais quid des performances ? A vrai dire, ce genre de machine n'est pas trop faite pour être une bête de course mais j'avais tout de même envie de voir ce qu'elle a sous le capot.</p>
+<p>J'ai fait une grappe RAID 5 soft de 16To pour les disques (le point de montage qui va être benché), coté RAM on a 16Go et coté processeur on a un Xeon E3-1225. Comme je me doutais que les performances du RAID5 allait être très moyenne uniquement en lecture et écriture aléatoire, j'ai également fait quelques benchs en séquentiel. En effet, ce serveur étant fait pour de la backup, il va faire beaucoup de rsync et son utilisation sera plus proche du bench en séquentiel qu'en aléatoire.</p>
+<p>Concernant les résultats, je m'attendais un peu à ça, rien de bien folichon mais il fait ce pour quoi il est fait correctement .On peut mettre un <a href="http://backuppc.sourceforge.net/" title="backuppc">backuppc</a> dessus et faire pas mal de backup en parallèle avant de le mettre à genoux (en précisant une limite de bande passante à rsync). On a beaucoup de place et c'est vraiment pratique, on peut conserver un peu plus longtemps les backups. Les benchmarks on été réalisés sur une Debian Wheezy avec un Kernel stock en 3.2.</p>
+<h4>Caractéristiques techniques et informations supplémentaires</h4>
+<ul>
+	<li>OS : Debian Wheezy, kernel debian 3.2 amd64</li>
+	<li>Disques : HITACHI  HDS724040ALE640 (6 disques)</li>
+	<li>Raid : Raid5 soft via mdadm</li>
+	<li>Intel(R) Xeon(R) CPU E3-1225 V2 @ 3.20GHz</li>
+	<li>RAM : 32Go</li>
+</ul>
+<h4>Benchmark du CPU</h4>
+<pre><code>
+# sysbench --test=cpu --cpu-max-prime=20000 --num-threads=1 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+
+Doing CPU performance benchmark
+
+Threads started!
+Done.
+
+Maximum prime number checked in CPU test: 20000
+
+
+Test execution summary:
+    total time:                          23.3615s
+    total number of events:              10000
+    total time taken by event execution: 23.3608
+    per-request statistics:
+         min:                                  2.33ms
+         avg:                                  2.34ms
+         max:                                  5.30ms
+         approx.  95 percentile:               2.34ms
+
+Threads fairness:
+    events (avg/stddev):           10000.0000/0.00
+    execution time (avg/stddev):   23.3608/0.00
+</code></pre>
+<pre><code>
+# sysbench --test=cpu --cpu-max-prime=20000 --num-threads=4 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 4
+
+Doing CPU performance benchmark
+
+Threads started!
+Done.
+
+Maximum prime number checked in CPU test: 20000
+
+
+Test execution summary:
+    total time:                          6.1908s
+    total number of events:              10000
+    total time taken by event execution: 24.7559
+    per-request statistics:
+         min:                                  2.46ms
+         avg:                                  2.48ms
+         max:                                  9.08ms
+         approx.  95 percentile:               2.47ms
+
+Threads fairness:
+    events (avg/stddev):           2500.0000/2.12
+    execution time (avg/stddev):   6.1890/0.00
+</code></pre>
+<h4>Benchmark et informations sur la partie disque</h4>
+<pre><code>
+tune2fs -l /dev/md4
+tune2fs 1.42.5 (29-Jul-2012)
+Filesystem volume name:   &lt;none&gt;
+Last mounted on:          &lt;not available&gt;
+Filesystem UUID:          6d65cf62-e486-4410-abcf-dadb11bdbd9e
+Filesystem magic number:  0xEF53
+Filesystem revision #:    1 (dynamic)
+Filesystem features:      has_journal ext_attr resize_inode dir_index filetype needs_recovery extent flex_bg sparse_super large_file huge_file uninit_bg dir_nlink extra_isize
+Filesystem flags:         signed_directory_hash
+Default mount options:    user_xattr acl
+Filesystem state:         clean
+Errors behavior:          Continue
+Filesystem OS type:       Linux
+Inode count:              507322368
+Block count:              4058570880
+Reserved block count:     202928544
+Free blocks:              4026557117
+Free inodes:              507322357
+First block:              0
+Block size:               4096
+Fragment size:            4096
+Reserved GDT blocks:      56
+Blocks per group:         32768
+Fragments per group:      32768
+Inodes per group:         4096
+Inode blocks per group:   256
+RAID stride:              128
+RAID stripe width:        640
+Flex block group size:    16
+Filesystem created:       Fri Aug 16 18:42:07 2013
+Last mount time:          Fri Aug 16 18:44:51 2013
+Last write time:          Fri Aug 16 18:44:51 2013
+Mount count:              2
+Maximum mount count:      -1
+Last checked:             Fri Aug 16 18:42:07 2013
+Check interval:           0 (&lt;none&gt;)
+Lifetime writes:          259 MB
+Reserved blocks uid:      0 (user root)
+Reserved blocks gid:      0 (group root)
+First inode:              11
+Inode size:	          256
+Required extra isize:     28
+Desired extra isize:      28
+Journal inode:            8
+Default directory hash:   half_md4
+Directory Hash Seed:      18155278-05c1-49d0-a21b-b96162fa60f7
+Journal backup:           inode blocks
+</code></pre>
+<pre><code>
+mdadm --detail /dev/md4
+/dev/md4:
+        Version : 1.2
+  Creation Time : Fri Aug 16 18:41:48 2013
+     Raid Level : raid5
+     Array Size : 16234283520 (15482.22 GiB 16623.91 GB)
+  Used Dev Size : 3246856704 (3096.44 GiB 3324.78 GB)
+   Raid Devices : 6
+  Total Devices : 6
+    Persistence : Superblock is persistent
+
+    Update Time : Fri Aug 16 19:01:32 2013
+          State : clean
+ Active Devices : 6
+Working Devices : 6
+ Failed Devices : 0
+  Spare Devices : 0
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+           Name : rescue.ovh.net:4
+           UUID : 5e5b843e:0167e753:191a1398:b5349022
+         Events : 2
+
+    Number   Major   Minor   RaidDevice State
+       0       8        4        0      active sync   /dev/sda4
+       1       8       20        1      active sync   /dev/sdb4
+       2       8       36        2      active sync   /dev/sdc4
+       3       8       52        3      active sync   /dev/sdd4
+       4       8       68        4      active sync   /dev/sde4
+       5       8       84        5      active sync   /dev/sdf4
+</code></pre>
+<pre><code>
+parted /dev/sda
+GNU Parted 2.3
+Using /dev/sda
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) unit s print
+Model: ATA HGST HDS724040AL (scsi)
+Disk /dev/sda: 7814037168s
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+
+Number  Start        End          Size         File system     Name     Flags
+ 1      40s          2048s        2009s                        primary  bios_grub
+ 2      4096s        40962047s    40957952s    ext4            primary  raid
+ 3      40962048s    43007999s    2045952s     linux-swap(v1)  primary
+ 4      43008000s    6536984575s  6493976576s                  primary  raid
+ 5      6536984576s  7814027263s  1277042688s                  primary  raid
+
+(parted) quit
+</code></pre>
+<pre><code>
+sysbench --test=fileio --file-total-size=150G prepare
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+128 files, 1228800Kb each, 153600Mb total
+Creating files for the test...
+</code></pre>
+<pre><code>
+sysbench --test=fileio --file-total-size=150G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from timer.
+
+
+Extra file open flags: 0
+128 files, 1.1719Gb each
+150Gb total file size
+Block size 16Kb
+Number of random requests for random IO: 0
+Read/Write ratio for combined random IO test: 1.50
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing random r/w test
+Threads started!
+Time limit exceeded, exiting...
+Done.
+
+Operations performed:  13260 Read, 8840 Write, 28274 Other = 50374 Total
+Read 207.19Mb  Written 138.12Mb  Total transferred 345.31Mb  (1.151Mb/sec)
+   73.66 Requests/sec executed
+
+Test execution summary:
+    total time:                          300.0139s
+    total number of events:              22100
+    total time taken by event execution: 111.2041
+    per-request statistics:
+         min:                                  0.00ms
+         avg:                                  5.03ms
+         max:                                 85.07ms
+         approx.  95 percentile:              18.89ms
+
+Threads fairness:
+    events (avg/stddev):           22100.0000/0.00
+    execution time (avg/stddev):   111.2041/0.00
+</code></pre>
+<pre><code>
+sysbench --test=fileio --file-total-size=150G --file-test-mode=seqrewr --init-rng=on --max-time=300 --max-requests=0 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from timer.
+
+
+Extra file open flags: 0
+128 files, 1.1719Gb each
+150Gb total file size
+Block size 16Kb
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing sequential rewrite test
+Threads started!
+Time limit exceeded, exiting...
+Done.
+
+Operations performed:  0 Read, 4288040 Write, 0 Other = 4288040 Total
+Read 0b  Written 65.43Gb  Total transferred 65.43Gb  (223.33Mb/sec)
+14293.00 Requests/sec executed
+
+Test execution summary:
+    total time:                          300.0097s
+    total number of events:              4288040
+    total time taken by event execution: 299.0121
+    per-request statistics:
+         min:                                  0.00ms
+         avg:                                  0.07ms
+         max:                                713.77ms
+         approx.  95 percentile:               0.01ms
+
+Threads fairness:
+    events (avg/stddev):           4288040.0000/0.00
+    execution time (avg/stddev):   299.0121/0.00
+</code></pre>
+<pre><code>
+sysbench --test=fileio --file-total-size=150G --file-test-mode=seqwr --init-rng=on --max-time=300 --max-requests=0 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from timer.
+
+
+Extra file open flags: 0
+128 files, 1.1719Gb each
+150Gb total file size
+Block size 16Kb
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing sequential write (creation) test
+Threads started!
+Time limit exceeded, exiting...
+Done.
+
+Operations performed:  0 Read, 4446372 Write, 0 Other = 4446372 Total
+Read 0b  Written 67.846Gb  Total transferred 67.846Gb  (231.58Mb/sec)
+14821.23 Requests/sec executed
+
+Test execution summary:
+    total time:                          300.0001s
+    total number of events:              4446372
+    total time taken by event execution: 296.0861
+    per-request statistics:
+         min:                                  0.01ms
+         avg:                                  0.07ms
+         max:                                287.07ms
+         approx.  95 percentile:               0.02ms
+
+Threads fairness:
+    events (avg/stddev):           4446372.0000/0.00
+    execution time (avg/stddev):   296.0861/0.00
+</code></pre>
+<pre><code>
+sysbench --test=fileio --file-total-size=150G --file-test-mode=seqrd --init-rng=on --max-time=300 --max-requests=0 run
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from timer.
+
+
+Extra file open flags: 0
+128 files, 1.1719Gb each
+150Gb total file size
+Block size 16Kb
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing sequential read test
+Threads started!
+FATAL: Failed to read file! file: 60 pos: 1126760448 errno = 0 ()
+Done.
+
+Operations performed:  4446372 Read, 0 Write, 0 Other = 4446372 Total
+Read 67.846Gb  Written 0b  Total transferred 67.846Gb  (440.79Mb/sec)
+28210.62 Requests/sec executed
+
+Test execution summary:
+    total time:                          157.6134s
+    total number of events:              4446372
+    total time taken by event execution: 157.0151
+    per-request statistics:
+         min:                                  0.00ms
+         avg:                                  0.04ms
+         max:                               1281.24ms
+         approx.  95 percentile:               0.00ms
+
+Threads fairness:
+    events (avg/stddev):           4446372.0000/0.00
+    execution time (avg/stddev):   157.0151/0.00
+</code></pre>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/benchmark-du-serveur-dedie-fs-24t-ovh-sortie-en-aout-2013/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/benchmark-du-serveur-dedie-fs-24t-ovh-sortie-en-aout-2013/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/benchmark-du-serveur-dedie-fs-24t-ovh-sortie-en-aout-2013/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/benchmark-du-serveur-dedie-fs-24t-ovh-sortie-en-aout-2013/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

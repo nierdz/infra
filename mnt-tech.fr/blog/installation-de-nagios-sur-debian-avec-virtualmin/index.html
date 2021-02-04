@@ -1,0 +1,511 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation de Nagios sur debian avec virtualmin | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation de Nagios sur debian avec virtualmin Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Ce tutoriel explique l'installation de nagios depuis les sources sur debian squeeze avec virtualmin." />
+		<meta property="og:title" content="Installation de Nagios sur debian avec virtualmin" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-de-nagios-sur-debian-avec-virtualmin/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Ce tutoriel explique l'installation de nagios depuis les sources sur debian squeeze avec virtualmin." />
+		<meta property="article:tag" content="debian" />
+		<meta property="article:tag" content="nagios" />
+		<meta property="article:tag" content="virtualmin" />
+		<meta property="article:published_time" content="2013-04-02T15:42:44+00:00" />
+		<meta property="article:modified_time" content="2016-09-15T19:51:04+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation de Nagios sur debian avec virtualmin | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Ce tutoriel explique l'installation de nagios depuis les sources sur debian squeeze avec virtualmin." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation de Nagios sur debian avec virtualmin"><img src="../../images/logo.png" alt="Installation de Nagios sur debian avec virtualmin" title="Installation de Nagios sur debian avec virtualmin"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation de Nagios sur debian avec virtualmin</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 02 04 2013</div>
+
+				<p>Dans ce tutoriel nous allons voir comment installer nagios 3.4.1 avec les plugins 1.4.16 sur une debian squeeze et virtualmin.</p>
+<p>Pour commencer on va définir quelques règles, déjà, on va installer depuis les sources nagios et ses plugins. Et comme j'aime bien les trucs propres j'installe tous mes logiciels compilés à partir des sources dans <strong>/opt</strong>. Donc nagios et ses plugins seront dans <strong>/opt</strong>. Pour les dossiers d'installation, je garde une trace de ce que j'ai compilé en conservant le tar.gz des programmes et les dossiers de compilation dans <strong>/root/install/</strong>. Maintenant que vous savez ça, on peut commencer.</p>
+<p>On va donc aller dans <strong>/root/install</strong>. Si jamais ce dossier n'est pas créé  :</p>
+<pre><code>
+# mkdir /root/install
+</code></pre>
+<p>Et ensuite : </p>
+<pre><code>
+# cd /root/install/
+</code></pre>
+<p>Il faut ensuite télécharger les sources de nagios et de ces plugins. Au moment ou j'écris ce tutoriel la version de <strong>nagios core</strong> est là 3.4.1 et celle de <strong>nagios plugins</strong> est la 1.4.16. Il vous faudra donc aller chercher nagios core à l'adresse suivante : http://www.nagios.org/download/core/thanks/ et nagios plugins à l'adresse suivante : http://www.nagios.org/download/plugins. Vous copiez les url fourni pour faire un wget.</p>
+<p>Une fois que vous avez récupérer vos deux paquets, il faut les décompresser :</p>
+<pre><code>
+# tar xvzf nagios-3.4.1.tar.gz
+# tar xvzf nagios-plugins-1.4.16.tar.gz
+</code></pre>
+<p>On va commencer par l'installation de nagios core et ensuite on fera nagios-plugins.</p>
+<pre><code>
+# cd nagios-3.4.1
+</code></pre>
+<p>On va créer un user pour faire tourner nagios et comme je suis un gros malin, je vais l'appeler nagios 😉</p>
+<pre><code>
+# useradd -r nagios
+# usermod -d /opt/nagios nagios
+</code></pre>
+<p>Il nous faut maintenant configurer le bousin. Je vais donc vous filer mes options de compilation mais il se peut que vous ayez besoin d'autres options ou que vous ayez envie de savoir ce que je vous refile comme options. Je vous invite donc à faire un ./configure --help au préalable, pour avoir toutes les options de compilations.:</p>
+<pre><code>
+# ./configure --help
+</code></pre>
+<p>Dans mon cas j'ai utilisé :</p>
+<pre><code>
+# ./configure --prefix=/opt/nagios --with-nagios-user=nagios --with-nagios-group=nagios --with-command-user=nagios --with-command-group=nagios --enable-event-broker --enable-nanosleep --enable-embedded-perl --with-perlcache --with-httpd-conf=/etc/apache2/conf.d
+</code></pre>
+<p>Comme d'habitude, si vous avez des erreurs pendant le <strong>./configure</strong> je vous invite à consulter l'ami google. Il vous manque surement telle ou telle bibliothèque ou paquet.</p>
+<p>On peut ensuite lancer la compilation :</p>
+<pre><code>
+# make all
+</code></pre>
+</p>
+<p>On copie les fichier dans /opt/ avec :</p>
+<pre><code>
+# make install
+</code></pre>
+<p>On installe le script d'init :</p>
+<pre><code>
+# make install-init
+</code></pre>
+<p>On installe le reste avec le thème exfoliation pour avoir une interface "sympa" :</p>
+<pre><code>
+# make install-commandmode
+# make install-config
+# make install-exfoliation
+</code></pre>
+<p>Par contre on installe pas la conf apache car on va le faire nous même avec nos petites mains. Pour cela on se connecte sur son panel virtualmin et on crée un sous domaine que l'on va dédier à nagios. Pour le tuto on va prendre l'exemple suivant : nagios.mondomaine.fr.</p>
+<p>On va donc aller éditer le vhost de ce domaine :</p>
+<pre><code>
+vim /etc/apache2/sites-available/nagios.mondomaine.fr.conf
+</code></pre>
+<p>Et voici la conf qu'il faut pour faire tourner nagios en fastCGI :</p>
+<pre><code>
+&lt;VirtualHost aaa.bbb.ccc.ddd:80&gt;
+	ServerName nagios.mondomaine.fr
+	DocumentRoot /opt/nagios/share/
+	ErrorLog /var/log/virtualmin/nagios.mondomaine.fr_error_log
+	CustomLog /var/log/virtualmin/nagios.mondomaine.fr_access_log combined
+	ScriptAlias /nagios/cgi-bin /opt/nagios/sbin/
+	DirectoryIndex index.php
+	Alias /nagios/stylesheets /opt/nagios/share/stylesheets/
+	Alias /nagios/images /opt/nagios/share/images/
+	Alias /nagios/js /opt/nagios/share/js/
+	&lt;Directory /opt/nagios/share/&gt;
+		Options -Indexes +IncludesNOEXEC +FollowSymLinks +ExecCGI
+		Order allow,deny
+		AuthName "Nagios Access"
+		AuthType Basic
+		AuthUserFile /opt/nagios/etc/htpasswd.users
+		Require valid-user
+		allow from all
+		AllowOverride All
+		AddHandler fcgid-script .php
+		FCGIWrapper /home/mondomaine/domains/nagios.mondomaine.fr/fcgi-bin/php5.fcgi .php
+	&lt;/Directory&gt;
+	&lt;Directory /opt/nagios/sbin&gt;
+		Options +ExecCGI
+		AllowOverride None
+		Order allow,deny
+		Allow from all
+		AuthName "Nagios Access"
+		AuthType Basic
+		AuthUserFile /opt/nagios/etc/htpasswd.users
+		Require valid-user
+	&lt;/Directory&gt;
+	RemoveHandler .php
+	IPCCommTimeout 31
+	FileETag none
+	AddType image/x-icon .ico
+	FcgidMaxRequestLen 1073741824
+&lt;/VirtualHost&gt;
+</code></pre>
+<p>Si on détaille un peu cette conf, on peut voir qu'on à ajouter des alias sur les css, les images et les js. On voit également que l'accès à nagios est protéger par un htpasswd : <strong>/opt/nagios/etc/htpasswd.users</strong> que l'on va créer juste après. Et enfin, on voit qu'on à ajouter le bon handler fastCGI pour prendre en charge le php. J'ai un peu galéré avec suexec, du coup j'ai laissé tomber cette option qui est utilisé par défaut sur les vhost créés avec virtualmin. Si jamais je mets ça en place je reviendrais éditer ce tuto mais pour le moment je m'en fous.</p>
+<p>On va donc créer notre user pour nagios :</p>
+<pre><code>
+# htpasswd -c /opt/nagios/etc/htpasswd.users nagiosadmin
+</code></pre>
+<p>On vérifie que la conf par défaut de nagios est OK :</p>
+<pre><code>
+# /opt/nagios/bin/nagios -v /opt/nagios/etc/nagios.cfg
+</code></pre>
+<pre><code>
+Nagios Core 3.4.1
+Copyright (c) 2009-2011 Nagios Core Development Team and Community Contributors
+Copyright (c) 1999-2009 Ethan Galstad
+Last Modified: 05-11-2012
+License: GPL
+
+Website: http://www.nagios.org
+Reading configuration data...
+   Read main config file okay...
+Processing object config file '/opt/nagios/etc/objects/commands.cfg'...
+Processing object config file '/opt/nagios/etc/objects/contacts.cfg'...
+Processing object config file '/opt/nagios/etc/objects/timeperiods.cfg'...
+Processing object config file '/opt/nagios/etc/objects/templates.cfg'...
+Processing object config file '/opt/nagios/etc/objects/localhost.cfg'...
+   Read object config files okay...
+
+Running pre-flight check on configuration data...
+
+Checking services...
+	Checked 8 services.
+Checking hosts...
+	Checked 1 hosts.
+Checking host groups...
+	Checked 1 host groups.
+Checking service groups...
+	Checked 0 service groups.
+Checking contacts...
+	Checked 1 contacts.
+Checking contact groups...
+	Checked 1 contact groups.
+Checking service escalations...
+	Checked 0 service escalations.
+Checking service dependencies...
+	Checked 0 service dependencies.
+Checking host escalations...
+	Checked 0 host escalations.
+Checking host dependencies...
+	Checked 0 host dependencies.
+Checking commands...
+	Checked 24 commands.
+Checking time periods...
+	Checked 5 time periods.
+Checking for circular paths between hosts...
+Checking for circular host and service dependencies...
+Checking global event handlers...
+Checking obsessive compulsive processor commands...
+Checking misc settings...
+
+Total Warnings: 0
+Total Errors:   0
+
+Things look okay - No serious problems were detected during the pre-flight check
+</code></pre>
+<p>Tout est bon donc on lance le script d'init :</p>
+<pre><code>
+# /etc/init.d/nagios start
+</code></pre>
+<p>Et maintenant, il ne reste qu'a compiler les plugins pour que l'installation soit finie.</p>
+<pre><code>
+# cd /root/install/nagios-plugins-1.4.16
+</code></pre>
+<p>On configure :</p>
+<pre><code>
+# ./configure --prefix=/opt/nagios --with-nagios-user=nagios --with-nagios-group=nagios
+</code></pre>
+<p>On compile et on installe :</p>
+<pre><code>
+# make &amp;&amp; make install
+</code></pre>
+<p>Logiquement, vous devriez avoir un nagios disponible en utilisant l'url : nagios.mondomaine.fr. et il faut évidemment utiliser le login nagiosadmin et le mot de passe que vous avez entrer pour créer le htpasswd.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-de-nagios-sur-debian-avec-virtualmin/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-de-nagios-sur-debian-avec-virtualmin/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-de-nagios-sur-debian-avec-virtualmin/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-de-nagios-sur-debian-avec-virtualmin/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

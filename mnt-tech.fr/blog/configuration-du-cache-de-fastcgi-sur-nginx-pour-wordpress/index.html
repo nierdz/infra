@@ -1,0 +1,545 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Configuration du cache de FastCGI sur nginx pour WordPress | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Configuration du cache de FastCGI sur nginx pour WordPress Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Un petit tutoriel expliquant la mise en place du cache de FastCGI sur nginx pour WordPress." />
+		<meta property="og:title" content="Configuration du cache de FastCGI sur nginx pour WordPress" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/configuration-du-cache-de-fastcgi-sur-nginx-pour-wordpress/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Un petit tutoriel expliquant la mise en place du cache de FastCGI sur nginx pour WordPress." />
+		<meta property="article:tag" content="nginx" />
+		<meta property="article:tag" content="php-fpm" />
+		<meta property="article:tag" content="cache" />
+		<meta property="article:tag" content="wordpress" />
+		<meta property="article:published_time" content="2016-11-10T18:15:27+00:00" />
+		<meta property="article:modified_time" content="2016-11-11T16:56:19+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Configuration du cache de FastCGI sur nginx pour WordPress | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Un petit tutoriel expliquant la mise en place du cache de FastCGI sur nginx pour WordPress." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Configuration du cache de FastCGI sur nginx pour WordPress"><img src="../../images/logo.png" alt="Configuration du cache de FastCGI sur nginx pour WordPress" title="Configuration du cache de FastCGI sur nginx pour WordPress"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Configuration du cache de FastCGI sur nginx pour WordPress</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 10 11 2016</div>
+
+				<p>Le petit tutoriel du jour concerne la façon de mettre en place le <strong>cache</strong> de <strong>FastCGI</strong> sur <strong>nginx</strong> et sa gestion via un plugin <strong>WordPress</strong>. Si vous n'utilisez pas Wordpress vous pouvez tout de même utiliser ce type de cache mais il faudra l'adapter à votre situation, c'est à dire trouver un plugin compatible avec votre CMS ou passer par l'écriture de votre propre gestionnaire de cache. Nous verrons cela dans la dernière partie.</p>
+
+<h4>Introduction</h4>
+<p>Pour commencer, nous allons voir à quoi sert ce cache et quels bénéfices et désavantages il apporte lorsqu'on l'active. Il permet donc de conserver en cache les résultats de l'appel à votre backend FastCGI qui bien souvent se trouve être php-fpm. Celui-ci est stocké d'une façon bien particulière que nous verrons dans la partie configuration. Cela permet d'accèlerer grandement le temps de chargement d'une page car on évite de passer par FastCGI et on va, à la place, chercher un fichier statique sur le disque dur. Dans ce tutoriel nous allons même configurer un montage tmps pour stocker ce cache en RAM et gagner ainsi encore un peu plus en performance. Les désavantages de cette solution sont similaires à toutes les solutions de cache. Elle n'est pas compatible avec tous les applicatifs et il faut donc bien réfléchir à sa mise en place, voire mieux, en parler avec le dev pour savoir ce qui peut être mis en cache ou non. Par exemple, un forum ne peut pas bénéficier de ce genre de cache car les pages ont besoin d'être mise à jour à chaque chargement. Les formulaires de contact sont également dans cette situation lorsqu'ils sont appelés. Bref, il faut faire assez attention à ce que l'on fait avant de le mettre en place.</p>
+
+<h4>Configuration</h4>
+<p>On commence par éditer <strong>/etc/fstab</strong> pour y ajouter notre montage de <strong>/var/cache/nginx</strong> en <strong>tmpfs</strong> qui contiendra le cache FastCGI. Voilà la ligne à y ajouter :</p>
+<pre><code>
+tmpfs	/var/cache/nginx tmpfs	defaults,size=256M			0	0
+</code></pre>
+<p>Dans mon cas, j'ai mis 256M ce qui est surdimensionné pour mon site mais je préfère la jouer safe. C'est à adapter à votre situation, vous pouvez commencer par cette valeur et baisser ou augmenter en fonction de votre besoin. Pour faire une estimation, il faut s'imaginer que le cache est basé, entre autres, sur l'uri, donc vous aurez à stocker le nombre de pages appelées dans le temps de garde du cache (attention, différent du temps de validation). Exemple, si votre site à 1000 pages et que celles-ci pèsent en moyenne 500Ko une fois générées en html, que vous avez mis le cache inactif à 1 heure et que durant une heure vous constatez que 600 pages différentes sont appelées. Vous faites 600 x 500Ko = 300Mo et comme on est jamais assez prudent et qu'on a surement assez de RAM, on fait un bon vieux "fois deux" des familles sur cette valeur car on a pas envie d'être emmerder en pleine nuit donc on part sur 600Mo 😉</p>
+
+<p>Il faut ensuite créer le dossier, lui attribuer les bons droits et le monter :</p>
+<pre><code>
+root@web0:~# mkdir /var/cache/nginx
+root@web0:~# chown www-data:www-data /var/cache/nginx/
+root@web0:~# mount /var/cache/nginx/
+</code></pre>
+
+<p>On vérfie ensuite que le montage est OK :</p>
+<pre><code>
+root@web0:~# mount
+[...]
+tmpfs on /var/cache/nginx type tmpfs (rw,relatime,size=262144k)
+</code></pre>
+
+<p>C'est bon, on va donc pouvoir passez à la configuration du vhost. Dans mon exemple, il s'agit du site <a target="_blank" href="https://mad-rabbit.com/">https://mad-rabbit.com/</a> dont voici le fichier de conf complet. On va détailler en dessous les paramètres importants :</p>
+<pre><code>
+fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=madrabbit:256m inactive=30d max_size=1000m;
+fastcgi_cache_key "$scheme$request_method$host$request_uri";
+fastcgi_cache_use_stale error timeout invalid_header http_500;
+fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+
+server {
+	listen 443 ssl http2 default_server;
+	server_name mad-rabbit.com www.mad-rabbit.com;
+	root /home/madrabbit/www;
+	index index.html index.php;
+	access_log /var/log/nginx/mad-rabbit.com-ssl_access.log;
+	error_log /var/log/nginx/mad-rabbit.com-ssl_error.log;
+	ssl_certificate /etc/nginx/ssl/mad-rabbit.chain.pem;
+	ssl_certificate_key /etc/nginx/ssl/mad-rabbit.key;
+	ssl_trusted_certificate /etc/nginx/ssl/gandi-standardssl-2.chain.pem;
+	include /etc/nginx/mad-rabbit.com.rewrite;
+
+	# Factcgi_cache activated by default. Will be disabled if necessary
+	set $skip_cache 0;
+
+	# POST requests and urls with a query string should always go to PHP
+	if ($request_method = POST) {
+		set $skip_cache 1;
+	}
+	if ($query_string != "") {
+		set $skip_cache 1;
+	}
+
+	# Don't cache uris containing the following segments
+	if ($request_uri ~* "/wp-admin/|wp-.*.php|/feed/|index.php|sitemap(_index)?.xml|random_player.php|related.php|player/*.php|/forums/|android-push-notifications.php") {
+		set $skip_cache 1;
+	}
+
+	# Don't use the cache for logged in users or recent commenters
+	if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
+		set $skip_cache 1;
+	}
+
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+
+	location ~ \.php$ {
+		fastcgi_cache_bypass $skip_cache;
+		fastcgi_no_cache $skip_cache;
+		fastcgi_cache madrabbit;
+		fastcgi_cache_valid 1d;
+		fastcgi_pass unix:/run/php/php7.0-fpm-mad-rabbit.com-ssl.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+
+	location ~ /\. {
+		deny all;
+		access_log off;
+		log_not_found off;
+	}
+}
+</code></pre>
+
+<p>Tout n'est pas forcément nécéssaire et il ne faut donc pas la copier aveuglément telle quelle. On va commencer par le bloc tout en haut qui se trouve en dehors du bloc server :</p>
+<pre><code>
+fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=madrabbit:256m inactive=30d max_size=256m;
+fastcgi_cache_key "$scheme$request_method$host$request_uri";
+fastcgi_cache_use_stale error timeout invalid_header http_500;
+fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+</code></pre>
+<p>Dans cette configuration, voici ce qu'il se passe :</p>
+<ul>
+	<li>le dossier de cache est <strong>/var/cache/nginx</strong></li>
+	<li><strong>levels=1:2</strong> : cela définit la hiérarchie du cache</li>
+	<li><strong>keys_zone=madrabbit:256m</strong> : il faut bien faire attention à spécifier une zone différente par vhost</li>
+	<li><strong>inactive=30d</strong> : lorsqu'une ressource n'est pas accédée depuis plus de 30 jours elle est supprimée, vous pouvez également utiliser m pour minutes et h pour heure</li>
+	<li><strong>max_size=256m</strong> : si on dépasse ce seuil les ressources les plus vieilles sont supprimées</li>
+	<li><strong>"$scheme$request_method$host$request_uri"</strong> : la clé de cache, vous pouvez la simplifier pour éviter les doublons si vous avez plusieurs noms de domaine servant le même contenu ou si vous servez le contenu en http et en https par exemple. Si vous utilisez le plugin nginx helper vous devez conserver précisément cette clé.</li>
+	<li><strong>fastcgi_cache_use_stale error timeout invalid_header http_500</strong> : si fastCGI rencontre une erreur 500 il ira taper dans le cache même si il est invalide, c'est là l'interêt d'avoir un <strong>inactive</strong> assez haut si cela est possible dans votre situation. Vous pouvez donc relancer <strong>php-fpm</strong> oklm 😃</li>
+	<li><strong>fastcgi_ignore_headers Cache-Control Expires Set-Cookie</strong> : si on n'utilise pas ça, les headers renvoyés par php vont définir la durée de validité du cache (fastcgi_cache_valid)</li>
+</ul>
+
+<p>Maintenant, on va regarder ce qui se trouve dans le bloc server :</p>
+<pre><code>
+# Factcgi_cache activated by default. Will be disabled if necessary
+set $skip_cache 0;
+
+# POST requests and urls with a query string should always go to PHP
+if ($request_method = POST) {
+	set $skip_cache 1;
+}
+if ($query_string != "") {
+	set $skip_cache 1;
+}
+
+# Don't cache uris containing the following segments
+if ($request_uri ~* "/wp-admin/|wp-.*.php|/feed/|index.php|sitemap(_index)?.xml|random_player.php|related.php|player/*.php|/forums/|android-push-notifications.php") {
+	set $skip_cache 1;
+}
+
+# Don't use the cache for logged in users or recent commenters
+if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
+	set $skip_cache 1;
+}
+</code></pre>
+<p>En fait, c'est déjà bien commenté donc je vais être bref. Par défaut, on active le cache et en fonction de situation particulière comme le fait qu'une requête soit en POST ou que l'uri contienne /forums/ on le désactive. Bref, t'as compris, tu peux skip le cache sur un tas de critères car il suffit de passer <strong>$skip_cache à 1</strong>.<p>
+
+<p>On va ensuite voir la partie dans le bloc <strong>location ~ \.php$</strong> :</p>
+<pre><code>
+location ~ \.php$ {
+	fastcgi_cache_bypass $skip_cache;
+	fastcgi_no_cache $skip_cache;
+	fastcgi_cache madrabbit;
+	fastcgi_cache_valid 1d;
+	fastcgi_pass unix:/run/php/php7.0-fpm-mad-rabbit.com-ssl.sock;
+	fastcgi_index index.php;
+	include fastcgi_params;
+}
+</code></pre>
+<p>On va voir les paramètres concernant le cache, pour les autres, go RTFM !</p>
+<ul>
+	<li><strong>fastcgi_no_cache $skip_cache</strong> : permet de savoir si on va utiliser le cache ou non</li>
+	<li><strong>fastcgi_cache madrabbit</strong> : il faut bien faire attention d'utiliser ce qu'on a définit dans la <strong>keys_zone</strong></li>
+	<li><strong>fastcgi_cache_valid 1d</strong> : si on a du cache qui a moins d'un jour on va l'utiliser, sinon on met à jour le cache ou on le crée</li>
+</ul>
+<p>Il ne reste plus qu'à reload nginx en ayant au préalable vérifier que la configuration était OK :</p>
+<pre><code>
+root@web0:~# nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+root@web0:~# service nginx reload
+</code></pre>
+
+<p>Si tout se passe bien, vous derviez avoir des dossiers dans <strong>/var/cache/nginx</strong> :</p>
+<pre><code>
+root@web0:~# ls -R /var/cache/nginx/
+/var/cache/nginx/:
+7
+
+/var/cache/nginx/7:
+d2
+
+/var/cache/nginx/7/d2:
+5b0f21f11c36615b7fa263057c19bd27
+</code></pre>
+<p>Il faut bien penser à surveiller cette partition dans nagios pour éviter qu'elle ne sature.</p>
+
+<h4>Purge du cache</h4>
+<p>Maintenant que ça fonctionne, on va voir comment purger ce cache. Pour commencer, il y a la méthode radicale et rapide :</p>
+<pre><code>
+root@web0:~# rm -rf /var/cache/nginx/*
+</code></pre>
+
+<p>Il n'y a rien de plus à faire et nginx commencera à recréer le cache tout seul sans qu'on est besoin de le relancer. Il faut également savoir que le fait de relancer nginx ne supprime pas le cache et ne l'invalide pas non plus. Pour que le cache soit vidé, il faut qu'il le soit physiquement sur la partition de cache.</p>
+<p>Dans le cas de l'utilisation de WordPress il existe un plugin très pratique : <a target="_blank" href="https://fr.wordpress.org/plugins/nginx-helper/">nginx helper</a> qui permet de gérer la purge du cache sur n'importe quelle version de nginx. Pour cela, il faut installer le plugin et ajouter dans <strong>wp-config.php</strong> cette variable :</p>
+<pre><code>
+/** Nginx fastcgi_cache_path */
+define('RT_WP_NGINX_HELPER_CACHE_PATH','/var/cache/nginx');
+</code></pre>
+<p>Il faut également utiliser la clé précise fastcgi_cache_key <strong>"$scheme$request_method$host$request_uri";</strong>. qui sera utilisé pour calculer le <strong>hash md5</strong> et donc fournir le chemin du fichier de cache. Ensuite, il faut aller dans les settings du plugin et cocher la case <strong>Delete local server cache files</strong> dans l'option <strong>Purge Method</strong>. Cela vous permet de ne purger que les pages qui ont changé lors de la modification du contenu.</p>
+<p>Il existe bien d'autres méthodes pour gérer le cache à l'intégrer dans votre applicatif avec php ou d'autres langages mais je vous laisse faire les recherches sur google...</p>
+
+<h4>Log</h4>
+<p>Il est possible de logguer les résultats du cache de FastCGI en utilisant la variable $upstream_cache_status dans votre log_format. Par exemple si je définis ce log format :</p>
+<pre><code>
+log_format vhost_cache '$remote_addr - [$time_local] $upstream_cache_status "$request" $status';
+</code></pre>
+<p>Cela va produire ce genre de log :</p>
+<pre><code>
+188.165.6.38 - [10/Nov/2016:00:01:01 +0100] - "POST /wp-cron.php?doing_wp_cron=1478732460.1202449798583984375000 HTTP/1.1" 499
+123.125.71.101 - [10/Nov/2016:00:01:01 +0100] BYPASS "GET /feed/ HTTP/1.1" 200
+66.249.64.123 - [10/Nov/2016:00:01:22 +0100] EXPIRED "GET /manga-baseball/ HTTP/1.1" 200
+188.165.6.38 - [10/Nov/2016:00:01:43 +0100] HIT "GET / HTTP/1.1" 200
+</code></pre>
+<p>Il est donc possible de compter, voire grapher (cela fera l'objet d'un autre article) les statistiques du cache et d'affiner les réglages pour avoir un maximum de <strong>HIT</strong>.</p>
+
+<p><strong>EDIT du 11/11/2016</strong>: Une fois que vous avez fait un peu chauffer votre cache vous pouvez utiliser cette commande pour connaitre la taille moyenne des fichiers dans votre cache pour en affiner les réglages :<p>
+<pre><code>
+root@web0:~# find /var/cache/nginx/ -type f -exec du {} \; | awk '{ sum += $1; n++ } END { if (n &gt; 0) print "Taille moyenne: " sum / n"Ko"; }'
+Taille moyenne: 25.8307Ko
+</code></pre>
+<p>C'est vraiment un truc grossier donc à prendre avec des pincettes mais ça peut mettre sur une piste quand on sait vraiment pas ce qu'on héberge (et dans ce cas, il est recommandé de ne pas mettre ce type de cache en place...)</p>
+<p>Sources :</p>
+<ul>
+	<li><a target="_blank" href="http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html">La bible</a></li>
+	<li><a target="_blank" href="https://easyengine.io/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/">https://easyengine.io/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/</a></li>
+</ul>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/configuration-du-cache-de-fastcgi-sur-nginx-pour-wordpress/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/configuration-du-cache-de-fastcgi-sur-nginx-pour-wordpress/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/configuration-du-cache-de-fastcgi-sur-nginx-pour-wordpress/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/configuration-du-cache-de-fastcgi-sur-nginx-pour-wordpress/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

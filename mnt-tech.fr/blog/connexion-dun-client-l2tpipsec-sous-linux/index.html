@@ -1,0 +1,656 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Connexion d'un client l2tp/IPsec sous Linux | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Connexion d'un client l2tp/IPsec sous Linux Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Ce billet explique le fonctionnement de la connexion d'un client l2tp/ipsec via xl2tpd et openswan. Des scripts de supervision permettent également de superviser la connexion." />
+		<meta property="og:title" content="Connexion d'un client l2tp/IPsec sous Linux" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/connexion-dun-client-l2tpipsec-sous-linux/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Ce billet explique le fonctionnement de la connexion d'un client l2tp/ipsec via xl2tpd et openswan. Des scripts de supervision permettent également de superviser la connexion." />
+		<meta property="article:tag" content="ipsec" />
+		<meta property="article:tag" content="l2tp" />
+		<meta property="article:tag" content="linux" />
+		<meta property="article:tag" content="vpn" />
+		<meta property="article:published_time" content="2013-05-13T17:49:05+00:00" />
+		<meta property="article:modified_time" content="2016-09-15T22:05:21+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Connexion d'un client l2tp/IPsec sous Linux | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Ce billet explique le fonctionnement de la connexion d'un client l2tp/ipsec via xl2tpd et openswan. Des scripts de supervision permettent également de superviser la connexion." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Connexion d'un client l2tp/IPsec sous Linux"><img src="../../images/logo.png" alt="Connexion d'un client l2tp/IPsec sous Linux" title="Connexion d'un client l2tp/IPsec sous Linux"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Connexion d'un client l2tp/IPsec sous Linux</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 13 05 2013</div>
+
+				<p>Dans ce billet qui est la suite de <a href="https://blog/mnt-tech.fr/monter-un-serveur-l2tpipsec-sur-debian/">celui-ci</a> nous allons voir comment connecter un client linux à un VPN l2tp/IPsec via xl2tpd et openswan. Nous allons également voir comment superviser cette connexion et tenter de la remettre en place automatiquement en cas de problème via des scripts Bash.</p>
+<h4>Installation et configuration d'IPsec</h4>
+<p>Pour commencer nous allons installer openswan en le compilant. Les étapes sont les mêmes que dans le précédents tutoriels, je vais donc simplifier pour cette fois :</p>
+<pre><code>
+# wget --no-check-certificate https://s3-ap-northeast-1.amazonaws.com/openswanjp/openswan-2.6.38.tar.gz
+# tar xvzf openswan-2.6.38.tar.gz
+# cd openswan-2.6.38/
+# make programs
+# make install
+</code></pre>
+<p>Et pour le kernel :</p>
+<pre><code>
+# for each in /proc/sys/net/ipv4/conf/*; do echo 0 &gt; $each/accept_redirects &amp;&amp; echo 0 &gt; $each/send_redirects; done
+</code></pre>
+<p>On va pouvoir s'attaquer à la configuration. Comme la dernière fois, tout se passe dans <strong>/etc/ipsec.conf</strong>. Pour l'exemple, on va considérer que l'adresse IP du serveur VPN est <strong>66.66.66.66</strong> et que derrière ce VPN existe un subnet du type <strong>192.168.66.0/24</strong> auquel on souhaite avoir accès. On va également partir du principe que le client qui essaye de se connecter est derrière un NAT et qu'il a pour IP <strong>192.168.1.1</strong></p>
+<pre><code>
+# /etc/ipsec.conf - Openswan IPsec configuration file
+# RCSID $Id: ipsec.conf.in,v 1.16 2005/07/26 12:29:45 ken Exp $
+
+# This file:  /usr/share/doc/openswan/ipsec.conf-sample
+#
+# Manual:     ipsec.conf.5
+
+
+version 2.0     # conforms to second version of ipsec.conf specification
+
+config setup
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,!%v4:192.168.66.0/24
+	nat_traversal=yes
+	protostack=netkey
+	oe=off
+	plutoopts="--interface=eth0"
+conn L2TP-PSK-VPN0
+	authby=secret
+	pfs=no
+	auto=add
+	keyingtries=3
+	dpddelay=30
+	dpdtimeout=120
+	dpdaction=clear
+	rekey=yes
+	ikelifetime=8h
+	keylife=1h
+	type=transport
+	left=192.168.1.1
+	leftnexthop=%defaultroute
+	leftprotoport=17/1701
+	right=66.66.66.66
+	rightprotoport=17/1701
+</code></pre>
+<p>Dans <strong>virtual_private</strong> on interdit une adresse appartenant au réseau 192.168.66.0/24 de se connecter, en effet ça ne pourrait pas fonctionner correctement avec une IP dans le même subnet. Pour <strong>left</strong> on utilise notre IP privée et pour <strong>right</strong> l'ip du serveur. On indique également que IPsec doit fonctionner en mode transport et qu'il doit "tunneliser" le trafic en provenance du port 1701 en udp à destination du port 1701 en udp également ( leftprotoport=17/1701 et rightprotoport=17/1701). Enfin, on nomme la connexion à ce serveur <strong>L2TP-PSK-VPN0</strong> que l'on devra utiliser dans les commandes pour lancer ou arrêter IPsec.</p>
+<p>Il ne reste plus que le fichier <strong>/etc/ipsec.secrets</strong> qui va simplement contenir la clé pré-partagée :</p>
+<pre><code>
+# RCSID $Id: ipsec.secrets.proto,v 1.3.6.1 2005/09/28 13:59:14 paul Exp $
+# This file holds shared secrets or RSA private keys for inter-Pluto
+# authentication.  See ipsec_pluto(8) manpage, and HTML documentation.
+
+# RSA private key for this host, authenticating it to any other host
+# which knows the public part.  Suitable public keys, for ipsec.conf, DNS,
+# or configuration of other implementations, can be extracted conveniently
+# with "ipsec showhostkey".
+192.168.1.1 66.66.66.66 : PSK "monpasswordrandomquitue"
+</code></pre>
+<p>Il n'y a pas grand chose à dire sur ce fichier de conf. On va donc passer à la partie xl2tpd</p>
+<h4>Installation et configuration de l2tp</h4>
+<p>La partie l2tp est géré par xl2tpd que l'on installe tout simplement avec :</p>
+<pre><code>
+# apt-get install xl2tpd
+</code></pre>
+<p>Pour la configuration, le fichier est <strong>/etc/xl2tpd/xl2tpd.conf</strong></p>
+<pre><code>
+[lac vpn0]
+	lns = 66.66.66.66
+	ppp debug = yes
+	pppoptfile = /etc/ppp/options.l2tpd.vpn0
+	length bit = yes
+</code></pre>
+<p>On indique donc que le lac (L2TP Access Concentrator) se nomme <strong>vpn0</strong> et on indique également le fichier contenant les options ppp : <strong>/etc/ppp/options.l2tpd.vpn0</strong></p>
+<p>Le contenu de /etc/ppp/options.l2tpd.vpn0 :</p>
+<pre><code>
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+require-mschap-v2
+noccp
+noauth
+idle 1800
+mtu 1410
+mru 1410
+defaultroute
+usepeerdns
+debug
+lock
+connect-delay 5000
+name plop
+password mon_beau_password
+</code></pre>
+<p>On y indique son nom d'utilisateur et son password (<strong>name plop</strong> et <strong>password mon_beau_password</strong>). Pour les autres options je vous renvoie sur le man de <strong>pppd</strong></p>
+<h2>Démarrage et arrêt de la connexion VPN</h2>
+<p>Pour lancer la connexion VPN il faut initialiser IPsec.</p>
+<pre><code>
+# ipsec auto --up L2TP-PSK-VPN0
+</code></pre>
+<p>On devrait obtenir quelque chose dans ce style :</p>
+<pre><code>
+104 "L2TP-PSK-VPN0" #136: STATE_MAIN_I1: initiate
+003 "L2TP-PSK-VPN0" #136: ignoring unknown Vendor ID payload [4f457f7e637f7679517f4a5a]
+003 "L2TP-PSK-VPN0" #136: received Vendor ID payload [Dead Peer Detection]
+003 "L2TP-PSK-VPN0" #136: received Vendor ID payload [RFC 3947] method set to=115
+106 "L2TP-PSK-VPN0" #136: STATE_MAIN_I2: sent MI2, expecting MR2
+003 "L2TP-PSK-VPN0" #136: NAT-Traversal: Result using draft-ietf-ipsec-nat-t-ike (MacOS X): i am NATed
+108 "L2TP-PSK-VPN0" #136: STATE_MAIN_I3: sent MI3, expecting MR3
+003 "L2TP-PSK-VPN0" #136: received Vendor ID payload [CAN-IKEv2]
+004 "L2TP-PSK-VPN0" #136: STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_PRESHARED_KEY cipher=aes_128 prf=oakley_sha group=modp2048}
+117 "L2TP-PSK-VPN0" #137: STATE_QUICK_I1: initiate
+004 "L2TP-PSK-VPN0" #137: STATE_QUICK_I2: sent QI2, IPsec SA established transport mode {ESP=&gt;0x2c6414b5 &lt;0x8fa973f2 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=enabled}
+</code></pre>
+<p>Ensuite on lance la connexion l2tp :</p>
+<pre><code>
+echo "c vpn0" &gt; /var/run/xl2tpd/l2tp-control
+</code></pre>
+<p>Si le lien xl2tpd monte bien, nous devrions avoir une nouvelle interface <strong>ppp</strong> visible via <strong>ifconfig</strong> :</p>
+<pre><code>
+ppp0      Link encap:Point-to-Point Protocol
+          inet addr:10.0.1.1  P-t-P:10.0.1.200  Mask:255.255.255.255
+          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1400  Metric:1
+          RX packets:4 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:3 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:3
+          RX bytes:81 (81.0 B)  TX bytes:72 (72.0 B)
+</code></pre>
+<p>On voit donc que notre nouvelle interface est UP et il ne reste plus qu'à ajouter une route passant par cette interface pour l'utiliser. Dans notre cas, nous voulions joindre le sous-réseau 192.168.66.0/24 :</p>
+<pre><code>
+# ip route add 192.168.66.0/24 via 10.0.1.200
+</code></pre>
+<p>Sur le serveur il ne faut pas oublié de mettre un <strong>MASQUERADE</strong> sur le subnet des interfaces ppp sinon les paquets arriveront avec des adresses en 10.0.1.0/27 sur le subnet 192.168.66.0/24 qui ne sera pas ou les renvoyer... Pour rappel, il faut donc ajouter cette règle à iptables sur le <strong>serveur</strong> :</p>
+<pre><code>
+# iptables -t nat -A POSTROUTING -s 10.0.1.0/27 -j MASQUERADE
+</code></pre>
+<h4>Automatisation et Supervision du lien VPN</h4>
+<p>Pour automatisé et superviser cette connexion VPN, j'ai écrit quelques scripts que je vous livre ici :</p>
+<p>Le premier script est un script qui permet  de superviser la connexion. Il est très commenté pour en faciliter la compréhension. Il faut l'adapter à votre situation en indiquant en début de script les valeurs qui correspondent à votre connexion. En gros, le script check la connexion VPN en pinguant toutes les 30 secondes l'adresse de l'interface <strong>ppp</strong>. Si il détecte un problème sur la partie IPsec il relance la connexion IPsec, si il détecte un problème sur l2tp, il relance la connexion l2tp. Il vous envoie un mail en cas de problème et envoie les logs dans /var/log/vpn0.log par défaut (N'oubliez pas de faire un logrotate). Bref, il est plutôt sympa ce petit script 😎 </p>
+<pre><code>
+#!/bin/bash
+
+# Supervise l2tp/ipsec connection like a champ !
+# Author : Kévin MET (https://mnt-tech.fr/)
+
+FAILMAX=2 # nombres maximum de fails avant de relancer
+KEEPALIVE=30 # nombres de secondes entres les controles
+NEXTRESTART=1800 # duree en secondes pendant laquelle on ne relance qu'un seule fois le vpn
+IPSEC_LOCK="/tmp/ipsec_$$" # lock de la relance ipsec
+L2TP_LOCK="/tmp/l2tp_$$" # lock de la relance l2tp
+ADMIN="admins@exemple.fr" # adresse a contacter
+VPN="vpn0" # le nom du vpn l2tp dans la conf de xl2tpd
+TUNNEL="L2TP-PSK-VPN0" # le nom du tunnel ipsec dans ipsec.conf
+PINGCOUNT="4" # nombre de ping envoyés à chaque passe
+FAIL=0 # reset du compteur de fail
+LOGFILE="/var/log/vpn0.log" # fichier de log
+PPP_GW="10.0.1.200" # la gateway de l'interface ppp0
+LOCAL_IP="192.168.1.1" # l'adresse ip locale
+ROUTE_VIA_VPN="192.168.66.0/24 via 10.0.1.200"
+
+MESSAGE=""
+
+function l2tprestart () {
+	MESSAGE="Nombres de fails maximum ($FAILMAX) atteint: relance du vpn l2tpd $VPN sur `hostname -f`. Si tu as le temps regarde la cause de cette relance."
+	echo "$NOW $MESSAGE" &gt;&gt; $LOGFILE
+	# on détruit le vpn si il est encore UP
+	echo "d $VPN" &gt; /var/run/xl2tpd/l2tp-control
+	sleep 5
+	# on le relance
+	echo "c $VPN" &gt; /var/run/xl2tpd/l2tp-control
+	sleep 10
+	# on ajoute la route vers le LAN
+	ip route add $ROUTE_VIA_VPN
+	echo "$MESSAGE" | mail -s "Redemarrage du vpn l2tp sur `hostname -f`!" $ADMIN
+	# on change la date de modification du fichier lock
+	touch $L2TP_LOCK
+	sleep 20
+}
+
+function ipsecrestart () {
+	MESSAGE="Nombres de fails maximum ($FAILMAX) atteint: relance du tunnel ipsec $TUNNEL sur `hostname -f`. Si tu as le temps regarde la cause de cette relance."
+	echo  "$NOW $MESSAGE" &gt;&gt; $LOGFILE
+	# on détruit le tunnel si il est encore UP
+	ipsec auto --down $TUNNEL &gt;&gt; $LOGFILE
+	sleep 5
+	# on le relance
+	ipsec auto --up $TUNNEL &gt;&gt; $LOGFILE
+	echo "$MESSAGE" | mail -s "Redemarrage du tunnel ipsec sur `hostname -f`!" $ADMIN
+	# on change la date de modification du fichier lock
+	touch $IPSEC_LOCK
+	sleep 20
+}
+
+while (true); do
+	# on check le ping vers la gateway de l'interface ppp. c'est ça qui va determiner si le vpn est fonctionnel
+	NOW=`date`
+	ping=$(ping -c $PINGCOUNT $PPP_GW | grep received | cut -d ',' -f2 | cut -d ' ' -f2)
+	# si on perd plus d'un ping on considère que c'est un fail
+	if [ "$ping" -lt "3" ]; then
+		echo "$NOW Impossible de pinger $PPP_GW Le VPN est down" &gt;&gt; $LOGFILE
+		# on incrémente le compteur de fail de 1
+		FAIL=`echo $FAIL+1 | bc`
+	else
+		echo "$NOW Le ping vers $PPP_GW est OK" &gt;&gt; $LOGFILE
+		# on reinitialise le compteur de fail
+		FAIL=0
+	fi
+
+	if [ "$FAIL" -ge "$FAILMAX" ] ; then
+		# on commence par checker le tunnel ipsec
+		echo "Controle de la couche ipsec" &gt;&gt; $LOGFILE
+		CHECK_IPSEC=`ipsec auto --status | grep $LOCAL_IP | grep $TUNNEL | grep -c esp`
+		if [ "$CHECK_IPSEC" -ne "1" ] ; then
+			echo "La couche ipsec semble KO" &gt;&gt; $LOGFILE
+			# on verifie que le fichier lock de ipsec ne soit pas trop recent pour eviter de nombreuses relances
+			if [ -f $IPSEC_LOCK ]; then
+				ATMP=`stat -c"%Y" $IPSEC_LOCK`
+				TIMESTAMP=`date +%s`
+				SSLR=`echo "$TIMESTAMP - $ATMP" | bc` # seconds since last restart
+					if [ "$SSLR" -ge "$NEXTRESTART" ]; then
+						rm -f $IPSEC_LOCK
+						ipsecrestart
+						FAIL=0
+					else
+						TIME_TO_SLEEP=`echo $NEXTRESTART - $SSLR | bc`
+						MESSAGE= "Nombre de fails maximum ($FAILMAX) atteint, mais le tunnel ipsec a deja ete relance il y a $SSLR secondes. Seul un redemarrage toutes les $NEXTRESTART secondes est permis.Le vpn est donc DOWN et une relance du tunel ipsec sera faite dans $TIME_TO_SLEEP secondes."
+						echo "$NOW $MESSAGE" &gt;&gt; $LOGFILE
+						echo "$MESSAGE" | mail -s "ATTENTION probleme de vpn sur `hostname -f` !!" $ADMIN
+						sleep $TIME_TO_SLEEP
+					fi
+			else
+				ipsecrestart
+				FAIL=0
+			fi
+		else
+			# si la couche ipsec est OK on va checker la partie l2tp
+			echo "La couche ipsec est OK, on commence le check de la partie l2tp" &gt;&gt; $LOGFILE
+			CHECK_L2TP=`ifconfig | grep 'addr:10.0.1.1'`
+			echo $CHECK_L2TP
+			if [ -z "$check" ]; then
+				echo "La couche l2tp semble KO" &gt;&gt; $LOGFILE
+				if [ -f $L2TP_LOCK ]; then
+					ATMP=`stat -c"%Y" $L2TP_LOCK`
+					TIMESTAMP=`date +%s`
+					SSLR=`echo $TIMESTAMP - $ATMP | bc` # seconds since last restart
+					if [ "$SSLR" -ge "$NEXTRESTART" ]; then
+						rm -f $L2TP_LOCK
+						l2tprestart
+						FAIL=0
+					else
+						TIME_TO_SLEEP=`echo $NEXTRESTART - $SSLR | bc`
+						MESSAGE="Nombre de fails maximum ($FAILMAX) atteint, mais le vpn l2tp a deja ete relance il y a $SSLR secondes. Seul un redemarrage toutes les $NEXTRESTART secondes est permis. Le vpn est donc DOWN et une relance du vpn l2tp sera faite dans $TIME_TO_SLEEP secondes."
+						echo "$NOW $MESSAGE" &gt;&gt; $LOGFILE
+						echo "$MESSAGE" | mail -s "ATTENTION probleme de vpn sur `hostname -f` !!" $ADMIN
+						sleep $TIME_TO_SLEEP
+					fi
+				else
+					l2tprestart
+					FAIL=0
+				fi
+			else
+				MESSAGE="Les couches ipsec et l2tp viennent d'etre relancees suite a un probleme non detecte par le script. Merci d'investiguer la cause du probleme."
+				echo "$NOW $MESSAGE" &gt;&gt; $LOGFILE
+				echo "$MESSAGE" | mail -s "ATTENTION relance du vpn sur `hostname -f` !!" $ADMIN
+				echo "d vpn0" &gt; /var/run/xl2tpd/l2tp-control
+				ipsec auto --down $TUNNEL
+				/etc/init.d/ipsec restart
+				/etc/init.d/xl2tp restart
+				sleep 5
+				ipsec auto --up $TUNNEL
+				sleep 5
+				echo "c vpn0" &gt; /var/run/xl2tpd/l2tp-control
+			fi
+		fi
+	fi
+	sleep $KEEPVALIVE
+done
+</code></pre>
+<p>J'ai également ecrit deux autres scripts, un pour le lancement de la connexion VPN et un pour l'arrêt :</p>
+<pre><code>
+
+#!/bin/bash
+
+# demarrage du tunnel ipsec
+ipsec auto --up L2TP-PSK-VPN0
+
+# temporisation le temps que le tunnel soit UP
+sleep 10
+
+# lancement du script qui check ipsec
+/opt/vpn/check_vpn.sh &amp;
+
+# lancement du vpn via xl2tpd
+echo "c vpn0" &gt; /var/run/xl2tpd/l2tp-control
+
+# temporisation le temps que le vpn soit UP
+sleep 20
+
+# ajout de la route pour router 10.0.1.0/27 via le vpn
+ip route add 192.168.66.0/24 via 10.0.1.200
+</code></pre>
+<pre><code>
+#!/bin/bash
+
+# arret du vpn l2tpd
+echo "d vpn0" &gt; /var/run/xl2tpd/l2tp-control
+
+# temporisation le temps que le vpn soit DOWN
+sleep 5
+
+# kill du tunnel ipsec
+ipsec auto --down L2TP-PSK-VPN0
+
+# kill du script check_ipsec.sh
+process_id=`ps aux | grep "check_vpn.sh" | grep -v "grep" | awk '{print $2}'`
+if [ $? -eq "0" ]; then
+kill $process_id
+fi
+</code></pre>
+<p>C'est fini pour cet article mais n'hésitez pas à laisser vos commentaires si vous ajoutez des améliorations à mes scripts ou pour toutes autres remarques.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/connexion-dun-client-l2tpipsec-sous-linux/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/connexion-dun-client-l2tpipsec-sous-linux/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/connexion-dun-client-l2tpipsec-sous-linux/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/connexion-dun-client-l2tpipsec-sous-linux/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

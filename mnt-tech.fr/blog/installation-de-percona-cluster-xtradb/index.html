@@ -1,0 +1,626 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation de Percona Cluster XtraDB | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation de Percona Cluster XtraDB Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Tutoriel pour monter un Cluster Percona XtraDB. Une alternative vraiment très intéressante à MySQL Cluster." />
+		<meta property="og:title" content="Installation de Percona Cluster XtraDB" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-de-percona-cluster-xtradb/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Tutoriel pour monter un Cluster Percona XtraDB. Une alternative vraiment très intéressante à MySQL Cluster." />
+		<meta property="article:tag" content="mysql" />
+		<meta property="article:tag" content="cluster" />
+		<meta property="article:tag" content="percona" />
+		<meta property="article:published_time" content="2013-04-23T16:04:31+00:00" />
+		<meta property="article:modified_time" content="2013-04-23T16:04:31+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation de Percona Cluster XtraDB | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Tutoriel pour monter un Cluster Percona XtraDB. Une alternative vraiment très intéressante à MySQL Cluster." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation de Percona Cluster XtraDB"><img src="../../images/logo.png" alt="Installation de Percona Cluster XtraDB" title="Installation de Percona Cluster XtraDB"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation de Percona Cluster XtraDB</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 23 04 2013</div>
+
+				<p>Dans ce tutoriel nous allons voir comment mettre en place un Cluster Mysql Percona. Nous allons monter ce cluster sur 3 nœuds. Pour l'exemple les 3 nœuds auront ces caractéristiques :</p>
+<ul>
+<li>node1.domaine.fr 192.168.1.1</li>
+<li>node2.domaine.fr 192.168.1.2</li>
+<li>node3.domaine.fr 192.168.1.3</li>
+</ul>
+<h4>Principes de base</h4>
+<p>Tout d'abord nous allons commencer par faire un peu de théorie. Ce qu'on appelle un Cluster Percona XtraDB n'est en fait pas un réel cluster dans le sens ou ce n'est qu'une simple réplication multi-master synchrone. Cela est différent de MySQL Cluster qui repartit les données sur les différents nœuds. Pour autant j'ai obtenu de bien meilleurs performance avec Percona et j'aimerais bien avoir vos retour à ce sujet dans les commentaires.</p>
+<p>Un cluster Percona consiste donc en une réplication multi-master entre des serveur Percona grâce à un système de réplication utilisant <a href="http://codership.com/content/using-galera-cluster">Galera</a>. Cela implique que l'on peut transformer une installation de Percona serveur traditionnelle en un cluster. Chaque nœud contient donc toutes les données et un cluster peut être composé de 2 nœuds au minimum même si ce n'est pas une configuration recommandée. Ce n'est pas recommandé car dans cette situation les risques sont beaucoup plus grands pour que le cluster tombe en <a href="http://fr.wikipedia.org/wiki/Split-brain">split-brain</a>.</p>
+<h4>Installation</h4>
+<p>Pour commencer, nous allons ajouter le dépôt de Percona sur nos trois nœuds :</p>
+<pre><code>
+# gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+# gpg -a --export CD2EFD2A | apt-key add -
+</code></pre>
+<pre><code>
+# vim /etc/apt/sources.list
+</code></pre>
+<pre><code>
+# deb http://repo.percona.com/apt squeze main
+# deb-src http://repo.percona.com/apt squeeze main
+</code></pre>
+<pre><code>
+aptitude update
+</code></pre>
+<p>Nous pouvons passer à l'installation des paquets :</p>
+<pre><code>
+aptitude install percona-xtradb-cluster-common-5.5 percona-xtradb-cluster-client-5.5 percona-xtrabackup percona-xtradb-cluster-galera-2.x percona-xtradb-cluster-server-5.5
+</code></pre>
+<p>Il faut ensuite arrêter MySQL car nous allons devoir en modifier la configuration</p>
+<pre><code>
+# /etc/init.d/mysql stop
+</code></pre>
+<p>Une fois que cela est fait nous allons éditer le fichier <strong>/etc/hosts</strong> afin de renseigner les différents hostname de nos machines :</p>
+<pre><code>
+# vim /etc/hosts
+</code></pre>
+<pre><code>
+192.168.1.1    node1.mnt-tech.fr node1
+192.168.1.2    node2.mnt-tech.fr node2
+192.168.1.3    node3.mnt-tech.fr node3
+</code></pre>
+<p>Pour éviter un problème de désynchronisation sur les nœuds il est très important qu'il soit synchronisé sur la même heure. Nous installons donc ntp.</p>
+<pre><code>
+aptitude install ntp
+</code></pre>
+<h4>Configuration</h4>
+<p>Nous allons commencer par configurer le master. Pour cela, il va nous falloir créer le fichier <strong>/etc/mysql/my.cnf</strong> qui n'existe pas et sera donc pris en compte au prochain démarrage de Percona</p>
+<pre><code>
+vim /etc/mysql/my.cnf
+</code></pre>
+<p>Voici un fichier de configuration exemple pour un master :</p>
+<pre><code>
+[client]
+port = 3306
+socket = /var/run/mysqld/mysqld.sock
+
+
+[mysqld]
+port = 3306
+datadir = /var/lib/mysql
+socket = /var/run/mysqld/mysqld.sock
+max_connections = 500
+transaction-isolation = 'READ-COMMITTED'
+
+# caching and optimisations
+join_buffer_size = 128
+table_cache = 96
+table_open_cache = 64
+thread_cache_size = 128
+thread_stack = 256K
+tmp_table_size = 256M
+max_allowed_packet = 500M
+read_buffer_size = 128K
+
+slow-query-log-file = /var/log/mysql/slow-queries.log # file must first be created and owned by the MySQL user
+long_query_time = 5
+
+skip-external-locking
+skip-name-resolve
+
+#========#
+# InnoDB #
+#========#
+
+innodb_flush_method = ALL_O_DIRECT
+innodb_buffer_pool_size = 750M # it should be ~70-80% of the available RAM.
+innodb_log_buffer_size = 8M
+innodb_log_file_size = 50M
+innodb_support_xa = 0
+innodb_import_table_from_xtrabackup = 1 # allows restoring a single table
+innodb_flush_log_at_trx_commit = 0 # speeds things up, can lose 1 second worth of transactions if MySQL crashes.
+innodb_doublewrite = 1 # ensures an incremental state transfer will be tried if possible
+
+innodb_file_per_table
+
+#================================#
+# Galera synchronous replication #
+#================================#
+
+binlog_format = row
+innodb_locks_unsafe_for_binlog = 1
+server-id = 1 # change on each node! - not strictly required for Galera, but it's safer to have a unique id on each node in case normal replication is also used
+innodb_autoinc_lock_mode = 2
+query_cache_type = 0
+query_cache_size = 0
+default_storage_engine = InnoDB
+wsrep_cluster_name = "Percona-XtraDB-Cluster"
+wsrep_node_name = "node1" # change this on each node!
+wsrep_provider = /usr/lib/libgalera_smm.so
+wsrep_cluster_address = "gcomm://" # set to "gcomm://"" to reinitialise (reset) a node; otherwise ensure it is pointing to a valid node
+wsrep_slave_threads = 12 # recommended: 4 slave thread per core
+wsrep_retry_autocommit = 2 # how many times to retry deadlocked autocommits
+wsrep_convert_LOCK_to_trx = 0 # convert locking sessions into transactions
+wsrep_certify_nonPK = 1 # Generate fake primary keys for non-PK tables (required for multi-master and parallel applying operation)
+
+# rsync or xtrabackup; remember to create the user 'mysql'@'localhost' on each node, with all privileges for the xtrabackup-based SST to work
+wsrep_sst_method = xtrabackup
+wsrep_sst_auth = mysql:password
+
+[mysqldump]
+quick
+max_allowed_packet = 16M
+
+[mysql]
+no-auto-rehash
+# Remove the next comment character if you are not familiar with SQL
+#safe-updates
+
+[myisamchk]
+key_buffer_size = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+</code></pre>
+<p>Voici une liste des paramètres les plus importants et leur signification</p>
+<ul>
+	<li><strong>max-connections</strong> : Ce paramètre définit le maximum de connexions possible simultanément, il dépend beaucoup de la façon dont votre applicatif utilise MySQL.</li>
+	<li><strong>transaction-isolation</strong> : Cela définit le niveau d'isolation des transactions InnoDB. Par défaut MySQL est à REPEATABLE-READ mais il préférable de le passer à READ-COMMITTED car cela peut augmenter les performances.</li>
+	<li><strong>skip-name-resolve</strong> : Cela permet au serveur de ne pas faire de requêtes DNS. Cela permet une augmentation sensible de performance.</li>
+	<li><strong>innodb_support_xa</strong> : Ce paramètre est obligatoire pour l'utilisation de Galera.</li>
+	<li><strong>innodb_import_table_from_xtrabackup</strong> : Cela permet de restaurer une seule table même à chaud.</li>
+	<li><strong>innodb_file_per_table</strong> : Cela permet de mieux utiliser le disque en stockant plusieurs fichiers plutot qu'un seule énorme fichier et cela permet également de ne restaurer qu'une seule table lorsque que l'on a activé innodb_import_table_from_xtrabackup.</li>
+</ul>
+<p>Voici une liste de paramètres concernant la réplication via Galera</p>
+<ul>
+	<li><strong>server-id</strong> : Cet identifiant doit être unique sur chaque nœud. Vous pouvez utiliser ce que vous voulez.</li>
+	<li><strong>wsrep_cluster_name</strong> : Cet identifiant doit être le même sur tous vos nœuds.</li>
+	<li><strong>wsrep_node_name</strong> : Ce paramètre doit également être différent sur chacun de vos nœud.</li>
+	<li><strong>wsrep_slave_threads</strong> : Le paramètre recommandé est de mettre 4 threads par core.</li>
+	<li><strong>wsrep_cluster_address</strong> : Ce paramètre est très important car il détermine le rôle d'un nœud dans le cluster. Sur le master il doit donc être gcomm:// lorsque l'on installe le cluster. Cela permet de déterminer que ce nœud sera le master sur lequel les autres nœuds vont venir se répliquer. Une fois le cluster en place il faudra modifier ce paramètre à chaud afin de désigner les autres nœuds du cluster (ex : gcomm://node1,node2,...) Cela indique que le master pourra devenir slave avec les autres nœuds et vice-versa.</li>
+	<li><strong>wsrep_sst_method</strong> : Ce paramètre détermine la méthode de synchronisation utilisée lorsqu'un nœud joint le cluster. Il existe 3 possibilités : mysqldump, rsync et xtrabackup. La méthode xtrabackup permet de continuer à utiliser le donneur lors de la synchronisation alors que les méthodes rsync et mysqldump empêchent le donneur et le receveur d'être utilisés.</li>
+</ul>
+<p>Pour démarrer notre master il va donc nous falloir mettre le paramètre <strong>wsrep_cluster_address</strong> à <strong>gcomm://</strong>. Une fois cela fait nous pouvons démarrer mysql sur le master.</p>
+<p>Vous aurez surement besoin de supprimer les fichiers <strong>ib_logfile</strong> avant de démarrer MySQL :</p>
+<pre><code>
+rm /var/lib/mysql/ib_logfile*
+</code></pre>
+<pre><code>
+/etc/init.d/mysql start
+</code></pre>
+<p>Une fois démarré nous allons vérifier que le master est prêt à recevoir des connexions des autres noeuds. Pour cela il faut se connecter au CLI MySQL et taper <strong>show status like 'wsrep%';</strong>. Si tout c'est bien passé vous devriez avoir une sortie similaire à celle ci :</p>
+<pre><code>
+mysql&gt; show status like 'wsrep%';
++----------------------------+--------------------------------------+
+| Variable_name              | Value                                |
++----------------------------+--------------------------------------+
+| wsrep_local_state_uuid     | ae7ae1e4-a900-11e2-0800-4e155b81b7f6 |
+| wsrep_protocol_version     | 4                                    |
+| wsrep_last_committed       | 2838280                              |
+| wsrep_replicated           | 360058                               |
+| wsrep_replicated_bytes     | 577520655                            |
+| wsrep_received             | 468500                               |
+| wsrep_received_bytes       | 740525323                            |
+| wsrep_local_commits        | 359811                               |
+| wsrep_local_cert_failures  | 17                                   |
+| wsrep_local_bf_aborts      | 247                                  |
+| wsrep_local_replays        | 0                                    |
+| wsrep_local_send_queue     | 0                                    |
+| wsrep_local_send_queue_avg | 0.000000                             |
+| wsrep_local_recv_queue     | 0                                    |
+| wsrep_local_recv_queue_avg | 0.000000                             |
+| wsrep_flow_control_paused  | 0.000000                             |
+| wsrep_flow_control_sent    | 0                                    |
+| wsrep_flow_control_recv    | 0                                    |
+| wsrep_cert_deps_distance   | 0.000000                             |
+| wsrep_apply_oooe           | 0.000000                             |
+| wsrep_apply_oool           | 0.000000                             |
+| wsrep_apply_window         | 0.000000                             |
+| wsrep_commit_oooe          | 0.000000                             |
+| wsrep_commit_oool          | 0.000000                             |
+| wsrep_commit_window        | 0.000000                             |
+| wsrep_local_state          | 4                                    |
+| wsrep_local_state_comment  | Synced                               |
+| wsrep_cert_index_size      | 0                                    |
+| wsrep_causal_reads         | 0                                    |
+| wsrep_incoming_addresses   | 192.168.1.1:3306                     |
+| wsrep_cluster_conf_id      | 13                                   |
+| wsrep_cluster_size         | 1                                    |
+| wsrep_cluster_state_uuid   | ae7ae1e4-a900-11e2-0800-4e155b81b7f6 |
+| wsrep_cluster_status       | Primary                              |
+| wsrep_connected            | ON                                   |
+| wsrep_local_index          | 0                                    |
+| wsrep_provider_name        | Galera                               |
+| wsrep_provider_vendor      | Codership Oy &lt;info@codership.com&gt;    |
+| wsrep_provider_version     | 2.5(r150)                            |
+| wsrep_ready                | ON                                   |
++----------------------------+--------------------------------------+
+40 rows in set (0.00 sec)
+</code></pre>
+<p>Il y a plusieurs point importants à vérifier :</p>
+<ul>
+	<li>Il faut que <strong>wsrep_ready</strong> soit sur ON afin que le master puisse accepter de nouvelles connexions.</li>
+	<li>Il faut que <strong>wsrep_local_state_comment</strong> soit <em>Synced</em>.</li>
+	<li>Et enfin, on peut checker <strong>wsrep_local_state_uuid</strong> qui indique l'état de la réplication, les nœuds qui vont rejoindre le cluster doivent atteindre le même état assurant que la réplication est complète.</li>
+</ul>
+<p>Pour assurer le bon fonctionnement de la réplication via <strong>xtrabackup</strong> vous devez créer un compte ayant l'accès à toutes les bases en local sur votre donneur. Pour suivre notre exemple, il s'agit du compte mysql avec comme mot de passe password. Ceci est indiqué dans le my.cnf : <strong>wsrep_sst_auth = mysql:password</strong>.</p>
+<pre><code>
+GRANT ALL PRIVILEGES ON *.* TO 'mysql'@'localhost' IDENTIFIED BY 'password';
+</code></pre>
+<p>En fait, une fois que le cluster sera complètement monté il faudra que chaque nœud est cet user car chaque nœud sera maitre et pourra être donneur pour les autres. Heureusement la réplication via Galera copie les droits du donneurs vers le receveur, du coup cet user sera automatiquement ajouté sur les autres nœuds. Sur debian, cette situation engendre un léger désagrément qui peut simplement se réparer. En effet, les scripts de démarrage et autres scripts de routine de MySQL utilisent le compte <strong>debian-sys-maint</strong> qui est renseigné dans le fichier <strong>/etc/mysql/debian.cnf</strong>. Les droits étant répliqués sur tous les nœuds et l'user debian-sys-maint ayant un mot de passe aléatoire généré à l'installation de MySQL vous allez devoir copier le fichier /etc/mysql/debian.cnf du master sur les autres nœuds. Pour cela vous pouvez par exemple utiliser scp :</p>
+<pre><code>
+scp /etc/mysql/debian.cnf root@192.168.1.2:/etc/mysql/debian.cnf
+scp /etc/mysql/debian.cnf root@192.168.1.3:/etc/mysql/debian.cnf
+</code></pre>
+<p>Si tout est bon vous pouvez passez au nœud suivant. Il suffit simplement d'éditer le <strong>my.cnf</strong> en prenant garde de modifier trois variables :</p>
+<ul>
+	<li>wsrep_node_name</li>
+	<li>server-id</li>
+	<li>wsrep_cluster_address</li>
+</ul>
+<p>La variable <strong>wsrep_cluster_address</strong> doit pointer sur le noeud donneur, dans notre exemple node1. (ex. : wsrep_cluster_address = "gcomm://node1")</p>
+<p>Il ne reste plus qu'à lancer vos noeuds qui vont se synchronisés sur le master. Pour vérifier que tout est bon on peut commencer par rejouer la même requête que précédemment :</p>
+<pre><code>
+mysql&gt; show status like 'wsrep%';
++----------------------------+----------------------------------------------------+
+| Variable_name              | Value                                              |
++----------------------------+----------------------------------------------------+
+| wsrep_local_state_uuid     | ae7ae1e4-a900-11e2-0800-4e155b81b7f6               |
+| wsrep_protocol_version     | 4                                                  |
+| wsrep_last_committed       | 2838280                                            |
+| wsrep_replicated           | 360058                                             |
+| wsrep_replicated_bytes     | 577520655                                          |
+| wsrep_received             | 468502                                             |
+| wsrep_received_bytes       | 740525751                                          |
+| wsrep_local_commits        | 359811                                             |
+| wsrep_local_cert_failures  | 17                                                 |
+| wsrep_local_bf_aborts      | 247                                                |
+| wsrep_local_replays        | 0                                                  |
+| wsrep_local_send_queue     | 0                                                  |
+| wsrep_local_send_queue_avg | 0.000000                                           |
+| wsrep_local_recv_queue     | 0                                                  |
+| wsrep_local_recv_queue_avg | 0.000000                                           |
+| wsrep_flow_control_paused  | 0.000000                                           |
+| wsrep_flow_control_sent    | 0                                                  |
+| wsrep_flow_control_recv    | 0                                                  |
+| wsrep_cert_deps_distance   | 0.000000                                           |
+| wsrep_apply_oooe           | 0.000000                                           |
+| wsrep_apply_oool           | 0.000000                                           |
+| wsrep_apply_window         | 0.000000                                           |
+| wsrep_commit_oooe          | 0.000000                                           |
+| wsrep_commit_oool          | 0.000000                                           |
+| wsrep_commit_window        | 0.000000                                           |
+| wsrep_local_state          | 4                                                  |
+| wsrep_local_state_comment  | Synced                                             |
+| wsrep_cert_index_size      | 0                                                  |
+| wsrep_causal_reads         | 0                                                  |
+| wsrep_incoming_addresses   | 192.168.1.1:3306,192.168.1.2:3306,192.168.1.3:3306 |
+| wsrep_cluster_conf_id      | 15                                                 |
+| wsrep_cluster_size         | 3                                                  |
+| wsrep_cluster_state_uuid   | ae7ae1e4-a900-11e2-0800-4e155b81b7f6               |
+| wsrep_cluster_status       | Primary                                            |
+| wsrep_connected            | ON                                                 |
+| wsrep_local_index          | 0                                                  |
+| wsrep_provider_name        | Galera                                             |
+| wsrep_provider_vendor      | Codership Oy &lt;info@codership.com&gt;                  |
+| wsrep_provider_version     | 2.5(r150)                                          |
+| wsrep_ready                | ON                                                 |
++----------------------------+----------------------------------------------------+
+</code></pre>
+<p>Notre cluster est visiblement bien formé de nos 3 noeuds comme l'indique <strong>wsrep_incoming_addresses</strong>. Vous pouvez donc commencer à vous amuser avec en créant une base depuis un nœud puis en vérifiant que celle ci est bien répliquée sur l'autre. Si vous êtes un bon admin sys vous préfèrerez sans doute faire des tests plus sérieux à l'aide de sysbench par exemple 😎</p>
+<p>Attendez, ce n'est pas fini, il nous reste encore à changer les variables <strong>wsrep_cluster_address</strong> sur les 3 nœuds. Cela va permettre à nos 3 nodes d'êtres master pour les autres. Pour cela il faut passer sur chacun des noeuds et désigner comme master ces 2 copains. Par exemple sur le node1 nous jouerons cette requête :</p>
+<pre><code>
+SET GLOBAL wsrep_cluster_address="gcomm://node2,node3;
+</code></pre>
+<p>Il ne faudra pas oublier de faire de même pour le <strong>my.cnf</strong> pour que le paramètre soit pris en compte en cas de redémarrage. Exemple sur node1 :</p>
+<pre><code>
+wsrep_cluster_address = "gcomm://node2,node3"
+</code></pre>
+<p>Voilà, maintenant c'est fini ! Vous avez un cluster robuste sur lequel vous pouvez perdre jusqu'à deux nodes sans perdre la moindre de vos données. Dans un prochain tutoriel nous alons voir comment mettre en place un loadbalancer via HAproxy afin de tirer profit de ces 3 nœuds et encore dans un autre nous verrons comment compiler sysbench 0.5 et effectuer quelques benchs sur notre cluster tout beau tout neuf.</p>
+<p>Inspiré de : <a href="http://vitobotta.com/percona-xtradb-cluster/">Percona XtraDB Cluster</a> et de pleins d'autres sources en provenance du grand méchant internet...</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-de-percona-cluster-xtradb/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-de-percona-cluster-xtradb/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-de-percona-cluster-xtradb/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-de-percona-cluster-xtradb/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>
