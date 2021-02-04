@@ -1,0 +1,537 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mettre en place un suivi des codes HTTP dans cacti | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Mettre en place un suivi des codes HTTP dans cacti Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Ce tutoriel explique comment mettre en place un suivi des codes HTTP générés par Apache ou Nginx dans Cacti. Cela permet de grapher vos logs et d'avoir un visuel très pratique sur le fonctionnement de votre applicatif." />
+		<meta property="og:title" content="Mettre en place un suivi des codes HTTP dans cacti" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/suivi-des-codes-http-avec-cacti/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Ce tutoriel explique comment mettre en place un suivi des codes HTTP générés par Apache ou Nginx dans Cacti. Cela permet de grapher vos logs et d'avoir un visuel très pratique sur le fonctionnement de votre applicatif." />
+		<meta property="article:tag" content="cacti" />
+		<meta property="article:tag" content="apache" />
+		<meta property="article:tag" content="nginx" />
+		<meta property="article:published_time" content="2017-01-24T15:38:40+00:00" />
+		<meta property="article:modified_time" content="2017-02-06T17:49:47+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Mettre en place un suivi des codes HTTP dans cacti | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Ce tutoriel explique comment mettre en place un suivi des codes HTTP générés par Apache ou Nginx dans Cacti. Cela permet de grapher vos logs et d'avoir un visuel très pratique sur le fonctionnement de votre applicatif." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Mettre en place un suivi des codes HTTP dans cacti"><img src="../../images/logo.png" alt="Mettre en place un suivi des codes HTTP dans cacti" title="Mettre en place un suivi des codes HTTP dans cacti"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Mettre en place un suivi des codes HTTP dans cacti</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 24 01 2017</div>
+
+				<h4>UPDATE DU 06/02/2017 :</h4>
+<p>Pour illustrer un peu mes propos, j'ajoute deux screenshots sur un projet qui fait pas mal de hits sur un des serveurs que j'infogère. Si un jour il y a un problème dans le déploiement qui produit des erreurs 500, je prendrais un screenshot et je mettrais à jour l'article pour que vous voyez à quel point c'est flagrant. Pour le moment, je croise les doigts, ça n'est pas encore arrivé...</p>
+<div class="row">
+	<div class="small-12 columns">
+		<div data-wow-delay="0.3s" class="text-center wow fadeInUp"><img src="../../images/blog/cacti-http-status-code-weekly.jpg" alt="cacti http status code weekly"/></div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div data-wow-delay="0.3s" class="text-center wow fadeInUp"><img src="../../images/blog/cacti-http-status-code-monthly.jpg" alt="cacti http status code monthly"/></div>
+	</div>
+</div>
+
+<h4>Introduction</h4>
+<p>Aujourd’hui un long billet sur ma façon de faire pour grapher les <strong>status code des logs d’apache et de  nginx</strong>. Je vous préviens, si vous voulez le mettre en place et que vous n’êtes pas trop familier avec Cacti vous en aurez pour minimum 30 minutes mais si vous connaissez déjà bien le fonctionnement de Cacti je pense que 15 minutes devraient suffire.</p>
+<p>Si vous êtes sysadmin et que vous êtes, comme tout bon sysadmin qui se respecte (ceci est du second degré), en guerre permanente avec les développeurs avec qui vous bossez, vous allez sûrement vous demandez "Mais pourquoi je devrais grapher les logs de leur applicatif, c’est à eux de regarder ça !" Et bien oui et non, car si lors du développement c’est bien à eux de regarder les logs pour corriger les erreurs, j’estime que lorsque l’appli est en  production c’est à l’admin de pouvoir jeter un <strong>coup d’œil global sur les performances de l’applicatif et cela passe notamment par la surveillance des status code HTTP</strong>. En effet, lors de la mise en prod d’un commit foireux on va recevoir un mail de notre ami cacti nous disant que le seuil d’erreurs 500 à exploser et on va pouvoir, soit engueuler un dev, soit faire un rollback (car il est 2h du matin mais on ne manquera pas de l’engueuler le lendemain matin) :D Bref, vous aurez compris l’utilité d’un tel dispositif.</p>
+
+<p>Avant de rentrer dans le vif du sujet, je sais qu’il existe d’autres méthodes pour faire cela et notamment <strong>ELK</strong> (Elasticsearch – Logstatsh – Kibana) mais je préfère avoir ce type de graphs directement dans cacti car celui-ci regroupe tout un tas d’autres graphiques utiles au sysadmin. Je n’ai rien contre ELK, au contraire même car c’est vraiment bien foutu, c’est juste que je trouve cela plus orienté développeur.</p>
+
+<h4>Fonctionnement</h4>
+<p>Le principe de fonctionnement est assez analogue à ce que font les <strong>plugins Cacti fournis par Percona</strong> pour ceux qui connaissent. Pour ceux qui ne connaissent pas, je vous conseille de les installer car il y a pas mal de type de graphiques disponibles en plus de tout ce qui concerne MySQL. Le fonctionnement est donc le suivant, sur le serveur cacti on a un <strong>script php qui est appelé par cacti et qui se connecte en ssh sur votre serveur web sur lequel il appelle un script perl qui parcours les logs</strong>. Cette information remonte donc jusqu’à cacti qui produit des RRD qui sont ensuite affichés sous forme de graphiques.</p>
+
+<h4>Script Perl sur le serveur web</h4>
+<p>On va commencer par déployer le script perl sur le serveur web qui va faire le comptage des status code de votre log. Je vous le colle ici mais vous pouvez également récupérer la dernière version sur mon dépôt git : <strong>https://github.com/nierdz/admintools/blob/master/cacti/logs/parse_www_logs.pl</strong></p>
+<p>Si vous ne voulez pas vous prendre la tête, je vous conseille de mettre ce script dans <strong>/opt/scripts/parse_www_logs.pl</strong>, sinon vous devrez faire une petite modification dans le fichier de conf du script PHP. J’expliquerai comment plus tard.</p>
+
+<pre><code>
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use File::ReadBackwards ;
+use POSIX qw(strftime);
+
+# Time five minutes ago in apache format
+my $five_minutes = strftime("%d/%b/%Y:%H:%M:%S",localtime(time-300));
+
+# Empty hash containing the status codes
+my %hash = (
+	'200' =&gt;0,
+	'206' =&gt;0,
+	'301' =&gt;0,
+	'302' =&gt;0,
+	'304' =&gt;0,
+	'310' =&gt;0,
+	'400' =&gt;0,
+	'401' =&gt;0,
+	'403' =&gt;0,
+	'404' =&gt;0,
+	'499' =&gt;0,
+	'500' =&gt;0,
+	'503' =&gt;0);
+
+my $bw = File::ReadBackwards-&gt;new( '/var/log/nginx/mad-rabbit.com-ssl_access.log' ) or die "can't read log file $!" ;
+while( defined( my $log_line = $bw-&gt;readline ) ) {
+	$log_line =~ m/([0-9]{1,}\/[a-zA-z]{3}\/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2}).*HTTP\/[0-9].[0-9]" ([0-9]{3})/;
+	my $date = $1;
+	my $status = $2;
+
+	if ($status == 200) {
+	$hash{200}++;
+	}
+	if ($status == 206) {
+	$hash{206}++;
+	}
+	if ($status == 301) {
+	$hash{301}++;
+	}
+	if ($status == 302) {
+	$hash{302}++;
+	}
+	if ($status == 304) {
+	$hash{304}++;
+	}
+	if ($status == 310) {
+	$hash{310}++;
+	}
+	if ($status == 400) {
+	$hash{400}++;
+	}
+	if ($status == 401) {
+	$hash{401}++;
+	}
+	if ($status == 403) {
+	$hash{403}++;
+	}
+	if ($status == 404) {
+	$hash{404}++;
+	}
+	if ($status == 499) {
+	$hash{499}++;
+	}
+	if ($status == 500) {
+	$hash{500}++;
+	}
+	if ($status == 503) {
+	$hash{503}++;
+	}
+
+	# Stop the loop after retrieve 5 minutes of log
+	if ($date le $five_minutes) {
+		foreach my $k (sort(keys(%hash))) {
+		print "$k $hash{$k}\n";
+		}
+	last;
+	}
+}
+</code></pre>
+
+<p>La particularité de ce script réside dans le fait qu’il est très rapide car il utilise <strong>File::ReadBackwards</strong> ce qui lui permet de lire le fichier de log en partant de la fin. J’ai fait ce choix car lorsqu’on a des projets qui génèrent plusieurs Mo de logs par heures cela peut vite devenir assez long de parser le fichier entier. J’avais commencé par écrire ce script en bash et je me suis donc rabattu sur perl pour pour cette raison.</p>
+<p>En lisant le script vous allez voir que le fichier de log parsé est <strong>/var/log/nginx/mad-rabbit.com-ssl_access.log</strong> et qu’il faut donc <strong>modifier cette partie pour l’adapter à votre propre situation</strong>. Une fois le script dans le dossier, vous lui attribué les droits 700 en root:root :</p>
+
+<pre><code>
+root@web0.mad-rabbit.com:~ # chmod 700 /opt/scripts/cacti/parse_www_logs.pl
+root@web0.mad-rabbit.com:~ # chown root: /opt/scripts/cacti/parse_www_logs.pl
+root@web0.mad-rabbit.com:~ # ls -l /opt/scripts/cacti/parse_www_logs.pl
+-rwx------ 1 root root 1366 Jan 24 15:26 /opt/scripts/cacti/parse_www_logs.pl
+</code></pre>
+
+<p>Une fois que c’est fait on installe <strong>File::ReadBackwards</strong> en passant par <strong>CPAN</strong> ou directement par le gestionnaire de paquet de votre distribution. Dans le cas de <strong>Debian/Ubuntu</strong>, il s’agit du paquet <strong>libfile-readbackwards-perl</strong>. Ensuite on lance le script pour voir si tout fonctionne bien et on devrait obtenir un résultat similaire à cela :</p>
+
+<pre><code>
+root@web0.mad-rabbit.com:~ # /opt/scripts/cacti/parse_www_logs.pl
+200 45
+206 0
+301 1
+302 0
+304 0
+310 0
+400 0
+401 0
+403 0
+404 0
+499 0
+500 0
+503 0
+</code></pre>
+
+<p>On obtient bien les <strong>status code des logs sur les 5 dernières minutes et la sortie est formatée correctement</strong> pour être lu par le script php, on peut donc passer à l’étape suivante.</p>
+
+<h4>Script PHP sur le serveur Cacti</h4>
+<p>On commence par télécharger le script PHP sur mon dépôt git, je ne l’affiche pas ici car il est beaucoup trop long. <strong>https://github.com/nierdz/admintools/blob/master/cacti/logs/check_logs_by_ssh.php</strong></p>
+
+<p>Ce script est très largement inspiré du script <strong>ss_get_by_ssh.php</strong> fourni dans les plugins Cacti de <strong>Percona</strong> donc tout le mérite revient à eux. Celui-ci est assez bien commenté donc si vous voulez creuser le fonctionnement il vous suffit de le lire. Pour allez plus loin, vous pouvez également passer la variable <strong>$debug</strong> à <strong>TRUE</strong>.</p>
+
+<p>Ce script est à placer dans le dossier <strong>scripts</strong> de cacti. Dans le cas d’une installation via le gestionnaire de paquet sur <strong>Debian/Ubuntu</strong> il s’agit du dossier <strong>/usr/share/cacti/site/scripts</strong>. Le script doit pouvoir être exécuté par l’utilisateur PHP qui lancera le script. Dans mon cas (installation via gestionnaire de paquet sur Debian) il s’agit de <strong>www-data</strong> car php est exécuté via <strong>mod_php</strong> dans apache. Attention donc, à adapter selon votre configuration.</p>
+
+<p>En plus de ce script PHP, il faut <strong>IMPÉRATIVEMENT</strong> ajouter un fichier de configuration dans le dossier <strong>/etc/cacti</strong> qui sera lu par le script PHP. Le fichier est disponible ici : https://github.com/nierdz/admintools/blob/master/cacti/logs/check_logs_by_ssh.php.cnf</p>
+
+<pre><code>
+&lt;?php
+$ssh_user   = 'root';
+$ssh_iden   = '-i /etc/cacti/id_rsa';
+$logs_www_cmd = '/opt/scripts/cacti/parse_www_logs.pl';
+?&gt;
+</code></pre>
+
+<p>Ce deuxième fichier détermine la <strong>clé SSH privée</strong> à utiliser pour se connecter sur le serveur web. Dans mon cas, les clés sont dans <strong>/etc/cacti</strong> et il faudra donc les générer avec <strong>ssh-keygen</strong> auparavant. Une fois que vous avez généré vos deux clés, il faut attribuer les droits nécessaires à l’utilisateur qui lancera le script PHP, dans mon cas <strong>www-data</strong>.</p>
+
+<pre><code>
+-rw------- 1 www-data root 1675 Jan  9 20:36 /etc/cacti/id_rsa
+</code></pre>
+
+<p>Il faut ensuite copier la clé publique sur votre serveur web en utilisant <strong>ssh-copy-id</strong> par exemple ou encore directement via votre éditeur préféré donc vim ;)</p>
+<p>Il faut également penser à modifier la variable <strong>$logs_www_cmd</strong> qui doit pointer sur votre script perl sur votre serveur web.</p>
+<p>Pour vérifier que la connexion en SSH fonctionne bien avec votre clé et votre utilisateur PHP, vous devez faire une vérification en lançant la commande suivante :</p>
+
+<pre><code>
+root@sup1.mnt-tech.fr:~ # sudo -u www-data ssh -i /etc/cacti/id_rsa root@web0.mad-rabbit.com 'w'
+Could not create directory '/var/www/.ssh'.
+The authenticity of host 'web0.mad-rabbit.com (37.187.205.163)' can't be established.
+ECDSA key fingerprint is e7:6d:d7:10:b3:d3:6c:36:3e:78:d9:f4:e9:e1:cf:a2.
+Are you sure you want to continue connecting (yes/no)? yes
+Failed to add the host to the list of known hosts (/var/www/.ssh/known_hosts).
+ 18:21:58 up 47 days,  1:05,  1 user,  load average: 0.30, 0.13, 0.08
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     pts/1    17-86-190-109.ds 17:20   47:01   0.06s  0.06s -bash
+</code></pre>
+
+<p>On voit que www-data peut bien <strong>se connecter en root sur notre serveur web</strong>. On peut donc pousser plus loin les vérifications en lançant le script php avec <strong>www-data</strong> et en indiquant les paramètres nécessaires pour remonter les logs. Vous devriez avoir une sortie similaire à cela :</p>
+
+<pre><code>
+root@sup1.mnt-tech.fr:~ # sudo -u www-data php /usr/share/cacti/site/scripts/check_logs_by_ssh.php --host web0.mad-rabbit.com --type www --items gg,gh,gi,gj,gk,gl,gm,gn,go,gp,gq,gr,gs
+gg:52 gh:0 gi:3 gj:0 gk:0 gl:0 gm:0 gn:0 go:0 gp:1 gq:0 gr:0 gs:0
+</code></pre>
+
+<p>On voit qu’on a bien les données qui remontent, c’est bon signe, on peut enfin passer à la configuration de Cacti</p>
+
+<h4>Configuration dans l’interface admin de Cacti</h4>
+<p>Pour commencer, on va importer le template aux petits oignons que je vous ai concocté avec amour :) Il est disponible sur mon dépôt git : <strong>https://github.com/nierdz/admintools/blob/master/cacti/logs/cacti_graph_template_http_status_code_gt.xml</strong></p>
+
+<p>Ce template contient le <strong>graph template (GT), le data template (DT) et le data input method (IM)</strong>. Pour l’importer, il faut aller dans le menu "Import Templates" et cocher la case "Use custom RRA settings from the template".</p>
+
+<p>Une fois que c’est fait il faudra peut-être modifier le <strong>data input method</strong> dans la partie input string. Cela dépend du chemin dans lequel se trouve votre script PHP mais dans la plupart des cas il n’y aura rien à faire de ce coté là.</p>
+
+<p>Ensuite il faut ajouter le <strong>graph template à votre device</strong>, pour cela vous allez dans le menu "Devices" et sur votre serveur dans la partie "Associated Graph Templates" vous cliquez sur "Add graph templates" et vous ajoutez "HTTP Status Code GT". Il ne vous reste plus qu’à créer votre graph en allant dans le menu "Create graph for this host" puis en cochant la case "Create: HTTP Status Code GT" et "Create". Voilà, je vous avais dit que c’était long... mais franchement, ça en valait la peine non ? ;)</p>
+
+
+<h4>Et les futures machines ?</h4>
+<p>Vous vous demandez si cela va être aussi long pour chaque nouveau serveur que vous aurez envie de monitorer ? Heureusement que non car il suffira de mettre le script perl sur votre serveur web, de copier la clé publique sur votre nouveau serveur, d’ajouter le graph template, dans Cacti et de créer votre graph. Cette opération prend moins de 5 minutes montre en main !</p>
+
+<h4>Pour aller plus loin</h4>
+<p>Une fois que votre monitoring est en place, vous pouvez aller plus loin en utilisant par exemple le plugin <a href="http://docs.cacti.net/plugin:thold">thold</a> qui vous permettra de recevoir des alertes mails en cas de dépassement d’un seuil sur les erreurs 500 ou autres. Un plugin bien pratique dans bien des situations, à installer de toute urgence si vous ne l’avez pas encore !</p>
+
+<p>Et enfin, quand on a plusieurs frontaux web pour le même site et qu’on veut agréger les graphs en un seul gros graph pour jouer au concours du "qui à la plus grosse" avec ses collègues, on peut utiliser le plugin <a href="http://docs.cacti.net/plugin:aggregate">aggregate</a>. Il vous permettra de voir d’un coup d’œil comment se comporte l’applicatif sur tous vos frontaux et c’est quand même bien pratique !</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/suivi-des-codes-http-avec-cacti/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/suivi-des-codes-http-avec-cacti/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/suivi-des-codes-http-avec-cacti/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/suivi-des-codes-http-avec-cacti/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

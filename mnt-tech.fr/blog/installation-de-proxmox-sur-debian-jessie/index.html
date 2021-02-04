@@ -1,0 +1,499 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation de Proxmox sur Debian Jessie | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation de Proxmox sur Debian Jessie Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Voici comment installer Proxomox sur un serveur dédié en utilisant Debian Jessie et un RAID5 + LVM comme storage." />
+		<meta property="og:title" content="Installation de Proxmox sur Debian Jessie" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Voici comment installer Proxomox sur un serveur dédié en utilisant Debian Jessie et un RAID5 + LVM comme storage." />
+		<meta property="article:tag" content="proxmox" />
+		<meta property="article:tag" content="debian" />
+		<meta property="article:tag" content="virtualisation" />
+		<meta property="article:published_time" content="2016-09-27T11:09:20+00:00" />
+		<meta property="article:modified_time" content="2016-09-27T11:09:20+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation de Proxmox sur Debian Jessie | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Voici comment installer Proxomox sur un serveur dédié en utilisant Debian Jessie et un RAID5 + LVM comme storage." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation de Proxmox sur Debian Jessie"><img src="../../images/logo.png" alt="Installation de Proxmox sur Debian Jessie" title="Installation de Proxmox sur Debian Jessie"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation de Proxmox sur Debian Jessie</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 27 09 2016</div>
+
+				<p>Aujourd'hui nous allons voir comment installer un <strong>Proxmox</strong> chez OVH sans passer par l'installation par défaut de proxmox d'OVH. Tu te demandes pourquoi faire cela alors qu'on peut laisser faire le sale boulot à OVH de manière automatisée ? Et bien tout simplement car j'avais envie de faire cela moi même donc je suppose que d'autres personnes doivent être dans le même cas et que ce tutoriel peut donc les intéresser. De plus, j'ai loué des serveurs avec 3 disques et je voulais un RAID 5 pour porter le volume group (LVM) qui fera office de data storage sur proxmox. <strong>EDIT</strong>: Je me suis rendu compte plus tard qu'OVH gérait le raid5 à l'installation sur une partition autre que / ou /boot mais ce n'est pas très grave car c'est toujours bien de savoir comment fonctionne le partitionnement ou la création d'un RAID5 avec mdadm...</p>
+<p>On va donc commencer par faire l'installation d'une Debian Jessie sur l'interface d'OVH. Si vous êtes chez SoYouStart ou Kimsufi c'est exactement la même chose et tout fonctionnera de la même manière. Pour cette installation on va utiliser le partitionnement suivant :</p>
+<ul>
+	<li>/ : 20 Go</li>
+	<li>swap : 1024 Mo</li>
+</ul>
+<p>Cela va permettre de garder la majorité de l'espace non partitionnée pour créer notre VG. La partition racine reste en RAID 1 car OVH n'autorise pas autre chose dans son installateur. Une fois que le système est installé et que vous êtes connecté en SSH nous allons créer nos partitions avec <strong>parted</strong>. On commence avec /dev/sda et on répètera l'opération sur les autres disques :</p>
+
+<pre><code>
+root@hv0:~# parted /dev/sda
+</code></pre>
+
+<p>On passe l'unité de mesure en secteur, ce qui est à mon avis plus pratique que les autres unités pour créer des partitions et on affiche l'espace libre :</p>
+
+<pre><code>
+(parted) unit s
+(parted) print free
+Model: ATA INTEL SSDSA2CW12 (scsi)
+Disk /dev/sda: 234441648s
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start      End         Size        Type     File system     Flags
+        63s        4095s       4033s                Free Space
+ 1      4096s      40962047s   40957952s   primary  ext4            boot, raid
+ 2      40962048s  43057151s   2095104s    primary  linux-swap(v1)
+        43057152s  234441647s  191384496s           Free Space
+</code></pre>
+
+<p>On va ensuite ajouter la partition à l'aide de la commande <strong>mkpart</strong> et on va vérfier son id avec la commande <strong>print</strong>. Pour ajouter cette partition, on utiliser les données que l'on a receuillies aupravant sur les secteurs de début et de fin de l'espaces libre :</p>
+<pre><code>
+(parted) mkpart primary ext2 43057152s 234441647s
+(parted) print
+Model: ATA INTEL SSDSA2CW12 (scsi)
+Disk /dev/sda: 234441648s
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start      End         Size        Type     File system     Flags
+ 1      4096s      40962047s   40957952s   primary  ext4            boot, raid
+ 2      40962048s  43057151s   2095104s    primary  linux-swap(v1)
+ 3      43057152s  234441647s  191384496s  primary  ext2            lba
+</code></pre>
+
+<p>On va ensuite activer le flag raid sur cette partition :</p>
+<pre><code>
+(parted) set 3 raid on
+(parted) print
+Model: ATA INTEL SSDSA2CW12 (scsi)
+Disk /dev/sda: 234441648s
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start      End         Size        Type     File system     Flags
+ 1      4096s      40962047s   40957952s   primary  ext4            boot, raid
+ 2      40962048s  43057151s   2095104s    primary  linux-swap(v1)
+ 3      43057152s  234441647s  191384496s  primary                  raid
+
+(parted) quit
+Information: You may need to update /etc/fstab.
+</code></pre>
+
+<p>Il faut ensuite répèter l'opération sur les autres disques et on va pouvoir créer notre grappe RAID avec <strong>mdadm</strong> :</p>
+
+<pre><code>
+root@hv0:~# mdadm --create /dev/md3 --level=5 --assume-clean --raid-devices=3 /dev/sda3 /dev/sdb3 /dev/sdc3
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md3 started.
+</code></pre>
+
+<p>On va ensuite mettre à jour le fichier <strong>mdadm.conf</strong> :</p>
+<pre><code>
+updatroot@hv0:~# mdadm --detail --scan &gt; /etc/mdadm/mdadm.conf
+root@hv0:~# cat /etc/mdadm/mdadm.conf
+ARRAY /dev/md1 metadata=0.90 UUID=e93645f5:aa5d40c9:a4d2adc2:26fd5302
+ARRAY /dev/md3 metadata=1.2 name=hv0.mnt-tech.fr:3 UUID=b89e1214:2888d528:41ed2000:bb52ca21e de mdadm.conf
+</code></pre>
+
+
+<p>On va ensuite créer notre <strong>Physical volume</strong> et notre <strong>Volume group</strong>. C'est ce dernier qui sera utilisé directement par proxmox pour y stocker nos images :</p>
+<pre><code>
+root@hv0:~# pvcreate /dev/md3
+  WARNING: lvmetad is running but disabled. Restart lvmetad before enabling it!
+  Physical volume "/dev/md3" successfully created
+
+root@hv0:~# vgcreate data /dev/md3
+  Volume group "data" successfully created
+</code></pre>
+
+<p>On commente temporairement l'IPv6 de <strong>/etc/hosts</strong> pour installer proxmox sur l'IPv4 portée par notre hyperviseur. Il faut également bien faire attention à ce que votre hostname soit identifié par l'IP public de votre serveur et non pas par localhost :</p>
+<pre><code>
+root@hv0:~# cat /etc/hosts
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+127.0.0.1 localhost.localdomain localhost
+94.23.45.72       	hv0.mnt-tech.fr	hv0
+#2001:41d0:0002:2e48::	hv0.mnt-tech.fr	hv0
+
+# The following lines are desirable for IPv6 capable hosts
+#(added automatically by netbase upgrade)
+
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+</code></pre>
+
+<p>On va ensuite pouvoire ajouter le dépôt proxmox et faire la mise à jour de la distribution :</p>
+<pre><code>
+root@hv0:~# echo "deb http://download.proxmox.com/debian jessie pve-no-subscription" &gt; /etc/apt/sources.list.d/pve-install-repo.list
+root@hv0:~# wget -O- "http://download.proxmox.com/debian/key.asc" | apt-key add -
+--2016-09-23 15:09:09--  http://download.proxmox.com/debian/key.asc
+Resolving download.proxmox.com (download.proxmox.com)... 79.133.36.246
+Connecting to download.proxmox.com (download.proxmox.com)|79.133.36.246|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1703 (1.7K) [text/plain]
+Saving to: ‘STDOUT’
+
+-                                                           100%[===========================================================================================================================================>]   1.66K  --.-KB/s   in 0s
+
+2016-09-23 15:09:09 (220 MB/s) - written to stdout [1703/1703]
+
+OK
+root@hv0:~# apt-get update &amp;&amp; apt-get dist-upgrade
+[...]
+</code></pre>
+
+<p>Il faut ensuite installer les paquets proxmox avec cette commande :</p>
+
+<pre><code>
+root@hv0:~# apt-get install proxmox-ve ntp ssh postfix ksm-control-daemon open-iscsi systemd-sysv
+</code></pre>
+
+<p>Et pour finir l'installation, nous allons rebooter le serveur pour passer sur le <strong>kernel pve</strong> :</p>
+
+<pre><code>
+root@hv0:~# reboot
+</code></pre>
+
+<p>Une fois que la machine est remontée et juste pour faire les choses propres on vire l'ancien kernel et on update grub :</p>
+<pre><code>
+root@hv0:~# apt-get remove --purge linux-image-amd64 linux-base
+root@hv0:~# update-grub
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-4.4.19-1-pve
+Found initrd image: /boot/initrd.img-4.4.19-1-pve
+done
+</code></pre>
+
+<p>On vire le sources.list avec le dépôt entreprise qui a sournoisement été ajouté lors de l'installation de proxmox 😑</p>
+<pre><code>
+root@hv0:~# rm /etc/apt/sources.list.d/pve-enterprise.list
+</code></pre>
+
+<p>On peut ensuite se connecter sur l'interface de proxmox et commencer à configurer celui-ci via l'interface. https://ip.publique:8006</p>
+<p>Ensuite il faut aller dans le menu Datacenter -&gt; Add -&gt; LVM et on ajoute le LVM data. J'ajoute pas de screenshot car j'ai la flemme et surtout, c'est facile à trouver 😉</p>
+<p>Ensuite il faut afficher la conf de eth0. hv0 -&gt; system -&gt; network -&gt; eth0 -&gt; edit. Cela va nous servir à configurer une interface bridge que l'on nommera vmbr0 (le nom par défaut). Dans un autre onglet de votre navigateur vous aller ajouter ce bridge en gardant les mêmes informations que sur eth0. Avant de l'ajouter, il faudra supprimer eth0 sur le premier onglet. ATTENTION, il ne faut pas oublier de mettre eth0 dans <strong>bridge ports</strong> car c'est sur cette interface que passe le trafic. Un des défauts de proxmox est qu'il faut rebooter à chaque fois que l'on modifier le fichier <strong>/etc/network/interfaces</strong>... Nous allons donc devoir reboot le serveur une seconde fois</p>
+<pre><code>
+root@hv0:~# reboot
+</code></pre>
+
+<p>Lorsque votre serveur remonte vous avez fini l'installation de proxmox et vous pouvez commencer à ajouter des VM ou des containers. Pour avoir accès à internet elles devront utiliser l'interface vmbr0 en tant que bridge. Et voilà, vous pouvez vous amusez :)</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-de-proxmox-sur-debian-jessie/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

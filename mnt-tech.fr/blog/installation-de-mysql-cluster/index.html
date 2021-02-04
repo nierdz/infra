@@ -1,0 +1,530 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation de Mysql Cluster | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation de Mysql Cluster Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Voici un petit guide qui explique le fonctionnement de MySQL cluster et son installation. En suivant ce how to vous aurez 4 data nodes, 2 management nodes et 2 SQL nodes." />
+		<meta property="og:title" content="Installation de Mysql Cluster" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-de-mysql-cluster/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Voici un petit guide qui explique le fonctionnement de MySQL cluster et son installation. En suivant ce how to vous aurez 4 data nodes, 2 management nodes et 2 SQL nodes." />
+		<meta property="article:tag" content="mysql" />
+		<meta property="article:tag" content="cluster" />
+		<meta property="article:published_time" content="2013-04-17T17:53:35+00:00" />
+		<meta property="article:modified_time" content="2013-04-17T17:53:35+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation de Mysql Cluster | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Voici un petit guide qui explique le fonctionnement de MySQL cluster et son installation. En suivant ce how to vous aurez 4 data nodes, 2 management nodes et 2 SQL nodes." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation de Mysql Cluster"><img src="../../images/logo.png" alt="Installation de Mysql Cluster" title="Installation de Mysql Cluster"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation de Mysql Cluster</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 17 04 2013</div>
+
+				<p>Comme je le disais dans mon précédent billet je vais faire quelques articles sur MySQL cluster. Pour être plus précis, je vais faire quelques billets sur la haute disponibilité d'un environnement MySQL. (je prépare quelques articles sur Percona). Le sujet du jour est donc Mysql Cluster.</p>
+<h4>Principes de bases</h4>
+<p>MySQL cluster est divisé en nœuds (ou nodes comme je vais souvent l'écrire) qui permettent d'assurer une redondance des données et du service. Il existe 3 types de nodes :</p>
+<ul>
+	<li>Les data nodes : ce sont eux qui stockent les données</li>
+	<li>Les SQL nodes : ce sont eux qui encaissent les requêtes SQL de votre applicatif et les renvoient à vos data nodes</li>
+	<li>Les management nodes : ce sont eux qui gèrent le cluster</li>
+</ul>
+<p>Il faut également savoir que les données sont stockées en RAM et que, par conséquent, si vous avez des bases volumineuses il vous faudra beaucoup de RAM. Cela étant dit, il est possible de mettre certaines données sur disque mais les performances s'en ressentent fortement. Vous savez donc le minimum vital sur MySQL Cluster, nous allons passer à son installation.</p>
+<h4>Installation</h4>
+<p>Dans ce tutoriel nous allons utiliser 4 nodes avec les adresses ip et les rôles suivants (machines sous debian squeeze) :</p>
+<ul>
+	<li>192.168.1.1 (node1) : management et SQL</li>
+	<li>192.168.1.2 (node2) : management et SQL</li>
+	<li>192.168.1.3 (node3) : data</li>
+	<li>192.168.1.4 (node4) : data</li>
+</ul>
+<p>Cette configuration minimale nous permet d'avoir une tolérance de panne d'une machine, quelle qu'elle soit.</p>
+<p>Nous allons commencer par préparer les noeuds SQL et pour cela on télécharge l'archive de MySQL cluster que l'on décompresse.</p>
+<pre><code>
+root@node1:~# wget www.mysql.com/get/Downloads/MySQL-Cluster-7.2/mysql-cluster-gpl-7.2.12-linux2.6-x86_64.tar.gz/from/http://cdn.mysql.com/
+root@node1:~# mv index.html mysql-cluster-gpl-7.2.12-linux2.6-x86_64.tar.gz
+root@node1:~# tar xvzf mysql-cluster-gpl-7.2.12-linux2.6-x86_64.tar.gz
+root@node1:~# cd mysql-cluster-gpl-7.2.12-linux2.6-x86_64
+</code></pre>
+<p>Comme pour l'installation d'un serveur MySQL traditionnel il faut :</p>
+<ul>
+	<li>créer un groupe mysql</li>
+	<li>créer un utilisateur mysql utilisant ce groupe</li>
+	<li>bouger le dossier MySQL dans le dossier ou l'on veut qu'il soit installé (ici dans /usr/local/ pour faire simple)</li>
+	<li>faire un lien symbolique vers un nom plus simple</li>
+	<li>installer les dépendances</li>
+	<li>installer les bases de données par défaut</li>
+	<li>copier le script d'init dans /etc/init.d</li>
+</ul>
+<pre><code>
+root@node1:~# groupadd mysql
+root@node1:~# useradd -g mysql mysql
+root@node1:~# mv mysql-cluster-gpl-7.2.12-linux2.6-x86_64 /usr/local/
+root@node1:~# ln -s /usr/local/mysql-cluster-gpl-7.2.12-linux2.6-x86_64/ /usr/local/mysql
+root@node1:~# aptitude install libaio1
+root@node1:~# cd /usr/local/mysql
+root@node1:/usr/local/mysql# scripts/mysql_install_db --user=mysql
+root@node1:/usr/local/mysql# cp support-files/mysql.server /etc/init.d/
+</code></pre>
+<p>Une fois que vous avez fait ceci sur les deux nodes SQL vous pouvez passez à l'installation des nœuds de management (les même nodes dans notre exemple)</p>
+<p>Pour l'installation des management nodes c'est beaucoup plus rapide, il suffit de copier les binaires qui vont bien dans un des dossier qui fait partie de votre PATH (/usr/local/bin/ dans cet exemple) et de les rendre exécutables</p>
+<pre><code>
+root@node1:/usr/local/mysql# cd /usr/local/mysql/bin/
+root@node1:/usr/local/mysql/bin# cp ndb_mgm* /usr/local/bin/
+root@node1:/usr/local/mysql/bin# chmod +x /usr/local/bin/ndb_mgm
+root@node1:/usr/local/mysql/bin# chmod +x /usr/local/bin/ndb_mgm*
+</code></pre>
+<p>Ensuite nous allons passer à l'installation des data nodes qui est une étape aussi simple que précédemment car il faut quasiment faire la même chose au détail près que ce sont les binaires qui gèrent les data qui devront être copiés. Le plus simple pour éviter de télécharger de nouveau l'archive MySQL cluster sur les data nodes et de faire des scp depuis un des deux nodes SQL. Dans la suite de l'exemple nous ferons le scp depuis node1.</p>
+<pre><code>
+root@node1:~# scp /usr/local/mysql/bin/ndbd /usr/local/mysql/bin/ndbmtd root@192.168.1.3:/usr/local/bin/
+root@node1:~# scp /usr/local/mysql/bin/ndbd /usr/local/mysql/bin/ndbmtd root@192.168.1.4:/usr/local/bin/
+root@node1:~# ssh root@192.168.1.3 "chmod +x /usr/local/bin/ndb*"
+root@node1:~# ssh root@192.168.1.4 "chmod +x /usr/local/bin/ndb*"
+</code></pre>
+<h4>Configuration basique des nodes</h4>
+<p>Nous pouvons passer à la configuration des nodes. Je vais volontairement faire une configuration simpliste qui contiendra le strict miminum pour permettre à MySQL Cluster de tourner convenablement. Nous allons commencer par configurer les data nodes et des SQL nodes qui auront exactement le même fichier <strong>my.cnf</strong>. On écrit donc dans notre exemple un fichier my.cnf sur tous les nodes.</p>
+<pre><code>
+root@node3:~# mkdir -p /usr/local/mysql/data
+root@node3:~# vim /etc/my.cnf
+</code></pre>
+<pre><code>
+[mysqld]
+ndbcluster
+[mysql_cluster]
+ndb-connectstring=192.168.1.1,192.168.1.2
+</code></pre>
+<p>On va passer à la configuration des nœuds de management.</p>
+<pre><code>
+root@node1:~# mkdir /var/lib/mysql-cluster
+root@node1:~# mkdir -p /usr/local/mysql/mysql-cluster/
+root@node1:~# vim /var/lib/mysql-cluster/config.ini
+</code></pre>
+<pre><code>
+[ndbd default]
+NoOfReplicas=2
+DataMemory=80M
+IndexMemory=18M
+[tcp default]
+[ndb_mgmd]
+hostname=192.168.1.1
+datadir=/var/lib/mysql-cluster
+[ndb_mgmd]
+hostname=192.168.1.2
+datadir=/var/lib/mysql-cluster
+[ndbd]
+hostname=192.168.1.3
+datadir=/usr/local/mysql/data
+[ndbd]
+hostname=192.168.1.4
+datadir=/usr/local/mysql/data
+[mysqld]
+hostname=192.168.1.1
+[mysqld]
+hostname=192.168.1.2
+</code></pre>
+<h4>Lancement du Cluster</h4>
+<p>Pour lancer et arrêter le cluster il faut respecter un ordre. Lors du démarrage, on commence toujours par les nœuds de management. On commence donc par node1 :</p>
+<pre><code>
+root@node1:~# ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+MySQL Cluster Management Server mysql-5.5.30 ndb-7.2.12
+</code></pre>
+<p>Pour se connecter à la commande de management on tape simplement <strong>ndb_mgm</strong>. Et pour voir le status des différents noeuds on tape <strong>show</strong> :</p>
+<pre><code>
+root@node1:~# ndb_mgm
+-- NDB Cluster -- Management Client --
+ndb_mgm&gt; show
+Connected to Management Server at: 192.168.1.1:1186
+ERROR Message: The cluster configuration is not yet confirmed by all defined management servers. This management server is still waiting for node 2 to connect.
+
+Could not get configuration
+*  4012: Failed to get configuration
+*        The cluster configuration is not yet confirmed by all defined management servers. This management server is still waiting for node 2 to connect.
+ndb_mgm&gt;
+</code></pre>
+<p>Ici, on voit que le nœud 1 attend que le nœud 2 soit connecté. On démarre donc le nœud 2</p>
+<pre><code>
+root@node2:~# ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+MySQL Cluster Management Server mysql-5.5.30 ndb-7.2.12
+</code></pre>
+<p>On vérifie que les deux nœuds se voient bien :</p>
+<pre><code>
+root@node2:~# ndb_mgm
+-- NDB Cluster -- Management Client --
+ndb_mgm&gt; show
+Connected to Management Server at: 192.168.1.1:1186
+Cluster Configuration
+---------------------
+[ndbd(NDB)]	2 node(s)
+id=3 (not connected, accepting connect from 192.168.1.3)
+id=4 (not connected, accepting connect from 192.168.1.4)
+
+[ndb_mgmd(MGM)]	2 node(s)
+id=1	@192.168.1.1  (mysql-5.5.30 ndb-7.2.12)
+id=2	@192.168.1.2  (mysql-5.5.30 ndb-7.2.12)
+
+[mysqld(API)]	2 node(s)
+id=5 (not connected, accepting connect from 192.168.1.1)
+id=6 (not connected, accepting connect from 192.168.1.2)
+</code></pre>
+<p>Nous pouvons donc lancer les data nodes</p>
+<pre><code>
+root@node3:~# ndbd
+2013-04-17 18:45:18 [ndbd] INFO     -- Angel connected to '192.168.1.1:1186'
+2013-04-17 18:45:18 [ndbd] INFO     -- Angel allocated nodeid: 3
+root@node4:~# ndbd
+2013-04-17 18:45:41 [ndbd] INFO     -- Angel connected to '192.168.1.1:1186'
+2013-04-17 18:45:41 [ndbd] INFO     -- Angel allocated nodeid: 4
+</code></pre>
+<p>On vérifie que les deux nodes sont bien détectés dans la console de management :</p>
+<pre><code>
+ndb_mgm&gt; show
+Cluster Configuration
+---------------------
+[ndbd(NDB)]	2 node(s)
+id=3	@192.168.1.3  (mysql-5.5.30 ndb-7.2.12, Nodegroup: 0, Master)
+id=4	@192.168.1.4  (mysql-5.5.30 ndb-7.2.12, Nodegroup: 0)
+
+[ndb_mgmd(MGM)]	2 node(s)
+id=1	@192.168.1.1  (mysql-5.5.30 ndb-7.2.12)
+id=2	@192.168.1.2  (mysql-5.5.30 ndb-7.2.12)
+
+[mysqld(API)]	2 node(s)
+id=5 (not connected, accepting connect from 192.168.1.1)
+id=6 (not connected, accepting connect from 192.168.1.2)
+</code></pre>
+<p>Il ne reste plus qu'à lancer les nodes mysql :</p>
+<pre><code>
+root@node1:~# /etc/init.d/mysql.server start
+Starting MySQL
+....
+root@node2:~# /etc/init.d/mysql.server start
+Starting MySQL
+...
+</code></pre>
+<p>Il ne reste plus qu'à vérifier que les nœuds sont tous connectés via la console de management :</p>
+<pre><code>
+ndb_mgm&gt; show
+Connected to Management Server at: 192.168.1.1:1186
+Cluster Configuration
+---------------------
+[ndbd(NDB)]	2 node(s)
+id=3	@192.168.1.3  (mysql-5.5.30 ndb-7.2.12, Nodegroup: 0, Master)
+id=4	@192.168.1.4  (mysql-5.5.30 ndb-7.2.12, Nodegroup: 0)
+
+[ndb_mgmd(MGM)]	2 node(s)
+id=1	@192.168.1.1  (mysql-5.5.30 ndb-7.2.12)
+id=2	@192.168.1.2  (mysql-5.5.30 ndb-7.2.12)
+
+[mysqld(API)]	2 node(s)
+id=5	@192.168.1.1  (mysql-5.5.30 ndb-7.2.12)
+id=6	@192.168.1.2  (mysql-5.5.30 ndb-7.2.12)
+</code></pre>
+<p>Tout est OK, les nœuds sont bien connectés et UP. Il ne vous reste plus qu'à jouer avec votre cluster ! Pour éteindre votre cluster vous devrez procéder dans l'ordre inverse. Il faut arrêter les SQL puis les datas puis les managements. Dans un prochain tutoriel, on verra comment sont gérées les sauvegardes et restauration.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-de-mysql-cluster/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-de-mysql-cluster/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-de-mysql-cluster/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-de-mysql-cluster/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>

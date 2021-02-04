@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://mnt-tech.fr/sitemap.xml

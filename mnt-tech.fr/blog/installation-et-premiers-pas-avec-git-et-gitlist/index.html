@@ -1,0 +1,406 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Installation et premiers pas avec Git et Gitlist | MNT-TECH - Sysadmin blog</title>
+		<link rel="canonical" href="index.html" />
+		<link rel="shortcut icon" href="../../images/icons/favicon.png" />
+		<link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
+		<link rel="alternate" type="application/rss+xml" title="Installation et premiers pas avec Git et Gitlist Feed" href="../feed/index.html" />
+		<link rel="stylesheet" href="../../css/foundation.css" />
+		<link rel="stylesheet" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/animate.min.css" />
+		<link rel="stylesheet" href="../../css/morphext.css" />
+		<link rel="stylesheet" href="../../css/owl.carousel.css">
+		<link rel="stylesheet" href="../../css/owl.theme.css" />
+		<link rel="stylesheet" href="../../css/owl.transitions.css" />
+		<link rel="stylesheet" href="../../css/slicknav.css" />
+		<link rel="stylesheet" href="../../style.css" />
+		<meta name="description" content="Ce tutoriel explique l'installation de gitlist. Il explique également comment paramétrer un dépôt git afin de le faire fonctionner avec gitlist." />
+		<meta property="og:title" content="Installation et premiers pas avec Git et Gitlist" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://mnt-tech.fr/blog/installation-et-premiers-pas-avec-git-et-gitlist/" />
+		<meta property="og:image" content="https://mnt-tech.fr/images/meta.jpg" />
+		<meta property="og:site_name" content="MNT-TECH - Infogérance Serveur Linux OVH & Online" />
+		<meta property="og:description" content="Ce tutoriel explique l'installation de gitlist. Il explique également comment paramétrer un dépôt git afin de le faire fonctionner avec gitlist." />
+		<meta property="article:tag" content="git" />
+		<meta property="article:tag" content="php" />
+		<meta property="article:tag" content="gitlist" />
+		<meta property="article:published_time" content="2013-05-31T16:08:52+00:00" />
+		<meta property="article:modified_time" content="2017-03-02T08:32:30+00:00" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@mnttech" />
+		<meta name="twitter:domain" content="mnt-tech.fr" />
+		<meta name="twitter:title" content="Installation et premiers pas avec Git et Gitlist | MNT-TECH - Sysadmin blog" />
+		<meta name="twitter:description" content="Ce tutoriel explique l'installation de gitlist. Il explique également comment paramétrer un dépôt git afin de le faire fonctionner avec gitlist." />
+		<meta name="twitter:image" content="https://mnt-tech.fr/images/meta.jpg" />
+	</head>
+<body>
+
+
+<!--  HEADER -->
+<header class="alt-2">
+<div class="top">
+	<div class="row">
+		<div class="small-12 large-3 medium-3 columns">
+			<div class="logo">
+			<a href="../../index.html" title="Installation et premiers pas avec Git et Gitlist"><img src="../../images/logo.png" alt="Installation et premiers pas avec Git et Gitlist" title="Installation et premiers pas avec Git et Gitlist"/></a>
+			</div>
+		</div>
+		<div class="small-12 large-9 medium-9 columns">
+
+<!--  NAVIGATION MENU AREA -->
+<nav class="desktop-menu">
+	<ul class="sf-menu" id="navigation">
+		<li class="current-menu-item"><a href="../page/1/index.html">BLOG</a></li>
+	</ul>
+</nav>
+<!--  END OF NAVIGATION MENU AREA -->
+		</div>
+	</div>
+</div>
+<!--  MESSAGES ABOVE HEADER IMAGE -->
+<div class="message">
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="message-intro">
+				<span class="message-line"></span>
+				<p>Blog</p>
+				<span class="message-line"></span>
+			</div>
+			<h1>Installation et premiers pas avec Git et Gitlist</h1>
+		</div>
+	</div>
+</div>
+<!--  END OF MESSAGES ABOVE HEADER IMAGE -->
+</header>
+<!--  END OF HEADER -->
+
+<!-- BLOG CONTENT -->
+<div class="sectionarea blog">
+	<div class="row">
+		<div class="small-12 large-9 medium-9 columns">
+
+			<!-- POST START -->
+			<div class="entry">
+			<div class="meta">Écrit le 31 05 2013</div>
+
+				<h4>EDIT DU 02 03 2017</h4>
+<p>Après avoir pas mal utilisé gitlist j'ai décidé de m'en séparer car j'ai l'impression que le développement s'essouffle un peu et surtout car c'était un peu overkill à mon goût d'avoir ma propre solution pour aussi peu de dépôt. J'ai donc décidé de switcher sur <a href="https://github.com/nierdz" target="_blank">github</a></p>
+
+<p>Je fais mes premiers pas avec <strong>git</strong> que j'ai utilisé pour la première fois hier :) Je vais donc faire un tutoriel spécial noob. En fait, en tant que sysadmin ce n'est pas le genre de truc que j'ai besoin de manipuler très souvent, mais en découvrant <strong>git</strong> et <strong>github</strong> je me suis dit que j'allais mettre au chaud mes scripts et que j'allais les <strong>versionner</strong>. Par contre, je n'aime pas dépendre d'un service tiers, j'ai donc cherché une alternative <strong>libre</strong> à github et je suis tombé sur <a href="http://gitlab.org/">gitlab</a>. Le hic, c'est que je voulais un truc simple et en <strong>php</strong>. Et là, je suis tombé sur <a href="http://gitlist.org/">gitlist</a>. C'est exactement ce que je cherchais. Il est simple, beau, en php, léger et il fait juste ce qu'il faut. En plus le mec qui développe à l'air plutôt motiver comme le prouve la page <a href="https://github.com/klaussilveira/gitlist/">github de gitlist</a>. <s>Pour une démo du truc, vous pouvez jetez un coup d'oeil sur mon gitlist</s>. Nous allons donc voir deux choses dans ce tutoriel spécial noob :</p>
+<ul>
+	<li>Comment mettre en place un dépôt git sur son serveur fonctionnant avec ssh.</li>
+	<li>Comment installer gitlist pour qu'il liste le contenu de ce dépôt.</li>
+</ul>
+<h4>Création d'un dépôt git sur le serveur</h4>
+<p>Pour commencer, on installe git :</p>
+<pre><code>
+# apt-get install git
+</code></pre>
+<p>Ensuite, il faut créer un utilisateur qui sera l'utilisateur du dépôt git. Dans cet exemple nous l’appellerons <strong>bob</strong> :</p>
+<pre><code>
+# useradd -m -d /home/bob -U -s /bin/bash bob
+</code></pre>
+<ul>
+	<li><strong>-m</strong> permet de créer le home directory si il n'existe pas.</li>
+	<li><strong>-d</strong> permet de spécifier le home directory.</li>
+	<li><strong>-U</strong> permet de créer un groupe au nom de l'utilisateur et d'ajouter l'utilisateur à ce groupe.</li>
+	<li><strong>-s</strong> permet de spécifier le shell de l'utilisateur.</li>
+</ul>
+<p>Dans notre cas on veut que l'utilisateur se connecte au serveur en ssh on utilise donc un shell valide (/bin/bash). Dans le cas ou l'on veut que l'utilisateur se serve uniquement de git on peut lui attribuer un shell git qui permettra uniquement de faire du git et rien d'autre. Dans ce cas, toujours pour l'utilisateur bob on change le shell comme ceci :</p>
+<pre><code>
+# usermod -s /usr/bin/git-shell bob
+</code></pre>
+<p>Dans la suite on considère que bob a un shell valide et qu'il peut donc se connecter sur le serveur. Nous allons donc créer notre dépot git pour un premier projet. Comme je suis un mec original je vais nommer ce projet "projet". La suite est donc à faire avec notre utilisateur bob sur le serveur et pour l'exemple on va dire que le hostname du serveur est git.serveur.fr</p>
+<pre><code>
+$ ssh bob@git.serveur.fr
+$ mkdir projet.git
+$ cd projet.git
+$ git --bare init
+</code></pre>
+<p>Il faut toujours nommer les dossiers en <strong>.git</strong> car lorsque l'on fera notre premier clone le <strong>.git</strong> sera supprimé et le projet se nommera donc bien projet sur notre PC en local. L'option <strong>--bare init</strong> permet d'initialiser un dépôt git vide.</p>
+<p>C'est tout pour la partie serveur, plutot simple non ? On peut ensuite attaquer notre premier commit. Pour cela on va utiliser notre PC en local. Je pars du principe que vous êtes un mec bien et que vous utilisez GNU/Linux 😁</p>
+<pre><code>
+$ mkdir projet
+$ cd projet
+$ git init
+$ git add .
+$ git commit -m 'premier commit'
+$ git remote add origin ssh://bob@git.serveur.fr:2222/home/bob/git/projet.git
+$ git push origin master
+</code></pre>
+<p>Pour résumer ces quelques lignes de commandes, on commance par créer un projet et l'initialiser à vide. On fait un premier commit pour pouvoir ensuite faire notre premier push. Dans notre cas on utilise le port 2222 au lieu du port 22 traditionnellement utilisé pour ssh. Et voilà pour la partie git, nous avons un serveur fonctionnel et il ne reste plus qu'à installer gitlist pour pouvoir naviguer dans nos dépots git avec classe.</p>
+<h4>Installation de gitlist</h4>
+<p>L'installation de gitlist se fait très simplement également. Il vous faut juste un serveur apache ou nginx avec mod_rewrite ainsi que php. On va partir du principe que vous avez déjà installé ces deux là et que vous savez gérer vos vhost car ce n'est pas le but de ce tutoriel. Pour l'exemple on va partir du principe que le <strong>DocumentRoot</strong> de votre vhost se trouve dans <strong>/home/www/git</strong>.</p>
+<pre><code>
+# cd /home/www/git
+# wget https://s3.amazonaws.com/gitlist/gitlist-0.4.0.tar.gz
+# tar xvzf gitlist-0.4.0.tar.gz
+# rm gitlist-0.4.0.tar.gz
+# mv config.ini-example config.ini
+</code></pre>
+<p>Il ne reste plus qu'à éditer le fichier config.ini pour y indiquer ou se trouve vos dépots git :</p>
+<p>cat config.ini</p>
+<pre><code>
+[git]
+client = '/usr/bin/git'
+repositories = '/home/bob/git/'
+
+; You can hide repositories from GitList, just copy this for each repository you want to hide
+; hidden[] = '/var/www/projects/BetaTest'
+
+[app]
+debug = true
+
+; If you need to specify custom filetypes for certain extensions, do this here
+[filetypes]
+; extension = type
+; dist = xml
+</code></pre>
+<p>Et voilà, c'est déjà fini pour l'installation de gitlist.</p>
+
+			</div>
+			<!-- POST END -->
+
+			<!-- SHARE -->
+			<div class="single-section-container"><h5 class="single-section-title"><span class="single-section-text">♥ Partage sur tes réseaux sociaux ♥</span></h5></div>
+			<div class="sharing-buttons">
+				<ul>
+					<li><a href="https://www.facebook.com/sharer/sharer.php?u=https://mnt-tech.fr/blog/installation-et-premiers-pas-avec-git-et-gitlist/" title="Partage sur Facebook !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="https://twitter.com/share/?url=https://mnt-tech.fr/blog/installation-et-premiers-pas-avec-git-et-gitlist/&amp;via=mnttech" title="Partage sur Tweeter !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="https://pinterest.com/pin/create/button/?url=https://mnt-tech.fr/blog/installation-et-premiers-pas-avec-git-et-gitlist/" title="Partage sur Pinterest !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-pinterest"></i></a></li>
+					<li><a href="https://plus.google.com/share?url=https://mnt-tech.fr/blog/installation-et-premiers-pas-avec-git-et-gitlist/" title="Partage sur Google+ !" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-google-plus"></i></a></li>
+				</ul>
+			</div>
+			<!-- END OF SHARE -->
+
+			<!-- AUTHOR BOX -->
+			<div class="author-wrap">
+				<div class="row">
+					<div class="small-12 large-2 medium-3 columns">
+						<div class="author-gravatar"><img src="../../images/gravatar.png" alt="Kévin MET"/></div>
+					</div>
+					<div class="small-12 large-10 medium-9 columns">
+						<div class="author-info">
+							<div class="author author-title"><h6>Kévin MET</h6></div>
+							<div class="author-description"><p>Auteur de ce blog et gérant de la société MNT-TECH, je publie sur ce blog lorsque le temps me le permet et lorsqu'un sujet qui me parait intéressant n'a pas encore été abordé en français. Toutes les informations techniques présentes sur cette page peuvent être réutilisées moyennant le fait de citer la source.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END OF AUTHOR BOX -->
+
+		</div>
+		<div class="small-12 large-3 medium-3 columns">
+
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="widget">
+	<h4 class="widget_title"><span>Categories</span></h4>
+		<ul>
+		<li><a href="../category/sysadmin/page/1/index.html" title="Sysadmin">Sysadmin</a></li>
+		<li><a href="../category/dev/page/1/index.html" title="Dev">Dev</a></li>
+		</ul>
+	</div>
+	<div class="widget">
+	<h4 class="widget_title"><span>Recherche</span></h4>
+		<form method="get" id="searchform" action="https://mnt-tech.fr/blog">
+			<div class="row collapse">
+				<div class="small-11 large-11 medium-11 columns">
+					<input type="text" name="search" id="search">
+				</div>
+				<div class="small-1 large-1 medium-1 columns">
+					<button type="submit" class="button tiny"><i class="fa fa-search"></i></button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>Un coup de pouce ?</span></h4>
+		<div class="textwidget">
+			<a href="../../index.html"><img src="../../images/headache.jpg" alt=""/></a>
+		</div>
+	</div>
+	<div class="widget">
+		<h4 class="widget_title"><span>TROP DE TAGS</span></h4>
+		<div class="tagcloud">
+						<a href="../tag/raid/index.html">raid</a>
+			<a href="../tag/megacli/index.html">megacli</a>
+			<a href="../tag/rtfm/index.html">rtfm</a>
+			<a href="../tag/owncloud/index.html">owncloud</a>
+			<a href="../tag/xen/index.html">xen</a>
+			<a href="../tag/virtualisation/index.html">virtualisation</a>
+			<a href="../tag/mysql/page/1/index.html">mysql</a>
+			<a href="../tag/percona/index.html">percona</a>
+			<a href="../tag/cluster/index.html">cluster</a>
+			<a href="../tag/php/page/1/index.html">php</a>
+			<a href="../tag/opcache/index.html">opcache</a>
+			<a href="../tag/benchmark/page/1/index.html">benchmark</a>
+			<a href="../tag/ovh/page/1/index.html">ovh</a>
+			<a href="../tag/wordpress/page/1/index.html">wordpress</a>
+			<a href="../tag/cms/index.html">cms</a>
+			<a href="../tag/git/index.html">git</a>
+			<a href="../tag/pub/index.html">pub</a>
+			<a href="../tag/doitquick/index.html">doitquick</a>
+			<a href="../tag/linux/page/1/index.html">linux</a>
+			<a href="../tag/daa/index.html">daa</a>
+			<a href="../tag/menu/index.html">menu</a>
+			<a href="../tag/distribution/index.html">distribution</a>
+			<a href="../tag/redhat/index.html">redhat</a>
+			<a href="../tag/rpm/index.html">rpm</a>
+			<a href="../tag/chroot/index.html">chroot</a>
+			<a href="../tag/grub/index.html">grub</a>
+			<a href="../tag/debian/page/1/index.html">debian</a>
+			<a href="../tag/squid/index.html">squid</a>
+			<a href="../tag/proxy/index.html">proxy</a>
+			<a href="../tag/mysqldump/index.html">mysqldump</a>
+			<a href="../tag/vpn/index.html">vpn</a>
+			<a href="../tag/freelan/index.html">freelan</a>
+			<a href="../tag/p2p/index.html">p2p</a>
+			<a href="../tag/nagios/page/1/index.html">nagios</a>
+			<a href="../tag/virtualmin/index.html">virtualmin</a>
+			<a href="../tag/cacti/index.html">cacti</a>
+			<a href="../tag/android/index.html">android</a>
+			<a href="../tag/github/index.html">github</a>
+			<a href="../tag/ssh/index.html">ssh</a>
+			<a href="../tag/backup/index.html">backup</a>
+			<a href="../tag/mydumper/index.html">mydumper</a>
+			<a href="../tag/sidebar/index.html">sidebar</a>
+			<a href="../tag/online/index.html">online</a>
+			<a href="../tag/header/index.html">header</a>
+			<a href="../tag/iptables/index.html">iptables</a>
+			<a href="../tag/firewall/index.html">firewall</a>
+			<a href="../tag/steam/index.html">steam</a>
+			<a href="../tag/apache/index.html">apache</a>
+			<a href="../tag/supervision/index.html">supervision</a>
+			<a href="../tag/optimisation/index.html">optimisation</a>
+			<a href="../tag/l2tp/index.html">l2tp</a>
+			<a href="../tag/ipsec/index.html">ipsec</a>
+			<a href="../tag/mail/index.html">mail</a>
+			<a href="../tag/imap/index.html">imap</a>
+			<a href="../tag/icinga/index.html">icinga</a>
+			<a href="../tag/phpmyadmin/index.html">phpmyadmin</a>
+			<a href="../tag/postfix/index.html">postfix</a>
+			<a href="../tag/node/index.html">node</a>
+			<a href="../tag/load-balancing/index.html">load-balancing</a>
+			<a href="../tag/haproxy/index.html">haproxy</a>
+			<a href="../tag/proxmox/index.html">proxmox</a>
+			<a href="../tag/swap/index.html">swap</a>
+			<a href="../tag/ram/index.html">ram</a>
+			<a href="../tag/cron/index.html">cron</a>
+			<a href="../tag/script/index.html">script</a>
+			<a href="../tag/integrit/index.html">integrit</a>
+			<a href="../tag/collectd/index.html">collectd</a>
+			<a href="../tag/grafana/index.html">grafana</a>
+			<a href="../tag/graphite/index.html">graphite</a>
+			<a href="../tag/nginx/index.html">nginx</a>
+			<a href="../tag/php-fpm/index.html">php-fpm</a>
+			<a href="../tag/cache/index.html">cache</a>
+			<a href="../tag/rsync/index.html">rsync</a>
+			<a href="../tag/xtrabackup/index.html">xtrabackup</a>
+			<a href="../tag/innobackupex/index.html">innobackupex</a>
+			<a href="../tag/nsca/index.html">nsca</a>
+			<a href="../tag/kernel/index.html">kernel</a>
+			<a href="../tag/squeeze/index.html">squeeze</a>
+			<a href="../tag/torrent/index.html">torrent</a>
+			<a href="../tag/rtorrent/index.html">rtorrent</a>
+			<a href="../tag/smartctl/index.html">smartctl</a>
+			<a href="../tag/openvpn/index.html">openvpn</a>
+			<a href="../tag/routage/index.html">routage</a>
+			<a href="../tag/sysbench/index.html">sysbench</a>
+			<a href="../tag/shortcode/index.html">shortcode</a>
+			<a href="../tag/kimsufi/index.html">kimsufi</a>
+			<a href="../tag/gitlist/index.html">gitlist</a>
+			<a href="../tag/qcow2/index.html">qcow2</a>
+			<a href="../tag/qemu/index.html">qemu</a>
+			<a href="../tag/kvm/index.html">kvm</a>
+			<a href="../tag/snapshot/index.html">snapshot</a>
+			<a href="../tag/lvm/index.html">lvm</a>
+			<a href="../tag/utf8/index.html">utf8</a>
+			<a href="../tag/sendmail/index.html">sendmail</a>
+			<a href="../tag/mailq/index.html">mailq</a>
+			<a href="../tag/nrpe/index.html">nrpe</a>
+			<a href="../tag/sip/index.html">sip</a>
+		</div>
+	</div>
+</div>
+<!-- END OF SIDEBAR -->
+
+		</div>
+	</div>
+</div>
+<!-- END OF CONTENT -->
+<!--  FOOTER  -->
+<footer>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="contacts">
+			<div class="row">
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-map-marker"></i></a>PARIS, FRANCE
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-mobile"></i></a>01 02 03 04 05
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-comments"></i></a>LIVE CHAT
+				</div>
+				<div class="small-12 large-3 medium-3 columns">
+					<a href="index.html#"><i class="fa fa-envelope-o"></i></a>E-MAIL
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<div class="footerlinks" data-equalizer>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Infogérance</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Hébergement web dédié</h2>
+				<ul>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns border-right" data-equalizer-watch>
+				<h2>Liens & Projets</h2>
+				<ul>
+					<li><a href="../page/1/index.html">Blog</a></li>
+					<li><a href="https://github.com/nierdz">Github</a></li>
+				</ul>
+			</div>
+			<div class="small-12 large-3 medium-3 columns" data-equalizer-watch>
+				<h2>Derniers articles</h2>
+					<ul>
+	<li><a href="../installation-collectd-graphite-grafana-partie-2/index.html">Installation de Collectd, Graphite et Grafana - Partie 2</a></li>
+	<li><a href="../installation-collectd-graphite-grafana-partie-1/index.html">Installation de Collectd, Graphite et Grafana - Partie 1</a></li>
+	<li><a href="../utiliser-fichier-conf-chiffre-client-mysql/index.html">Utiliser un fichier de conf chiffré pour le client mysql</a></li>
+</ul>			</div>
+			<!--End mc_embed_signup-->
+		</div>
+	</div>
+</div>
+<p class="copyright">© Copyright MNT-TECH</p>
+</footer>
+<!--  END OF FOOTER  -->
+<a href="index.html#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+<script src="../../js/vendor/jquery.js"></script>
+<script src="../../js/vendor/what-input.min.js"></script>
+<script src="../../js/foundation.min.js"></script>
+<script src="../../js/vendor/contact-script.js"></script>
+<script src="../../js/vendor/hoverIntent.js"></script>
+<script src="../../js/vendor/superfish.min.js"></script>
+<script src="../../js/vendor/morphext.min.js"></script>
+<script src="../../js/vendor/wow.min.js"></script>
+<script src="../../js/vendor/jquery.slicknav.min.js"></script>
+<script src="../../js/vendor/waypoints.min.js"></script>
+<script src="../../js/vendor/jquery.animateNumber.min.js"></script>
+<script src="../../js/vendor/owl.carousel.min.js"></script>
+<script src="../../js/vendor/retina.min.js"></script>
+<script src="../../js/custom.js"></script>
