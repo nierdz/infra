@@ -14,3 +14,6 @@
 - src: https://github.com/geerlingguy/ansible-role-nginx
   version: 2.8.0
   name: nginx
+
+- src: https://github.com/nierdz/ansible-role-nextcloud
+  name: nextcloud
