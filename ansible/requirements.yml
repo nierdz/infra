@@ -1,19 +1,19 @@
 ---
-- src: https://github.com/geerlingguy/ansible-role-php
+- src: geerlingguy.php
   version: 4.5.1
   name: php
 
-- src: https://github.com/geerlingguy/ansible-role-mysql
+- src: geerlingguy.mysql
   version: 3.3.0
   name: mysql
 
-- src: https://github.com/geerlingguy/ansible-role-docker
+- src: geerlingguy.docker
   version: 3.0.0
   name: docker
 
-- src: https://github.com/geerlingguy/ansible-role-nginx
+- src: geerlingguy.nginx
   version: 2.8.0
   name: nginx
 
-- src: https://github.com/nierdz/ansible-role-nextcloud
+- src: nierdz.nextcloud
   name: nextcloud
