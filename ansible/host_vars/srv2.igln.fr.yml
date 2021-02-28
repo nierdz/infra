@@ -92,7 +92,7 @@ nginx_vhosts:
   - listen: 5.39.49.20:443 ssl http2 default_server
     server_name: "{{ nextcloud_domain }}"
     state: "present"
-    root: "/var/www/{{ nextcloud_domain }}/current"
+    root: "/var/www/{{ nextcloud_domain }}/current/nextcloud"
     index: index.php
     extra_parameters: |
       add_header Referrer-Policy "no-referrer" always;
@@ -173,23 +173,12 @@ nginx_vhosts:
 # PHP
 php_default_version_debian: "7.4"
 php_packages:
-  - php7.4-common
   - php7.4-cli
-  - php7.4-dev
   - php7.4-fpm
-  - libpcre3-dev
-  - php7.4-gd
-  - php7.4-curl
-  - php7.4-imap
-  - php7.4-json
-  - php7.4-opcache
-  - php7.4-xml
-  - php7.4-mbstring
-  - php-sqlite3
-  - php-imagick
 php_enable_webserver: false
 php_enable_php_fpm: true
 php_enable_apc: false
+php_memory_limit: "512M"
 php_use_managed_ini: true
 php_fpm_listen: "127.0.0.1:9000"
 php_fpm_listen_allowed_clients: "127.0.0.1"
@@ -199,7 +188,6 @@ php_fpm_pm_min_spare_servers: 5
 php_fpm_pm_max_spare_servers: 5
 php_fpm_pool_user: "nginx"
 php_fpm_pool_group: "nginx"
-php_memory_limit: "521M"
 php_max_execution_time: "60"
 php_max_input_time: "60"
 php_max_input_vars: "1000"
@@ -228,7 +216,7 @@ php_opcache_zend_extension: "opcache.so"
 php_opcache_enable: "1"
 php_opcache_enable_cli: "0"
 php_opcache_memory_consumption: "128"
-php_opcache_interned_strings_buffer: "8"
+php_opcache_interned_strings_buffer: "16"
 php_opcache_max_accelerated_files: "10000"
 php_opcache_max_wasted_percentage: "5"
 php_opcache_validate_timestamps: "0"

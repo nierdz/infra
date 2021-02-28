@@ -80,6 +80,7 @@
   hosts: nextcloud
   vars_files:
     - vault_vars/all.yml
+    - vault_vars/nextcloud.yml
   roles:
     - { role: acme_sh, tags: [acme_sh'] }
     - { role: nginx,
