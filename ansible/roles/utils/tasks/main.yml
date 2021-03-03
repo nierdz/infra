@@ -47,7 +47,7 @@
 - name: Define logrotate in /etc/crontab
   lineinfile:
     dest: /etc/crontab
-    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf" # noqa 203
+    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf"  # noqa 203
   notify:
     - cron restart
 

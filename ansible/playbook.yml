@@ -2,8 +2,8 @@
   become: true
   hosts: all
   roles:
-    - { role: utils, tags: ['utils'] }
-    - { role: bind, tags: ['bind'] }
+    - {role: utils, tags: ['utils']}
+    - {role: bind, tags: ['bind']}
   post_tasks:
     - name: Remove /etc/sudoers.d/kmet
       file:
@@ -11,17 +11,17 @@
         state: absent
     # Keep this because of my control_path in ssh local configuration
     - name: Remove local control_path to force login again to load group
-      local_action: # noqa 504
-        module: file
+      file:
         path: /home/{{ ansible_env.USER }}/.ssh/{{ ansible_env.SUDO_USER }}@{{ inventory_hostname }}:22
         state: absent
+      delegate_to: localhost
       changed_when: false
 
 - name: Provision xmr-stak
   become: true
   hosts: xmrstak
   roles:
-    - { role: xmr_stak, tags: ['xmr_stak'] }
+    - {role: xmr_stak, tags: ['xmr_stak']}
 
 - name: Provision docker server
   become: true
@@ -65,15 +65,15 @@
         - madrabbit
         - mnttech
   roles:
-    - { role: docker, tags: ['docker'] }
-    - { role: acme_sh, tags: ['acme_sh'] }
-    - { role: mysql_backup, tags: ['mysql_backup'] }
+    - {role: docker, tags: ['docker']}
+    - {role: acme_sh, tags: ['acme_sh']}
+    - {role: mysql_backup, tags: ['mysql_backup']}
 
 - name: Configure ip failover
   become: true
   hosts: physical
   roles:
-    - { role: ip_failover, tags: ['ip_failover'] }
+    - {role: ip_failover, tags: ['ip_failover']}
 
 - name: Configure nextcloud servers
   become: true
@@ -82,16 +82,16 @@
     - vault_vars/all.yml
     - vault_vars/nextcloud.yml
   roles:
-    - { role: acme_sh, tags: [acme_sh'] }
-    - { role: nginx,
-        tags: ['nginx'],
-        nginx_default_vhost_path: '/etc/nginx/conf.d/default.conf',
-        nginx_vhost_path: '/etc/nginx/conf.d'
+    - {role: acme_sh, tags: [acme_sh']}
+    - {role: nginx,
+       tags: ['nginx'],
+       nginx_default_vhost_path: '/etc/nginx/conf.d/default.conf',
+       nginx_vhost_path: '/etc/nginx/conf.d'
     }
-    - { role: mysql, tags: ['mysql'] }
-    - { role: php, tags: ['php'] }
-    - { role: percona, tags: ['percona'] }
-    - { role: nextcloud, tags: ['nextcloud'] }
+    - {role: mysql, tags: ['mysql']}
+    - {role: php, tags: ['php']}
+    - {role: percona, tags: ['percona']}
+    - {role: nextcloud, tags: ['nextcloud']}
   pre_tasks:
     - name: Install sury key
       apt_key:
@@ -101,7 +101,7 @@
       apt_repository:
         repo: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
         state: present
-        update_cache: yes
+        update_cache: true
         filename: sury
     - name: Install nginx apt key
       apt_key:
@@ -134,7 +134,7 @@
   vars_files:
     - vault_vars/transmission.yml
   roles:
-    - { role: transmission, tags: ['transmission'] }
+    - {role: transmission, tags: ['transmission']}
 
 - name: Provision backuppc
   become: true
@@ -142,5 +142,5 @@
   vars_files:
     - vault_vars/all.yml
   roles:
-    - { role: nginx, tags: ['nginx'] }
-    - { role: backuppc, tags: ['backuppc'] }
+    - {role: nginx, tags: ['nginx']}
+    - {role: backuppc, tags: ['backuppc']}
