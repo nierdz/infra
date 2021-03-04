@@ -14,10 +14,10 @@ jobs:
       - name: Build Changelog
         id: git-chglog
         run: |
-          curl -o git-chglog -L https://github.com/git-chglog/git-chglog/releases/download/0.10.0/git-chglog_linux_amd64
-          chmod u+x git-chglog
+          curl -o /usr/local/bin/git-chglog -L https://github.com/git-chglog/git-chglog/releases/download/0.10.0/git-chglog_linux_amd64
+          chmod +x /usr/local/bin/git-chglog
           tag=`basename ${{ github.ref }}`
-          changelog="$(./git-chglog ${tag})"
+          changelog="$(/usr/local/bin/git-chglog ${tag})"
           echo "::set-output name=changelog::${changelog}"
       - name: Create Release
         uses: actions/create-release@v1
