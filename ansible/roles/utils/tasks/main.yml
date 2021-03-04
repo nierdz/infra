@@ -47,7 +47,7 @@
 - name: Define logrotate in /etc/crontab
   lineinfile:
     dest: /etc/crontab
-    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf" # noqa 203
+    line: "00 0	* * *	root    /usr/sbin/logrotate /etc/logrotate.conf"  # noqa 203
   notify:
     - cron restart
 
@@ -58,12 +58,6 @@
     owner: root
     group: root
     mode: 0755
-
-- name: Change PS1
-  lineinfile:
-    dest: /etc/bash.bashrc
-    regexp: "^export PS1.*"
-    line: 'export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;208m\]$(hostname -f)\[$(tput sgr0)\]\[\033[38;5;15m\]:\w \\$ \[$(tput sgr0)\]"' # noqa 204
 
 - name: Enable SSH forwarding for sudo
   lineinfile:
