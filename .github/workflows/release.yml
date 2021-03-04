@@ -8,22 +8,24 @@ on:
 
 jobs:
   release:
-    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Build Changelog
         id: git-chglog
+        shell: bash
         run: |
-          curl -o /usr/local/bin/git-chglog -L https://github.com/git-chglog/git-chglog/releases/download/0.10.0/git-chglog_linux_amd64
-          chmod +x /usr/local/bin/git-chglog
-          tag=`basename ${{ github.ref }}`
-          changelog="$(/usr/local/bin/git-chglog ${tag})"
-          echo "::set-output name=changelog::${changelog}"
+          curl -o git-chglog_0.10.0_linux_amd64.tar.gz -L https://github.com/git-chglog/git-chglog/releases/download/v0.10.0/git-chglog_0.10.0_linux_amd64.tar.gz
+          tar xvzf git-chglog_0.10.0_linux_amd64.tar.gz git-chglog
+          chmod +x ./git-chglog
+          ./git-chglog "${GITHUB_REF##*/})" > changelog.md
       - name: Create Release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          body: ${{steps.git-chglog.outputs.changelog}}
+          body_path: changelog.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
