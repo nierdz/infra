@@ -114,7 +114,7 @@
     - reload systemd
     - restart xmr-stak
 
-- meta: flush_handlers
+- meta: flush_handlers  # noqa unnamed-task
 
 - name: Copy config.txt to {{ xmr_stak_config_dir }}/config.txt
   template:
@@ -143,7 +143,7 @@
     mode: 0640
   notify: restart xmr-stak
 
-- meta: flush_handlers
+- meta: flush_handlers  # noqa unnamed-task
 
 - name: Enable xmr-stak service
   service:
