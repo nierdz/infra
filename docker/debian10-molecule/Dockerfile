@@ -2,7 +2,7 @@ FROM debian:buster
 
 ENV DEBIAN_FRONTEND noninteractive
 
-LABEL version=2.2.0
+LABEL version=2.2.1
 
 # Install dependencies.
 # hadolint ignore=DL3008
