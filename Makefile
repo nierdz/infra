@@ -86,6 +86,6 @@ ansible-lint: ## Run ansible-lint
 		pushd $(MAIN_DIR)/ansible; \
 		ANSIBLE_VAULT_PASSWORD_FILE=$(MAIN_DIR)/ansible/.vault_pass.txt; \
 		source $(VIRTUALENV_DIR)/bin/activate; \
-		ansible-lint --exclude .cache playbook.yml; \
+		ansible-lint -c ../.ansible-lint playbook.yml; \
 		popd; \
 	)
