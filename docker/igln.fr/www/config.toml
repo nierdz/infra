@@ -18,7 +18,7 @@ copyright = "coucou, c'est la fin de la page ! Fait avec [hugo](https://gohugo.i
   sharingicons = false
 
   [params.sidebar]
-    about = "J'écris des articles autour de l'univers SysAdmin/DevOps/SRE quand j'en ai le temps et l'envie."
+    about = "Mon bordel très rarement mis à jour."
     num_recent_posts = 5
 
   [params.social]
