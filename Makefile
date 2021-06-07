@@ -3,6 +3,7 @@ ANSIBLE_INVENTORY_GROUP ?= all
 ANSIBLE_TAGS ?= all
 MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
+ANSIBLE_DIR := $(MAIN_DIR)/ansible
 USER := kmet
 SERVER := srv2.igln.fr
 
@@ -10,6 +11,24 @@ help: ## Print this help
 	@grep -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort \
 		| awk 'BEGIN { FS = ":.*?## " }; { printf "\033[36m%-30s\033[0m %s\n", $$1, $$2 }'
+
+$(VIRTUALENV_DIR):
+	virtualenv -p $(shell command -v python3) $(VIRTUALENV_DIR)
+
+$(VIRTUALENV_DIR)/bin/pre-commit: $(MAIN_DIR)/requirements.txt
+	pip install -r $(MAIN_DIR)/requirements.txt
+	@touch '$(@)'
+
+pre-commit-install: ## Install pre-commit hooks
+	pre-commit install
+
+install-pip-packages: $(VIRTUALENV_DIR) $(VIRTUALENV_DIR)/bin/pre-commit ## Install python pip packages in a virtual environment
+
+$(ANSIBLE_DIR)/vendor: $(ANSIBLE_DIR)/requirements.yml ## Install ansible galaxy dependencies
+	ansible-galaxy install --force -r $(ANSIBLE_DIR)/requirements.yml -p $(ANSIBLE_DIR)/vendor/roles;
+	@touch '$(@)'
+
+install: install-pip-packages $(ANSIBLE_DIR)/vendor
 
 rsync-pull: ## Pull files from server
 	$(info --> Pull files from server)
@@ -38,18 +57,6 @@ docker-run-igln-local: ## Build and run igln.fr container locally
 		-v $(MAIN_DIR)/certs/igln.local.pem:/etc/ssl/certs/igln.local.pem:ro \
 		igln.fr:local
 
-venv: ## Create python virtualenv if not exists
-	@[[ -d $(VIRTUALENV_DIR) ]] || python3 -m virtualenv --system-site-packages $(VIRTUALENV_DIR)
-
-install: ## Install pip and ansible dependencies
-	$(info --> Install pip and ansible dependencies)
-	@$(MAKE) venv
-	@( \
-		source $(VIRTUALENV_DIR)/bin/activate; \
-		pip3 install --upgrade setuptools; \
-		pip3 install -r requirements.txt; \
-		ansible-galaxy install -r ansible/requirements.yml -p ansible/vendor/roles; \
-	)
 
 mkcert: ## Create certs if needed
 	$(info --> Create certs if needed)
