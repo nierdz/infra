@@ -1,6 +1,6 @@
 ansible==3.4.0
 ansible-base==2.10.10
-ansible-lint==5.0.11
+ansible-lint==5.0.12
 mitogen==0.2.9
 pre-commit==2.13.0
 yamllint==1.26.1
