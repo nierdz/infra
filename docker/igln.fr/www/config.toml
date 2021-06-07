@@ -1,6 +1,6 @@
 languageCode = "fr-fr"
 DefaultContentLanguage = "fr"
-title = "Blog IGLN"
+title = "IGLN"
 theme = "hugo-theme-bootstrap4-blog"
 enableRobotsTXT = true
 enableEmoji = true
@@ -13,7 +13,7 @@ copyright = "coucou, c'est la fin de la page ! Fait avec [hugo](https://gohugo.i
 
 [params]
   author = "Kévin Met"
-  description = "Blog autour de l'univers SysAdmin/DevOps/SRE."
+  description = "💩 mon petit merdier sur l'internet 💩"
   date_format = "02 Mon Jan 2006"
   sharingicons = false
 
