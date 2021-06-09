@@ -69,11 +69,10 @@ pre-commit: ## Run pre-commit tests
 
 ansible-run: ## Run ansible on all servers
 	pushd $(ANSIBLE_DIR); \
-	ANSIBLE_VAULT_PASSWORD_FILE=$(ANSIBLE_DIR)/.vault_pass.txt; \
 	ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy; \
 	ANSIBLE_STRATEGY=mitogen_linear; \
 	ansible-playbook -l $(ANSIBLE_INVENTORY_GROUP) $(ANSIBLE_ARGS) --diff playbook.yml;
 
 ansible-lint: ## Run ansible-lint
-	pushd $(ANSIBLE_DIR); \
-	ansible-lint -c ../.ansible-lint playbook.yml
+	ANSIBLE_ROLES_PATH=$(ANSIBLE_DIR)/roles:$(ANSIBLE_DIR)/vendor/roles \
+		ansible-lint -v -c .ansible-lint $(ANSIBLE_DIR)/playbook.yml
