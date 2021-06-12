@@ -18,10 +18,3 @@ jobs:
         run: make install
       - name: run pre-commit
         run: make pre-commit
-      - name: run ansible-lint
-        shell: bash
-        run: |
-          echo "$ANSIBLE_VAULT_PASSWORD" > ./ansible/.vault_pass.txt
-          make ansible-lint
-        env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
