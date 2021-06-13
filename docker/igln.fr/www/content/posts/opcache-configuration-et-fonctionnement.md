@@ -88,7 +88,7 @@ Ce type de revalidation du cache fonctionne avec deux paramètres :
 *   **opcache.validate_timestamps**
 *   **opcache.revalidate_freq**
 
-**opcache.validate_timestamps** est un booléen qui active ou non la revalidation via timestamp (par défaut à true) et **opcache.revalidate_freq** est le temps en secondes avant lequel un script doit être revalidé (par défaut deux secondes). Si on met la valeur de opcache.revalidate_freq à zéro le fichier PHP sera revalidé à chaque requête.
+**opcache.validate_timestamps** est un booléen qui active ou non la revalidation via timestamp (par défaut à true) et **opcache.revalidate_freq** est le temps en secondes avant lequel un script doit être revalidé (par défaut deux secondes). Si on met la valeur de **opcache.revalidate_freq** à zéro le fichier PHP sera revalidé à chaque requête.
 
 Si je résume, par défaut, OPcache va vérifier au maximum 2 fois par secondes si le timestamp du fichier a changé avant de l’exécuter. Ce type de mécanisme n’est pas idéal en production et ce même si on met une grande valeur à **opcache.revalidate_freq** car on utilise des accès disques pour vérifier les timestamp des fichiers. Dans un environnement qu’on connaît bien, c’est à dire dans lequel on travaille avec les développeurs qui poussent en prod les mises à jour, il faut totalement **désactiver ce mécanisme de revalidation par timestamp** et recharger le cache via un autre mécanisme qu’on verra plus tard dans l’article.
 
@@ -230,7 +230,8 @@ Il y a différents points à superviser pour s’assurer du bon fonctionnement d
 *   Le ratio de hits /misses
 *   Le nombre de restart (oom_restarts et hash_restarts)
 
-Dans un prochain article je détaillerai la façon de mettre en place cette supervision via Nagios. Pour la partie métrique, je n’ai encore rien mis en place dans Cacti à ce sujet mais j’ai vu qu’il y avait un template sur github que je testerai à l’occasion de ce futur article.
+Voici un repo github contenant de quoi mettre en place une supervision [nagios/cacti](https://github.com/nierdz/OPcache-plugins-for-nagios-and-cacti). Il s'agit d'un repository archivé et n'étant donc plus mis à jour.
+
 
 **Sources et liens utiles :**
 

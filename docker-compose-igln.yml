@@ -6,7 +6,7 @@ networks:
 services:
   igln:
     container_name: igln
-    image: nierdz/igln.fr:1.0.11
+    image: nierdz/igln.fr:1.0.12
     restart: always
     ports:
       - ${IGLN_IP}:80:80
