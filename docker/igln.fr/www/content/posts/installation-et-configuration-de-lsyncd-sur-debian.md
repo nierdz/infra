@@ -8,15 +8,15 @@ categories = ["blog"]
 tags = ["rsync", "linux"]
 +++
 
-#### Fonctionnement
+### Fonctionnement
 
 Avant de se lancer dans l'installation, un peu de théorie, histoire de savoir pourquoi il est plus intéressant d'utiliser **lsyncd** plutôt qu'un simple **script rsync en cron**. Le gros avantage de lsyncd est qu'il va utiliser **inotify ou fsevevents** pour monitorer les dossiers à l'intérieur de votre dossier source. Cela permet de lancer un **rsync** uniquement lorsqu'un changement est détecté. De plus, il va lancer un rsync uniquement sur le ou les fichiers qui ont été modifiés ce qui **économise pas mal d'I/O**, surtout lorsqu'on veut synchroniser des dossiers très lourd et qu'on a des disques en cartons 😉
 
 <!--more-->
 
-Attention, ça ne remplace pas un FS distribué ou un DRBD qui seront bien plus gourmand en I/O mais qui, en contre-partie, offriront l'assurance de dossiers synchronisés en temps réel. En effet, lsyncd va générer une **latence** entre la synchronisation des dossiers qui va être plus ou moins longue (ce paramètre est réglable) et qui par défaut est de 15 secondes. Ce type de setup peut donc très bien être utilisé pour du failover par exemple mais ne se prêtera surement pas à du load-balancing ou du HA. Ceci est à définir en fonction de l'applicatif qui tourne derrière et de la criticité de celui-ci...
+Attention, ça ne remplace pas un FS distribué ou un DRBD qui seront bien plus gourmand en I/O mais qui, en contre-partie, offriront l'assurance de dossiers synchronisés en temps réel. En effet, lsyncd va générer une **latence** entre la synchronisation des dossiers qui va être plus ou moins longue (ce paramètre est réglable) et qui par défaut est de 15 secondes. Ce type de setup peut donc très bien être utilisé pour du failover par exemple mais ne se prêtera sûrement pas à du load-balancing ou du HA. Ceci est à définir en fonction de l'applicatif qui tourne derrière et de la criticité de celui-ci...
 
-#### Installation & Configuration
+### Installation & Configuration
 
 Alors comme d'habitude, je suis sous Debian donc je ne parlerai que de Debian dans ce tutoriel mais pour les autres, cela vous permettra de vous familiariser avec les options de configurations. Pour l'installation, on part sur un bon vieux **apt install** des familles :
 
@@ -26,7 +26,7 @@ apt install lsyncd
 ```
 
 
-On va ensuite directement attaquer avec la création des dossiers nécéssaires à la configuration et aux logs :
+On va ensuite directement attaquer avec la création des dossiers nécessaires à la configuration et aux logs :
 
 
 ```bash

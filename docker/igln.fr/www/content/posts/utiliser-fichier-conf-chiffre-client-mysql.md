@@ -135,7 +135,7 @@ cat .mylogin.cnf
 R1�ei�RFU���A4U*������lb��� u�O@|�=�͐�TȰ�d���9��dJ�ƁL0޽��S�!�{}r8<)�f[]c��Ƅ�L�H�O݆��|=Ւ��D�
 ```
 
-Il s'agit d'un chiffrement symétrique utilisant un cipher [AES-128 ECB](https://github.com/mysql/mysql-server/blob/3e90d07c3578e4da39dc1bce73559bbdf655c28c/client/mysql_config_editor.cc#L1171). La clée est générée aléatoirement lors de la création du fichier **.mylogin.cnf** et est stockée dans l'entête de ce fichier. Il est donc très simple de le déchiffrer si on cherche un peu dans le code source de **MySQL**. Mais il existe une solution encore plus simple ! Il suffit d'utiliser l'utilitaire **my_print_defaults** avec l'option **-s** qui permet d'afficher les mots de passe.
+Il s'agit d'un chiffrement symétrique utilisant un cipher [AES-128 ECB](https://github.com/mysql/mysql-server/blob/3e90d07c3578e4da39dc1bce73559bbdf655c28c/client/mysql_config_editor.cc#L1171). La clé est générée aléatoirement lors de la création du fichier **.mylogin.cnf** et est stockée dans l'entête de ce fichier. Il est donc très simple de le déchiffrer si on cherche un peu dans le code source de **MySQL**. Mais il existe une solution encore plus simple ! Il suffit d'utiliser l'utilitaire **my_print_defaults** avec l'option **-s** qui permet d'afficher les mots de passe.
 
 Dans notre cas, voici ce que cela donne en spécifiant le groupe alice :
 
@@ -146,6 +146,6 @@ my_print_defaults -s alice
 --socket=/var/run/mysqld/mysqld.sock
 ```
 
-Il s'agit donc d'une bonne alternative au fait de laisser les mots des passe en clair dans des scripts ou dans l'historique **bash** mais si ce fichier est compromis, il faut considérer que toutes les connexions stockées sont perdues et donc, à changer. Il est donc important de continuer à appliquer des droits très strictes sur ce fichier `0400` ou `0600`.
+Il s'agit donc d'une bonne alternative au fait de laisser les mots des passe en clair dans des scripts ou dans l'historique **bash** mais si ce fichier est compromis, il faut considérer que toutes les connexions stockées sont compromises, et donc, à changer. Il est donc important de continuer à appliquer des droits très strictes sur ce fichier, `0400` quand c'est possible ou `0600`.
 
 Source : [https://www.percona.com/blog/2016/09/07/get-passwords-plain-text-mylogin-cnf/](https://www.percona.com/blog/2016/09/07/get-passwords-plain-text-mylogin-cnf/)
