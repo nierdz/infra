@@ -18,5 +18,3 @@ jobs:
         run: make install
       - name: run pre-commit
         run: make pre-commit
-      - name: run ansible-lint
-        run: make ansible-lint
