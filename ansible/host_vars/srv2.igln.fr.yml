@@ -93,7 +93,7 @@ nginx_vhosts:
     server_name: "{{ nextcloud_domain }}"
     state: "present"
     root: "/var/www/{{ nextcloud_domain }}/current/nextcloud"
-    index: index.php
+    index: index.php index.html /index.php$request_uri
     extra_parameters: |
       add_header Referrer-Policy "no-referrer" always;
       add_header X-Content-Type-Options "nosniff" always;
@@ -103,6 +103,8 @@ nginx_vhosts:
       add_header X-Robots-Tag "none" always;
       add_header X-XSS-Protection "1; mode=block" always;
 
+      fastcgi_hide_header X-Powered-By;
+
       ssl_certificate /root/.acme.sh/{{ nextcloud_domain }}/fullchain.cer;
       ssl_certificate_key /root/.acme.sh/{{ nextcloud_domain }}/{{ nextcloud_domain }}.key;
       include /etc/nginx/generic.conf;
@@ -110,64 +112,46 @@ nginx_vhosts:
       include /etc/nginx/security.conf;
       include /etc/nginx/ssl.conf;
 
-      location = /.well-known/carddav {
-        return 301 $scheme://$host/remote.php/dav;
-      }
-
-      location = /.well-known/caldav {
-        return 301 $scheme://$host/remote.php/dav;
+      location ^~ /.well-known {
+        location = /.well-known/carddav { return 301 /remote.php/dav/; }
+        location = /.well-known/caldav { return 301 /remote.php/dav/; }
+        location /.well-known/acme-challenge { try_files $uri $uri/ =404; }
+        location /.well-known/pki-validation { try_files $uri $uri/ =404; }
+        return 301 /index.php$request_uri;
       }
 
       client_max_body_size 512M;
       fastcgi_buffers 64 4K;
 
+      location /remote {
+        return 301 /remote.php$request_uri;
+      }
+
       location / {
-        rewrite ^ /index.php;
+        try_files $uri $uri/ /index.php$request_uri;
       }
 
-      location ~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/ {
-          deny all;
-      }
-      location ~ ^\/(?:\.|autotest|occ|issue|indie|db_|console) {
-          deny all;
-      }
 
-      location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+)\.php(?:$|\/) {
-        fastcgi_split_path_info ^(.+?\.php)(\/.*|)$;
+      location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/) { return 404; }
+      location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) { return 404; }
+
+      location ~ \.php(?:$|/) {
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
         set $path_info $fastcgi_path_info;
+
         try_files $fastcgi_script_name =404;
+
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param PATH_INFO $path_info;
         fastcgi_param HTTPS on;
+
         fastcgi_param modHeadersAvailable true;
         fastcgi_param front_controller_active true;
         fastcgi_pass 127.0.0.1:9000;
+
         fastcgi_intercept_errors on;
         fastcgi_request_buffering off;
-      }
-
-      location ~ ^\/(?:updater|oc[ms]-provider)(?:$|\/) {
-        try_files $uri/ =404;
-        index index.php;
-      }
-
-      location ~ \.(?:css|js|woff2?|svg|gif|map)$ {
-        try_files $uri /index.php$request_uri;
-        add_header Cache-Control "public, max-age=15778463";
-        add_header Referrer-Policy "no-referrer" always;
-        add_header X-Content-Type-Options "nosniff" always;
-        add_header X-Download-Options "noopen" always;
-        add_header X-Frame-Options "SAMEORIGIN" always;
-        add_header X-Permitted-Cross-Domain-Policies "none" always;
-        add_header X-Robots-Tag "none" always;
-        add_header X-XSS-Protection "1; mode=block" always;
-        access_log off;
-      }
-
-      location ~ \.(?:png|html|ttf|ico|jpg|jpeg|bcmap)$ {
-        try_files $uri /index.php$request_uri;
-        access_log off;
       }
 
 # PHP
