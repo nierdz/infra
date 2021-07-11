@@ -1,5 +1,5 @@
 +++
-date = "2017-07-21TO8:00:00+02:00"
+date = "2017-07-21T08:00:00+02:00"
 author = "Kévin Met"
 title = "Utiliser un fichier de conf chiffré pour le client mysql"
 slug = "utiliser-fichier-conf-chiffre-client-mysql"

@@ -1,4 +1,4 @@
 ---
-acme_sh_version: 2.8.8
+acme_sh_version: 2.9.0
 acme_sh_path: /opt/acme.sh
 acme_sh_certificates: []

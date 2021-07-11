@@ -4,7 +4,7 @@
   name: php
 
 - src: geerlingguy.mysql
-  version: 3.3.1
+  version: 3.3.2
   name: mysql
 
 - src: geerlingguy.docker
@@ -12,9 +12,9 @@
   name: docker
 
 - src: geerlingguy.nginx
-  version: 3.0.0
+  version: 3.1.0
   name: nginx
 
 - src: nierdz.nextcloud
-  version: 21.0.2
+  version: 22.0.0
   name: nextcloud
