@@ -6,7 +6,7 @@ networks:
 services:
   igln:
     container_name: igln
-    image: nierdz/igln.fr:1.0.13
+    image: nierdz/igln.fr:1.0.14
     restart: always
     ports:
       - ${IGLN_IP}:80:80
@@ -16,5 +16,6 @@ services:
       - ./nginx/conf:/etc/nginx/conf:ro
       - ./nginx/igln.conf.d/:/etc/nginx/conf.d:ro
       - /root/.acme.sh/igln.fr/:/etc/nginx/igln.fr:ro
+      - /root/.acme.sh/mnt-tech.fr/:/etc/nginx/mnt-tech.fr:ro
     networks:
       - igln-network

@@ -22,6 +22,6 @@ copyright = "coucou, c'est la fin de la page ! Fait avec [hugo](https://gohugo.i
     num_recent_posts = 5
 
   [params.social]
-    twitter = "mnttech"
+    twitter = "nierdz_"
 
 [languages.fr]

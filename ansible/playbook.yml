@@ -63,7 +63,6 @@
       with_items:
         - igln
         - madrabbit
-        - mnttech
   roles:
     - {role: docker, tags: ['docker']}
     - {role: acme_sh, tags: ['acme_sh']}
