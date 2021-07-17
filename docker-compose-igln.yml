@@ -16,5 +16,6 @@ services:
       - ./nginx/conf:/etc/nginx/conf:ro
       - ./nginx/igln.conf.d/:/etc/nginx/conf.d:ro
       - /root/.acme.sh/igln.fr/:/etc/nginx/igln.fr:ro
+      - /root/.acme.sh/mnt-tech.fr/:/etc/nginx/mnt-tech.fr:ro
     networks:
       - igln-network
