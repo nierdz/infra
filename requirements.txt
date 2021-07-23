@@ -1,4 +1,4 @@
-ansible==4.2.0
+ansible==4.3.0
 ansible-lint==5.1.2
 mitogen==0.2.9
 pre-commit==2.13.0
