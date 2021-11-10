@@ -69,8 +69,6 @@ pre-commit: ## Run pre-commit tests
 
 ansible-run: ## Run ansible on all servers
 	pushd $(ANSIBLE_DIR); \
-	ANSIBLE_STRATEGY_PLUGINS=venv/lib/python3.8/site-packages/ansible_mitogen/plugins/strategy; \
-	ANSIBLE_STRATEGY=mitogen_linear; \
 	ansible-playbook -l $(ANSIBLE_INVENTORY_GROUP) $(ANSIBLE_ARGS) --diff playbook.yml;
 
 ansible-lint: ## Run ansible-lint
