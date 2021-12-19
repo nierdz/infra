@@ -16,5 +16,5 @@
   name: nginx
 
 - src: nierdz.nextcloud
-  version: 22.2.0
+  version: 23.0.0
   name: nextcloud
