@@ -18,6 +18,6 @@ RUN if [[ $LOCAL -eq 1 ]]; then \
       /bin/hugo --baseUrl=https://igln.fr/; \
     fi
 
-FROM nginx:1.19
+FROM nginx:1.21
 LABEL version=1.0.15
 COPY --from=build /www/public /var/www
