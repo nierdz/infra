@@ -6,7 +6,7 @@ networks:
 services:
   madrabbit-nginx:
     container_name: madrabbit-nginx
-    image: nginx:1.19
+    image: nginx:1.21
     restart: always
     ports:
       - ${MADRABBIT_IP}:80:80
@@ -25,7 +25,7 @@ services:
 
   madrabbit-mysql:
     container_name: madrabbit-mysql
-    image: nierdz/mysql:1.1.5
+    image: nierdz/mysql:1.1.6
     restart: always
     command: '--default-authentication-plugin=mysql_native_password'
     volumes:
@@ -40,7 +40,7 @@ services:
 
   madrabbit-php-fpm:
     container_name: madrabbit-php-fpm
-    image: nierdz/php-fpm-7.4:1.0.5
+    image: nierdz/php-fpm-7.4:1.0.6
     restart: always
     volumes:
       - ./madrabbit/www:/madrabbit/www:rw
