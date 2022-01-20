@@ -6,7 +6,7 @@
     dest: "{{ acme_sh_path }}"
 
 - name: Create certificates
-  shell: source /infra/.ovh && ./acme.sh --issue -d {{ item.domains | join(' -d ') }} --renew-hook "{{ item.renew_hook }}" --dns dns_ovh
+  shell: source /infra/.ovh && ./acme.sh --issue -d {{ item.domains | join(' -d ') }} --server letsencrypt --renew-hook "{{ item.renew_hook }}" --dns dns_ovh
   args:
     creates: /root/.acme.sh/{{ item.domains | first }}/{{ item.domains | first }}.conf
     chdir: "{{ acme_sh_path }}"
