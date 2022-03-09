@@ -1,12 +1,12 @@
 # Quick reference
 
-This image is made to provide **debian 10** in a molecule pipeline. It provides **systemd** to allow **ansible** service module to work.
+This image is made to provide **debian 11** in a molecule pipeline. It provides **systemd** to allow **ansible** service module to work.
 
 -	**Main repository containing all my docker images**: [nierdz docker images](https://github.com/nierdz/infra/tree/master/docker)
 
 -	**Where to file issues**: [open issue in infra](https://github.com/nierdz/infra/issues)
 
-- **Dockerfile**: [Dockerfile](https://github.com/nierdz/infra/blob/master/docker/debian10-molecule/Dockerfile)
+- **Dockerfile**: [Dockerfile](https://github.com/nierdz/infra/blob/master/docker/debian11-molecule/Dockerfile)
 
 # Usage
 
@@ -20,10 +20,10 @@ An example of a role using a molecule pipeline and this image can be found here:
 
 When using this image with docker you need ton run in **privileges** mode and to **bind mount** `/sys/fs/cgroup`.
 
-`docker run --name debian10-molecule -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro nierdz/debian10-molecule`
+`docker run --name debian11-molecule -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro nierdz/debian11-molecule`
 
 ## Podman
 
 When using podman, you just run it without any particular privileges.
 
-`podman run --name debian10-molecule -d docker.io/nierdz/debian10-molecule`
+`podman run --name debian11-molecule -d docker.io/nierdz/debian11-molecule`
