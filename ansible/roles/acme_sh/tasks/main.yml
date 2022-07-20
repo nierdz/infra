@@ -18,4 +18,4 @@
     name: "Renew certificates"
     minute: "0"
     hour: "5"
-    job: "source /infra/.ovh && {{ acme_sh_path }}/acme.sh --cron --syslog 6"
+    job: ". /infra/.ovh && {{ acme_sh_path }}/acme.sh --cron --syslog 6"
