@@ -4,7 +4,7 @@
   name: php
 
 - src: geerlingguy.mysql
-  version: 3.5.0
+  version: 3.5.1
   name: mysql
 
 - src: geerlingguy.docker
