@@ -3,15 +3,19 @@ physical
 xmrstak
 docker
 nextcloud
+transmission
 
 [physical]
-srv2.igln.fr
+srv1.igln.fr
 
 [xmrstak]
-srv2.igln.fr
+srv1.igln.fr
 
 [docker]
-srv2.igln.fr
+srv1.igln.fr
 
 [nextcloud]
-srv2.igln.fr
+srv1.igln.fr
+
+[transmission]
+srv1.igln.fr

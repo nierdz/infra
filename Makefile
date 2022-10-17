@@ -5,7 +5,7 @@ MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
 ANSIBLE_DIR := $(MAIN_DIR)/ansible
 USER := kmet
-SERVER := srv2.igln.fr
+SERVER := srv1.igln.fr
 PATH := $(VIRTUALENV_DIR)/bin:$(PATH)
 
 help: ## Print this help

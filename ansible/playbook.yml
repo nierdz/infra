@@ -115,7 +115,7 @@
 
 - name: Provision transmission
   become: true
-  hosts: srv2.igln.fr
+  hosts: transmission
   vars_files:
     - vault_vars/transmission.yml
   roles:
