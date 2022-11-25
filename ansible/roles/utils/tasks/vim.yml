@@ -10,11 +10,10 @@
 - name: Remove this shitty mouse support in vim
   replace:
     path: /usr/share/vim/vim82/defaults.vim
-    regexp: '^  set mouse=a'
-    replace: '"  set mouse=a'
+    regexp: 'set mouse=a'
+    replace: 'set mouse-=a'
     mode: 0644
     owner: root
-  ignore_errors: true
 
 - name: Set vim as default editor
   alternatives:
