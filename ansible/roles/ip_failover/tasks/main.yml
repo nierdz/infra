@@ -1,9 +1,0 @@
----
-- name: Configure ip failover
-  template:
-    src: etc/network/interfaces.d/sys-failover.cfg.j2
-    dest: /etc/network/interfaces.d/sys-failover.cfg
-    mode: 0644
-    owner: root
-  notify: restart networking
-  when: ip_failover is defined

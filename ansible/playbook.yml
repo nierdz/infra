@@ -68,12 +68,6 @@
     - {role: acme_sh, tags: ['acme_sh']}
     - {role: mysql_backup, tags: ['mysql_backup']}
 
-- name: Configure ip failover
-  become: true
-  hosts: physical
-  roles:
-    - {role: ip_failover, tags: ['ip_failover']}
-
 - name: Configure nextcloud servers
   become: true
   hosts: nextcloud

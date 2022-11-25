@@ -1,23 +1,4 @@
 ---
-# Ip aliases
-ip_failover:
-  - ip: 5.39.49.16/28
-  - ip: 5.39.49.17/28
-  - ip: 5.39.49.18/28
-  - ip: 5.39.49.19/28
-  - ip: 5.39.49.20/28
-  - ip: 5.39.49.21/28
-  - ip: 5.39.49.22/28
-  - ip: 5.39.49.23/28
-  - ip: 5.39.49.24/28
-  - ip: 5.39.49.25/28
-  - ip: 5.39.49.26/28
-  - ip: 5.39.49.27/28
-  - ip: 5.39.49.28/28
-  - ip: 5.39.49.29/28
-  - ip: 5.39.49.30/28
-  - ip: 5.39.49.31/28
-
 # Docker
 docker_install_compose: true
 docker_compose_version: "1.27.4"
@@ -89,7 +70,7 @@ nginx_service_enabled: true
 nginx_service_state: started
 nginx_listen_ipv6: false
 nginx_vhosts:
-  - listen: 5.39.49.20:443 ssl http2 default_server
+  - listen: "*:443 ssl http2 default_server"
     server_name: "{{ nextcloud_domain }}"
     state: "present"
     root: "/var/www/{{ nextcloud_domain }}/current/nextcloud"
