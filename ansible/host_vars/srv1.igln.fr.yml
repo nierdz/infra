@@ -1,7 +1,6 @@
 ---
 # Docker
-docker_install_compose: true
-docker_compose_version: "1.27.4"
+docker_install_compose_plugin: true
 
 # Nextcloud
 nextcloud_domain: "data.igln.fr"
