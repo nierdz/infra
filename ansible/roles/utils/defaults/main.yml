@@ -27,8 +27,8 @@ common_packages:
   - openssh-client
   - parted
   - postfix
-  - python-apt
-  - python-pip
+  - python3-apt
+  - python3-pip
   - rsync
   - screen
   - smartmontools

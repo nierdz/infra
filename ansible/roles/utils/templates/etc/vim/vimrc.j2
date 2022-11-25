@@ -13,9 +13,20 @@ syntax on
 " search
 set incsearch                 " search fucking right now !
 set hlsearch                  " and give me some yellow !
+set ignorecase                " case insensitive search
 
 " tabs, spaces and indeting
 set expandtab                 " use spaces when press tab
 set tabstop=2                 " define 2 spaces for 1 tab useful for :retab for example
 set softtabstop=2             " use 2 spaces when press tab
 set shiftwidth=2              " 2 spaces for indentation
+
+" Automatically set paste mode when pasting something
+let &t_SI .= "\<Esc>[?2004h"
+let &t_EI .= "\<Esc>[?2004l"
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction

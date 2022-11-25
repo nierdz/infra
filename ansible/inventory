@@ -1,17 +1,17 @@
 [all:children]
-physical
 xmrstak
 docker
 nextcloud
-
-[physical]
-srv2.igln.fr
+transmission
 
 [xmrstak]
-srv2.igln.fr
+srv1.igln.fr
 
 [docker]
-srv2.igln.fr
+srv1.igln.fr
 
 [nextcloud]
-srv2.igln.fr
+srv1.igln.fr
+
+[transmission]
+srv1.igln.fr
