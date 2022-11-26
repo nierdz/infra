@@ -1,0 +1,4 @@
+---
+ignored:
+  # Do not pin apt-packages to allow easier updates
+  - DL3008
