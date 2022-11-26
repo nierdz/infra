@@ -114,12 +114,3 @@
     - vault_vars/transmission.yml
   roles:
     - {role: transmission, tags: ['transmission']}
-
-- name: Provision backuppc
-  become: true
-  hosts: backup.atelierasap.com
-  vars_files:
-    - vault_vars/all.yml
-  roles:
-    - {role: nginx, tags: ['nginx']}
-    - {role: backuppc, tags: ['backuppc']}
