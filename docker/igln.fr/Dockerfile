@@ -1,5 +1,5 @@
 FROM debian:11-slim as build
-ENV HUGO_VERSION 0.93.3
+ENV HUGO_VERSION 0.107.0
 ARG LOCAL=0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3015
@@ -18,6 +18,6 @@ RUN if [[ $LOCAL -eq 1 ]]; then \
       /bin/hugo --baseUrl=https://igln.fr/; \
     fi
 
-FROM nginx:1.21
-LABEL version=1.1.0
+FROM nginx:1.23
+LABEL version=1.1.1
 COPY --from=build /www/public /var/www
