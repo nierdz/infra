@@ -44,6 +44,8 @@ acme_sh_certificates:
   - domains:
       - igln.fr
       - www.igln.fr
+      - mnt-tech.fr
+      - www.mnt-tech.fr
     renew_hook: "systemctl restart docker-compose@igln"
   - domains:
       - mad-rabbit.com
@@ -55,10 +57,6 @@ acme_sh_certificates:
       - media.tenminutestokill.com
       - static.tenminutestokill.com
     renew_hook: "systemctl restart docker-compose@madrabbit"
-  - domains:
-      - mnt-tech.fr
-      - www.mnt-tech.fr
-    renew_hook: "systemctl restart docker-compose@igln"
   - domains:
       - "{{ nextcloud_domain }}"
     renew_hook: "systemctl restart nginx"
