@@ -1,9 +1,7 @@
-FROM mysql:8.0
-LABEL version=1.1.7
-# hadolint ignore=DL3008
+FROM mysql:8.0-debian
+LABEL version=1.1.8
 RUN apt-get update \
-  && apt-get install -y \
-  --no-install-recommends \
+  && apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
   gnupg2 \
@@ -13,7 +11,6 @@ RUN apt-get update \
 RUN curl -o "percona.deb" -SL "https://repo.percona.com/apt/percona-release_latest.generic_all.deb" \
   && dpkg -i "percona.deb" \
   && rm "percona.deb"
-# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y \
   --no-install-recommends \
