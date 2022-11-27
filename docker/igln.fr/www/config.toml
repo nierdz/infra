@@ -1,27 +1,36 @@
+baseURL = "/"
 languageCode = "fr-fr"
 DefaultContentLanguage = "fr"
 title = "IGLN"
-theme = "hugo-theme-bootstrap4-blog"
+theme = "docdock"
 enableRobotsTXT = true
 enableEmoji = true
-paginate = 10
-copyright = "coucou, c'est la fin de la page ! Fait avec [hugo](https://gohugo.io/)"
+pygmentsCodeFences = true
+pygmentsStyle = "monokailight"
+[Languages]
+  [Languages.fr]
+    title = "IGLN"
+    weight = 1
+    languageName = "Français"
 
-[permalinks]
-  posts = "/:slug/"
-  page = "/:slug/"
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
 
 [params]
-  author = "Kévin Met"
-  description = "💩 mon petit merdier sur l'internet 💩"
-  date_format = "02 Mon Jan 2006"
-  sharingicons = false
+author = "Kévin Met"
+sharingicons = false
+themeStyle = "original"
+ordersectionsby = "weight"
+disableHomeIcon = true
 
-  [params.sidebar]
-    about = "Mon bordel très rarement mis à jour."
-    num_recent_posts = 5
+[[menu.shortcuts]]
+pre = "<h3>À propos</h3>"
+name = "<i class='fa fa-github'></i> <label>github</label>"
+identifier = "ds"
+url = "https://github.com/nierdz"
+weight = 10
 
-  [params.social]
-    twitter = "nierdz_"
-
-[languages.fr]
+[[menu.shortcuts]]
+name = "<i class='fa fa-linkedin'></i> <label>linkedin</label>"
+url = "https://www.linkedin.com/in/kmet/"
+weight = 11

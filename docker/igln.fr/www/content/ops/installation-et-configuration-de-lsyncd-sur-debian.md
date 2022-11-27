@@ -1,11 +1,7 @@
 +++
-date = "2016-12-15T15:07:00+02:00"
-author = "Kévin Met"
+type = "page"
 title = "Installation et configuration de lsyncd sur Debian"
 slug = "installation-et-configuration-de-lsyncd-sur-debian"
-description = "Ce tutoriel explique la configuration de lsyncd sur Debian en utilisant rsync via SSH."
-categories = ["blog"]
-tags = ["rsync", "linux"]
 +++
 
 ### Fonctionnement

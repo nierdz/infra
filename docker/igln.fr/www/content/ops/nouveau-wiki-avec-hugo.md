@@ -1,19 +1,15 @@
 +++
-date = "2019-05-08T15:07:00+02:00"
-author = "Kévin Met"
-title = "Nouveau blog avec hugo"
-slug = "nouveau-blog-avec-hugo"
-description = "Dans ce premier billet j'explique comment j'utilise hugo et docker sur ce nouveau blog."
-categories = ["blog"]
-tags = ["hugo", "go", "docker", "nginx"]
+type = "page"
+title = "Nouveau wiki avec hugo"
+slug = "nouveau-wiki-avec-hugo"
 +++
 
-Bienvenue sur ce nouveau blog qui utilise [hugo](https://gohugo.io/) dans lequel je vais parler des découvertes que je fais autour du sujet **devops**. Mes articles seront toujours écrits en français car les ressources en anglais sont déjà très nombreuses. J'espère que je serai un peu plus productif que sur mon ancien [blog](https://mnt-tech.fr/blog/)... D'ailleurs, une sélection totalement arbitraire d'articles sera réintégrée sur ce nouveau blog avec une réécriture si besoin. Dans ce premier article, je vais justement expliquer comment je déploie ce blog en utilisant **hugo**, **docker** et **docker-compose**.
+Bienvenue sur ce nouveau wiki qui utilise [hugo](https://gohugo.io/) dans lequel je vais parler des découvertes que je fais autour du sujet **ops**. Mes articles seront toujours écrits en français car les ressources en anglais sont déjà très nombreuses. Dans cette première page, je vais justement expliquer comment je déploie ce wiki en utilisant **hugo**, **docker** et **docker-compose**.
 
 <!--more-->
 
 ### Introduction
-On va commencer par le début, j'avais écris en **php** un moteur de blog qui était assez dégueulasse, tellement dégueulasse que je n'ai jamais osé le mettre sur github :flushed: Ça faisait donc un moment que je regardais les générateurs de site statique pour le remplacer et mon choix s'est arrêté sur [hugo](https://gohugo.io/) car il semblait assez mâture et que j'avais envie d'apprendre le **go**. Ce blog sera donc entièrement sous [github](https://github.com/nierdz/infra/tree/master/docker/igln.fr) et je vais expliquer ici les étapes pour passer du développement à la production.
+On va commencer par le début, j'avais écris en **php** un moteur de blog qui était assez dégueulasse, tellement dégueulasse que je n'ai jamais osé le mettre sur github :flushed: Ça faisait donc un moment que je regardais les générateurs de site statique pour le remplacer et mon choix s'est arrêté sur [hugo](https://gohugo.io/) car il semblait assez mâture et que j'avais envie d'apprendre le **go**. Ce wiki sera donc entièrement sous [github](https://github.com/nierdz/infra/tree/master/docker/igln.fr) et je vais expliquer ici les étapes pour passer du dev à la prod.
 
 ### Docker
 Mon idée de base avec un site entièrement statique était que je pouvais embarquer le site, une fois généré, dans une image **docker nginx** de base. C'est donc ce que j'ai fait en utilisant [docker multi-stage](https://docs.docker.com/develop/develop-images/multistage-build/) afin de produire une image légère ne contenant que le code et l'image nginx. Voici à quoi ressemble le **Dockerfile** au global et on va prendre le temps de détailler un peu les différentes étapes pas à pas.
@@ -140,7 +136,7 @@ make docker-run-igln-local
 
 Une fois qu'on est satisfait de l'article, il ne reste plus qu'à modifier la version dans le **Dockerfile**, merger notre branche dans **master** et laisser github actions travailler à notre place.
 
-Ce n'est néanmoins pas tout à fait fini car il faut ensuite utiliser cette image quelque part pour afficher notre blog. Pour cela, j'utilise **docker-compose** pour la facilité et la souplesse de cet outil. Ce choix est motivé par le fait que ce site est hebergé sur un simple serveur et que si le service tombe, ce n'est absolument pas grave donc je n'ai pas besoin de mécanisme de redondance.
+Ce n'est néanmoins pas tout à fait fini car il faut ensuite utiliser cette image quelque part pour afficher notre wiki. Pour cela, j'utilise **docker-compose** pour la facilité et la souplesse de cet outil. Ce choix est motivé par le fait que ce site est hebergé sur un simple serveur et que si le service tombe, ce n'est absolument pas grave donc je n'ai pas besoin de mécanisme de redondance.
 
 Voici donc le fichier `docker-compose-igln.yml` qui permet de faire tourner l'image docker :
 

@@ -1,11 +1,7 @@
 +++
-date = "2017-02-01T14:54:37+02:00"
-author = "Kévin Met"
+type = "page"
 title = "Fonctionnement et configuration d'OPcache"
 slug = "opcache-configuration-et-fonctionnement"
-description = "Fonctionnement et configuration d'OPcache de PHP."
-categories = ["blog"]
-tags = ["php", "opcache"]
 +++
 
 Aujourd’hui on va parler de **Zend OPcache**, un sujet qui peut sembler un peu fade car c’est quelque chose qu’on manipule assez régulièrement depuis qu’il est inclus dans PHP mais finalement, j’ai quand même trouvé pas mal de chose à raconter et je vais essayer d’aller un peu en profondeur au long de cet article. C’est bien d’avoir de l’ambition en début d’article, on verra si je tiens mes promesses... 😉
