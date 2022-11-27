@@ -1,11 +1,7 @@
 +++
-date = "2017-07-21T08:00:00+02:00"
-author = "Kévin Met"
+type = "page"
 title = "Utiliser un fichier de conf chiffré pour le client mysql"
 slug = "utiliser-fichier-conf-chiffre-client-mysql"
-description = "Ce tutoriel explique la configuration de lsyncd sur Debian en utilisant rsync via SSH."
-categories = ["blog"]
-tags = ["mysql"]
 +++
 
 ### Introduction
