@@ -12,8 +12,8 @@ DEBUG=${DEBUG:=0}
 source /infra/.env
 
 DB="madrabbit"
-MYSQLDUMP=(/usr/bin/mysqldump -u root -p"${MADRABBIT_MYSQL_ROOT_PASSWORD}")
-MYSQL=(/usr/bin/mysql -u root -p"${MADRABBIT_MYSQL_ROOT_PASSWORD}")
+MYSQLDUMP=(/usr/bin/mysqldump -u root -p"${MYSQL_ROOT_PASSWORD}")
+MYSQL=(/usr/bin/mysql -u root -p"${MYSQL_ROOT_PASSWORD}")
 GZIP="/bin/gzip"
 TIME_TO_KEEP="60" # Time in days you want to keep old backups
 DATE=$(date +%Y%m%d)
