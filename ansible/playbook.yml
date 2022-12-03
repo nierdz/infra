@@ -39,15 +39,14 @@
         recursive: false
     - name: Create /infra/.env and /infra/.ovh
       template:
-        src: vault_files/{{ item.value }}
-        dest: "{{ item.key }}"
+        src: vault_files/{{ item.src }}
+        dest: "{{ item.dest }}"
         mode: 0400
-        owner: root
-        group: root
-      with_dict: {
-        "/infra/.env": "docker.env",
-        "/infra/.ovh": "ovh.secret"
-      }
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+      loop:
+        - { dest: "/infra/.env", src: "docker.env", owner: "www-data", group: "www-data" }
+        - { dest: "/infra/.ovh", src: "ovh.secret", owner: "root", group: "root" }
     - name: Create /etc/systemd/system/docker-compose@.service
       template:
         src: docker-compose@.service.j2
