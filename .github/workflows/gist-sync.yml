@@ -57,7 +57,7 @@ jobs:
         id: igln-6
         with:
           auth: ${{ secrets.GIST_TOKEN }}
-          gist_url: https://gist.github.com/nierdz/07469cc4d744615f6cb9335210cf2942
+          gist_url: https://gist.github.com/nierdz/6952539552b9ac9c8b6e93c0065b9a16
           gist_title: wordpress-bulk-delete-custom-fields.sh
           gist_description: script to bulk delete custom post fields on WordPress
           github_file: scripts/wordpress-bulk-delete-custom-fields.sh
