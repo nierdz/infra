@@ -53,3 +53,11 @@ jobs:
           gist_title: docker-build.sh
           gist_description: script to build all my docker images
           github_file: scripts/docker-build.sh
+      - uses: popsiclestick/gist-sync-action@v1.2.0
+        id: igln-6
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gist_url: https://gist.github.com/nierdz/07469cc4d744615f6cb9335210cf2942
+          gist_title: wordpress-bulk-delete-custom-fields.sh
+          gist_description: script to bulk delete custom post fields on WordPress
+          github_file: scripts/wordpress-bulk-delete-custom-fields.sh
