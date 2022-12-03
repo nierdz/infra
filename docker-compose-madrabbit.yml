@@ -21,7 +21,7 @@ services:
 
   madrabbit-wordpress:
     container_name: madrabbit-wordpress
-    image: nierdz/mad-rabbit.com:1.0.1
+    image: nierdz/mad-rabbit.com:1.0.2
     restart: on-failure
     ports:
       - ${MADRABBIT_HTTPS_PORT}:443
