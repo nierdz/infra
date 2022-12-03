@@ -22,6 +22,7 @@ sharingicons = false
 themeStyle = "original"
 ordersectionsby = "weight"
 disableHomeIcon = true
+disableNavChevron = true
 
 [[menu.shortcuts]]
 pre = "<h3>À propos</h3>"
