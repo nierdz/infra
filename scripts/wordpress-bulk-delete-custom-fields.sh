@@ -62,11 +62,13 @@ for id in "${POST_IDS[@]}"; do
   done
 
   # Delete simple meta keys
-  for key in "${META_KEYS[@]}"; do
-    if ${WP_BINARY} post meta get "${id}" "${key}" >/dev/null; then
-      echo "Deleting meta key ${key} from ${id}"
-      ${WP_BINARY} post meta delete "${id}" "${key}"
-    fi
+  for key in "${keys[@]}"; do
+    for simple_key in "${META_KEYS[@]}"; do
+      if [[ "${key}" == "${simple_key}" ]]; then
+        echo "Deleting ${key} matching ${simple_key} in ${id}"
+        ${WP_BINARY} post meta delete "${id}" "${key}"
+      fi
+    done
   done
 
 done
