@@ -61,3 +61,11 @@ jobs:
           gist_title: wordpress-bulk-delete-custom-fields.sh
           gist_description: script to bulk delete custom post fields on WordPress
           github_file: scripts/wordpress-bulk-delete-custom-fields.sh
+      - uses: popsiclestick/gist-sync-action@v1.2.0
+        id: igln-6
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gist_url: https://gist.github.com/nierdz/ca180f3f05d6ee445743d4685fae5359
+          gist_title: wordpress-check-duplicate-custom-fields.sh
+          gist_description: script to check for duplicate custom fields on WordPress
+          github_file: scripts/wordpress-check-duplicate-custom-fields.sh
