@@ -30,8 +30,8 @@
     - vault_vars/all.yml
   pre_tasks:
     - name: Clone infra repository
-      git:
-        repo: git@github.com:nierdz/infra.git
+      ansible.builtin.git:
+        repo: https://github.com/nierdz/infra.git
         version: "master"
         dest: /infra
         accept_hostkey: true
