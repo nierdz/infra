@@ -12,7 +12,7 @@ services:
       --general_log=1
       --general_log_file=/var/lib/mysql/general.log
     volumes:
-      - /opt/madrabbit-mysql:/var/lib/mysql:rw
+      - /opt/madrabbit/mysql:/var/lib/mysql:rw
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping || exit 1"]
       interval: 10s
@@ -33,8 +33,8 @@ services:
       - ./php/zzz-opcache.ini:/usr/local/etc/php/conf.d/zzz-opcache.ini
       - ./php/zzz-php-fpm-tuning.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm-tuning.conf
       - /root/.acme.sh/mad-rabbit.com/:/etc/nginx/mad-rabbit.com:ro
-      - ./madrabbit/images:/var/www/bedrock/web/images:ro
-      - ./madrabbit/uploads:/var/www/bedrock/web/app/uploads:rw
+      - /opt/madrabbit/images:/var/www/bedrock/web/images:ro
+      - /opt/madrabbit/uploads:/var/www/bedrock/web/app/uploads:rw
       - .env:/var/www/bedrock/.env:ro
     shm_size: 512M
     depends_on:
