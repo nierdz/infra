@@ -50,6 +50,7 @@ acme_sh_certificates:
   - domains:
       - mad-rabbit.com
       - www.mad-rabbit.com
+      - goaccess.mad-rabbit.com
       - tenminutestokill.com
       - www.tenminutestokill.com
     renew_hook: "systemctl restart docker-compose@madrabbit"
