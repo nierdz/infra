@@ -81,7 +81,7 @@ nginx_vhosts:
         proxy_set_header X-Real-IP $remote_addr;
       }
   - listen: "*:443 ssl http2 "
-    server_name: mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
+    server_name: mad-rabbit.com www.mad-rabbit.com goaccess.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/mad-rabbit.com/fullchain.cer;
