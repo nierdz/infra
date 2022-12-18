@@ -29,6 +29,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf:/etc/nginx/conf:ro
       - ./nginx/madrabbit.conf.d/:/etc/nginx/conf.d:ro
+      - /var/log/nginx/madrabbit_access.log:/var/log/nginx/madrabbit_access.log:rw
+      - /opt/madrabbit/goaccess:/var/www/goaccess:rw
       - ./php/zzz-hardening.ini:/usr/local/etc/php/conf.d/zzz-hardening.ini
       - ./php/zzz-opcache.ini:/usr/local/etc/php/conf.d/zzz-opcache.ini
       - ./php/zzz-php-fpm-tuning.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm-tuning.conf
@@ -44,3 +46,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+  madrabbit-goaccess:
+    container_name: madrabbit-goaccess
+    image: allinurl/goaccess:1.6.5
+    restart: on-failure
+    ports:
+      - 7890:7890
+    command: >
+      --no-global-config
+      --datetime-format "%d/%b/%Y:%H:%M:%S %z"
+      --tz=Europe/Paris
+      --log-format COMBINED
+      --real-time-html
+      --log-file=/var/log/nginx/madrabbit_access.log
+      --all-static-files
+      --ignore-crawlers
+      --persist
+      --restore
+      --db-path "/var/www/db"
+      --output=/var/www/goaccess/index.html
+      --ws-url=wss://goaccess.mad-rabbit.com:443
+    volumes:
+      - /var/log/nginx/madrabbit_access.log:/var/log/nginx/madrabbit_access.log:ro
+      - /opt/madrabbit/goaccess/db:/var/www/db:rw
+      - /opt/madrabbit/goaccess/html:/var/www/goaccess:rw
+    depends_on:
+      - madrabbit-wordpress
