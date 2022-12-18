@@ -46,13 +46,14 @@ acme_sh_certificates:
       - www.igln.fr
       - mnt-tech.fr
       - www.mnt-tech.fr
-    renew_hook: "systemctl restart docker-compose@igln"
+    renew_hook: "systemctl restart nginx && systemctl restart docker-compose@igln"
   - domains:
       - mad-rabbit.com
       - www.mad-rabbit.com
+      - goaccess.mad-rabbit.com
       - tenminutestokill.com
       - www.tenminutestokill.com
-    renew_hook: "systemctl restart docker-compose@madrabbit"
+    renew_hook: "systemctl restart nginx && systemctl restart docker-compose@madrabbit"
   - domains:
       - "{{ nextcloud_domain }}"
     renew_hook: "systemctl restart nginx"
@@ -77,9 +78,10 @@ nginx_vhosts:
       location / {
         proxy_pass https://localhost:4431;
         proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
       }
   - listen: "*:443 ssl http2 "
-    server_name: mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
+    server_name: mad-rabbit.com www.mad-rabbit.com goaccess.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/mad-rabbit.com/fullchain.cer;
@@ -92,6 +94,7 @@ nginx_vhosts:
       location / {
         proxy_pass https://localhost:4430;
         proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
       }
   - listen: "*:443 ssl http2 default_server"
     server_name: "{{ nextcloud_domain }}"
