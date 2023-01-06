@@ -174,3 +174,30 @@ php_opcache_validate_timestamps: "0"
 php_opcache_revalidate_path: "0"
 php_opcache_revalidate_freq: "1"
 php_opcache_max_file_size: "0"
+
+# Logrotate
+logrotate_options:
+  - weekly
+  - rotate 4
+  - create
+  - dateext
+
+logrotate_applications:
+  - name: nginx
+    definitions:
+      - logs:
+          - /var/log/nginx/*.log
+        options:
+          - daily
+          - missingok
+          - rotate 180
+          - compress
+          - delaycompress
+          - notifempty
+          - create 0644 www-data adm
+          - sharedscripts
+          - dateext
+          - dateformat .%Y-%m-%d
+        postrotate:
+          - /usr/bin/kill -USR1 "$(cat /run/nginx.pid)"
+          - /usr/bin/systemctl restart docker-compose@madrabbit

@@ -66,6 +66,7 @@
     - {role: docker, tags: ['docker']}
     - {role: acme_sh, tags: ['acme_sh']}
     - {role: mysql_backup, tags: ['mysql_backup']}
+    - {role: logrotate, tags: ['logrotate']}
 
 - name: Configure nextcloud servers
   become: true
