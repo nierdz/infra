@@ -18,3 +18,7 @@
 - src: nierdz.nextcloud
   version: 25.0.2
   name: nextcloud
+
+- src: arillso.logrotate
+  version: 1.6.1
+  name: logrotate
