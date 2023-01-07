@@ -1,12 +1,4 @@
 ---
-- name: Better log rotation
-  template:
-    src: etc/logrotate.d/nginx.j2
-    dest: /etc/logrotate.d/nginx
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Create /var/backups/logs/nginx directory
   file:
     path: /var/backups/logs/nginx
