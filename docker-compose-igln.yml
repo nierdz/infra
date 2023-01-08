@@ -3,7 +3,7 @@ version: '3'
 services:
   igln:
     container_name: igln
-    image: nierdz/igln.fr:2.0.1
+    image: nierdz/igln.fr:2.0.2
     restart: always
     ports:
       - ${IGLN_HTTPS_PORT}:443

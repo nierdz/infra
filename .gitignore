@@ -1,6 +1,5 @@
 .env
 .ovh
-/madrabbit
 venv
 vendor
 .vault_pass.txt
