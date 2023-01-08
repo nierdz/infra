@@ -50,7 +50,6 @@ acme_sh_certificates:
   - domains:
       - mad-rabbit.com
       - www.mad-rabbit.com
-      - goaccess.mad-rabbit.com
       - tenminutestokill.com
       - www.tenminutestokill.com
     renew_hook: "systemctl restart nginx && systemctl restart docker-compose@madrabbit"
@@ -81,7 +80,7 @@ nginx_vhosts:
         proxy_set_header X-Real-IP $remote_addr;
       }
   - listen: "*:443 ssl http2 "
-    server_name: mad-rabbit.com www.mad-rabbit.com goaccess.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
+    server_name: mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/mad-rabbit.com/fullchain.cer;
@@ -175,3 +174,30 @@ php_opcache_validate_timestamps: "0"
 php_opcache_revalidate_path: "0"
 php_opcache_revalidate_freq: "1"
 php_opcache_max_file_size: "0"
+
+# Logrotate
+logrotate_options:
+  - weekly
+  - rotate 4
+  - create
+  - dateext
+
+logrotate_applications:
+  - name: nginx
+    definitions:
+      - logs:
+          - /var/log/nginx/*.log
+        options:
+          - daily
+          - missingok
+          - rotate 180
+          - compress
+          - delaycompress
+          - notifempty
+          - create 0644 www-data adm
+          - sharedscripts
+          - dateext
+          - dateformat .%Y-%m-%d
+        postrotate:
+          - /usr/bin/kill -USR1 "$(cat /run/nginx.pid)"
+          - /usr/bin/systemctl restart docker-compose@madrabbit
