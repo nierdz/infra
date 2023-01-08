@@ -6,7 +6,7 @@ slug = "supprimer-custom-fields-wordpress"
 
 ### Introduction
 
-Quand on utilise **WordPress** depuis plusieurs années et qu'on a testé quelques plugins on se retrouve souvent avec beaucoup de [custom post fields](https://wordpress.org/support/article/custom-fields/) dans nos articles. C'était mon cas sur [mad-rabbit.com](https://mad-rabbit.com/) et j'ai décidé de faire un peu de ménage dans ce bordel en écrivant un petit script **bash** qui utilise **wp-cli**.
+Quand on utilise **WordPress** depuis plusieurs années et qu'on a testé quelques plugins on se retrouve souvent avec beaucoup de [custom post fields](https://wordpress.org/support/article/custom-fields/) dans nos articles. C'était mon cas sur [videoalacon.fr](https://videoalacon.fr/) et j'ai décidé de faire un peu de ménage dans ce bordel en écrivant un petit script **bash** qui utilise **wp-cli**.
 
 ### wordpress-bulk-delete-custom-fields.sh
 
@@ -30,10 +30,10 @@ Il faut ensuite éditer le script pour ajouter ou supprimer les **custom post fi
 - **META_KEYS** : les custom post fields simples
 - **META_KEYS_PATTERN** : les patterns de custom post fields (utilisation de wildcard dans la chaîne de caractères)
 
-Et ensuite il faut le lancer avec la variable `WP_BINARY` qui permet d'indiquer où se trouve le binaire de **wp-cli**. Par exemple, moi qui fait tourner WordPress dans un conteneur docker qui se nomme **madrabbit-wordpress** dans lequel le binaire **wp-cli** est `/usr/bin/wp`, je lance le script comme ça :
+Et ensuite il faut le lancer avec la variable `WP_BINARY` qui permet d'indiquer où se trouve le binaire de **wp-cli**. Par exemple, moi qui fait tourner WordPress dans un conteneur docker qui se nomme **valc-wordpress** dans lequel le binaire **wp-cli** est `/usr/bin/wp`, je lance le script comme ça :
 
 ```bash
-WP_BINARY="docker exec madrabbit-wordpress /usr/bin/wp --allow-root" ./scripts/wordpress-bulk-delete-custom-fields.sh
+WP_BINARY="docker exec valc-wordpress /usr/bin/wp --allow-root" ./scripts/wordpress-bulk-delete-custom-fields.sh
 ```
 
 En fonction du nombre d'articles et du nombre de **custom post fields** à supprimer, cela peut prendre plus ou moins de temps. A titre indicatif, pour environ 3000 articles cela m'a pris plus de 8 heures. Il peut donc être judicieux de lancer la commande dans un **screen**.

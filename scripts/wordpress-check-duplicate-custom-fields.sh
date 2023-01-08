@@ -15,7 +15,7 @@ DEBUG=${DEBUG:=0}
 [[ $DEBUG -eq 1 ]] && set -o xtrace
 
 # Define wp-cli binaray path and options
-WP_BINARY=${WP_BINARY:="docker exec madrabbit-wordpress /usr/bin/wp --allow-root"}
+WP_BINARY=${WP_BINARY:="docker exec valc-wordpress /usr/bin/wp --allow-root"}
 
 echo "Retrieving all IDs from all posts"
 IFS=$'\n' read -r -d '' -a POST_IDS < <(${WP_BINARY} post list --field=ID && printf '\0')

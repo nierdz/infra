@@ -61,7 +61,7 @@
         daemon_reload: true
       with_items:
         - igln
-        - madrabbit
+        - valc
   roles:
     - {role: docker, tags: ['docker']}
     - {role: acme_sh, tags: ['acme_sh']}

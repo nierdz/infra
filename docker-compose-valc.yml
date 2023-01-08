@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  madrabbit-mysql:
-    container_name: madrabbit-mysql
+  valc-mysql:
+    container_name: valc-mysql
     image: nierdz/mysql:1.1.8
     restart: always
     command: >
@@ -12,34 +12,34 @@ services:
       --general_log=1
       --general_log_file=/var/lib/mysql/general.log
     volumes:
-      - /opt/madrabbit/mysql:/var/lib/mysql:rw
+      - /opt/valc/mysql:/var/lib/mysql:rw
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
 
-  madrabbit-wordpress:
-    container_name: madrabbit-wordpress
-    image: nierdz/mad-rabbit.com:1.1.12
+  valc-wordpress:
+    container_name: valc-wordpress
+    image: nierdz/videoalacon.fr:1.2.0
     restart: on-failure
     ports:
-      - ${MADRABBIT_HTTPS_PORT}:443
+      - ${VALC_HTTPS_PORT}:443
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf:/etc/nginx/conf:ro
-      - ./nginx/madrabbit.conf.d/:/etc/nginx/conf.d:ro
+      - ./nginx/valc.conf.d/:/etc/nginx/conf.d:ro
       - /var/log/nginx/:/var/log/nginx/:rw
       - ./php/zzz-hardening.ini:/usr/local/etc/php/conf.d/zzz-hardening.ini
       - ./php/zzz-opcache.ini:/usr/local/etc/php/conf.d/zzz-opcache.ini
       - ./php/zzz-php-fpm-tuning.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm-tuning.conf
-      - /root/.acme.sh/mad-rabbit.com/:/etc/nginx/mad-rabbit.com:ro
-      - /opt/madrabbit/images:/var/www/bedrock/web/images:ro
-      - /opt/madrabbit/uploads:/var/www/bedrock/web/app/uploads:rw
+      - /root/.acme.sh/videoalacon.fr/:/etc/nginx/videoalacon.fr:ro
+      - /opt/valc/images:/var/www/bedrock/web/images:ro
+      - /opt/valc/uploads:/var/www/bedrock/web/app/uploads:rw
       - .env:/var/www/bedrock/.env:ro
     shm_size: 512M
     depends_on:
-      - madrabbit-mysql
+      - valc-mysql
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://127.0.0.1:80/fpm-status || exit 1"]
       interval: 10s

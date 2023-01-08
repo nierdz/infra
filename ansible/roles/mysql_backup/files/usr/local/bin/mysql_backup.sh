@@ -11,7 +11,7 @@ DEBUG=${DEBUG:=0}
 #shellcheck source=/dev/null
 source /infra/.env
 
-DB="madrabbit"
+DB="valc"
 MYSQLDUMP=(/usr/bin/mysqldump -u root -p"${MYSQL_ROOT_PASSWORD}")
 MYSQL=(/usr/bin/mysql -u root -p"${MYSQL_ROOT_PASSWORD}")
 GZIP="/bin/gzip"
@@ -19,8 +19,8 @@ TIME_TO_KEEP="60" # Time in days you want to keep old backups
 DATE=$(date +%Y%m%d)
 BACKUP_ROOT="/var/backups/mysql"
 BACKUP_DIR="$BACKUP_ROOT/$DATE"
-DOCKER=(/usr/bin/docker exec madrabbit-mysql)
-DOCKERI=(/usr/bin/docker exec -i madrabbit-mysql)
+DOCKER=(/usr/bin/docker exec valc-mysql)
+DOCKERI=(/usr/bin/docker exec -i valc-mysql)
 
 # Create backup folder
 if [ ! -d "${BACKUP_DIR}" ]; then
