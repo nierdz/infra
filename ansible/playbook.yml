@@ -47,6 +47,20 @@
       loop:
         - { dest: "/infra/.env", src: "docker.env", owner: "www-data", group: "www-data" }
         - { dest: "/infra/.ovh", src: "ovh.secret", owner: "root", group: "root" }
+    - name: Create /infra/matomo directory
+      file:
+        path: /infra/matomo
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
+    - name: Create /infra/matomo/config.ini.php
+      template:
+        src: config.ini.php.j2
+        dest: /infra/matomo/config.ini.php
+        mode: 0400
+        owner: www-data
+        group: www-data
     - name: Create /etc/systemd/system/docker-compose@.service
       template:
         src: docker-compose@.service.j2
