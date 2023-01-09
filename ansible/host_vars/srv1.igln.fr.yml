@@ -83,7 +83,7 @@ nginx_vhosts:
         proxy_set_header X-Real-IP $remote_addr;
       }
   - listen: "*:443 ssl http2 "
-    server_name: videoalacon.fr wwww.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
+    server_name: videoalacon.fr wwww.videoalacon.fr stats.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/videoalacon.fr/fullchain.cer;
