@@ -50,6 +50,7 @@ acme_sh_certificates:
   - domains:
       - videoalacon.fr
       - www.videoalacon.fr
+      - stats.videoalacon.fr
       - mad-rabbit.com
       - www.mad-rabbit.com
       - tenminutestokill.com
