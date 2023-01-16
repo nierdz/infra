@@ -110,6 +110,7 @@ nginx_vhosts:
       include /etc/nginx/gzip.conf;
       include /etc/nginx/security.conf;
       include /etc/nginx/ssl.conf;
+      add_header X-Robots-Tag "none" always;
 
       location ^~ /.well-known {
         location = /.well-known/carddav { return 301 /remote.php/dav/; }
