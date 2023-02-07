@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-ANSIBLE_INVENTORY_GROUP ?= all
+ANSIBLE_INVENTORY_GROUP ?= k8s
 ANSIBLE_ARGS ?= -v
 MAIN_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VIRTUALENV_DIR := $(MAIN_DIR)/venv
