@@ -15,3 +15,17 @@ srv1.igln.fr
 
 [transmission]
 srv1.igln.fr
+
+[k8s:children]
+cp
+worker
+
+[cp]
+cka-cp-fra1-01 ansible_host=165.227.151.7
+cka-cp-fra1-02 ansible_host=164.90.181.62
+cka-cp-fra1-03 ansible_host=161.35.192.44
+
+[worker]
+cka-wk-fra1-01 ansible_host=164.90.208.183
+cka-wk-fra1-02 ansible_host=68.183.69.242
+cka-wk-fra1-03 ansible_host=159.223.27.21
