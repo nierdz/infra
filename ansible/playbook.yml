@@ -1,14 +1,179 @@
 - name: Provision k8s servers
   become: true
   hosts: k8s
+  roles:
+    - {role: utils, tags: ['utils']}
+  handlers:
+    - name: restart containerd
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
   post_tasks:
+    - name: Force gathering facts of all group on each node
+      ansible.builtin.setup:
+      loop: "{{ groups['k8s'] }}"
+      delegate_to: "{{ item }}"
+      delegate_facts: true
     - name: Disable swap
       command: swapoff -a
       changed_when: true
       when: ansible_swaptotal_mb > 0
-
     - name: Remove swap from fstab
       lineinfile:
         path: '/etc/fstab'
         regexp: '\sswap\s'
         state: 'absent'
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg2
+          - lsb-release
+          - python3-kubernetes
+          - software-properties-common
+          - uidmap
+          - vim
+        state: present
+    - name: Load kernel modules
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - overlay
+        - br_netfilter
+    - name: Set some sysctl config
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+      loop:
+        - net.bridge.bridge-nf-call-ip6tables
+        - net.bridge.bridge-nf-call-iptables
+        - net.ipv4.ip_forward
+    - name: Add docker repository gpg key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add docker repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_facts['distribution_release'] }} stable"
+        state: present
+        filename: docker
+        update_cache: true
+    - name: Install containerd.io
+      ansible.builtin.apt:
+        name: containerd.io
+        state: present
+    - name: Setup /etc/containerd/config.toml
+      ansible.builtin.copy:
+        src: config.toml
+        dest: /etc/containerd/config.toml
+        mode: 0644
+        owner: root
+        group: root
+      notify:
+        - restart containerd
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Setup /etc/crictl.yaml
+      ansible.builtin.copy:
+        src: crictl.yaml
+        dest: /etc/crictl.yaml
+        mode: 0644
+        owner: root
+        group: root
+    - name: Add k8s repository gpg key
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+    - name: Add k8s repository
+      ansible.builtin.apt_repository:
+        repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+        state: present
+        filename: kubernetes
+        update_cache: true
+    - name: Install k8s packages
+      ansible.builtin.apt:
+        name:
+          - kubeadm=1.24.1-00
+          - kubelet=1.24.1-00
+          - kubectl=1.24.1-00
+        state: present
+    - name: Hold k8s packages
+      ansible.builtin.dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop:
+        - kubeadm
+        - kubelet
+        - kubectl
+    - name: Update /etc/hosts with other nodes
+      lineinfile:
+        path: /etc/hosts
+        regexp: ".*\t{{ item }}"
+        line: "{{ hostvars[item]['ansible_facts']['eth1']['ipv4']['address'] }}\t{{ item }}"
+        state: present
+      when: item != ansible_hostname
+      loop: "{{ groups['k8s'] }}"
+    - name: Copy kubeadm-config.yaml
+      ansible.builtin.copy:
+        src: kubeadm-config.yaml
+        dest: /root/kubeadm-config.yaml
+        mode: 0644
+        owner: root
+        group: root
+      delegate_to: cka-cp-fra1-01
+      run_once: true
+    - name: Check if cluster already init
+      ansible.builtin.stat:
+        path: /var/lib/etcd
+      register: ectd_data_directory
+      delegate_to: cka-cp-fra1-01
+      run_once: true
+    - name: Run kubeadm init on first control plane node
+      ansible.builtin.shell: kubeadm init --config=kubeadm-config.yaml --upload-certs | tee kubeadm-init.out
+      args:
+        chdir: /root
+      delegate_to: cka-cp-fra1-01
+      run_once: true
+      when:
+        - not ectd_data_directory.stat.exists
+    - name: Create kube config folder for kmet
+      ansible.builtin.file:
+        path: /home/kmet/.kube
+        state: directory
+        mode: 0750
+        owner: kmet
+        group: kmet
+    - name: Copy kubectl config from first control plane node
+      ansible.builtin.slurp:
+        src: /etc/kubernetes/admin.conf
+      register: kube_config
+      delegate_to: cka-cp-fra1-01
+      run_once: true
+    - name: Create /home/kmet/.kube/config
+      ansible.builtin.copy:
+        dest: /home/kmet/.kube/config
+        content: "{{ kube_config.content | b64decode }}"
+        mode: 0640
+        owner: kmet
+        group: kmet
+    - name: Copy calico.yaml to first control plane node
+      ansible.builtin.copy:
+        src: calico.yaml
+        dest: /home/kmet/calico.yaml
+        mode: 0644
+        owner: kmet
+        group: kmet
+      delegate_to: cka-cp-fra1-01
+      run_once: true
+    - name: Apply network config to first control plane node
+      become: true
+      become_user: kmet
+      ansible.builtin.shell: kubectl apply -f calico.yaml
+      args:
+        chdir: /home/kmet
+      delegate_to: cka-cp-fra1-01
+      run_once: true
