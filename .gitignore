@@ -7,3 +7,5 @@ certs/igln.local-key.pem
 certs/igln.local.pem
 .cache
 matomo/
+.terraform
+terraform.tfstate*
