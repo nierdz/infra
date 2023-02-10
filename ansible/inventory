@@ -3,11 +3,11 @@ cp
 worker
 
 [cp]
-cka-cp-fra1-01 ansible_host=165.22.79.208
-cka-cp-fra1-02 ansible_host=134.209.249.197
-cka-cp-fra1-03 ansible_host=139.59.134.48
+cka-cp-fra1-01 ansible_host=157.230.21.222
+cka-cp-fra1-02 ansible_host=164.90.190.188
+cka-cp-fra1-03 ansible_host=164.90.189.176
 
 [worker]
-cka-wk-fra1-01 ansible_host=139.59.135.127
-cka-wk-fra1-02 ansible_host=139.59.135.54
-cka-wk-fra1-03 ansible_host=139.59.135.231
+cka-wk-fra1-01 ansible_host=161.35.29.222
+cka-wk-fra1-02 ansible_host=157.230.23.129
+cka-wk-fra1-03 ansible_host=167.71.39.126
