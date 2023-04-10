@@ -3,7 +3,7 @@ version: '3'
 services:
   valc-mysql:
     container_name: valc-mysql
-    image: nierdz/mysql:1.1.8
+    image: nierdz/mysql:1.1.9
     restart: always
     command: >
       --default-authentication-plugin=mysql_native_password
