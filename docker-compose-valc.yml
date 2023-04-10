@@ -21,7 +21,7 @@ services:
 
   valc-wordpress:
     container_name: valc-wordpress
-    image: nierdz/videoalacon.fr:1.2.5
+    image: nierdz/videoalacon.fr:1.2.8
     restart: on-failure
     ports:
       - ${VALC_HTTPS_PORT}:443
