@@ -1,5 +1,5 @@
 FROM mysql:8.0-debian
-LABEL version=1.1.8
+LABEL version=1.1.9
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
   ca-certificates \
