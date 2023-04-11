@@ -10,7 +10,6 @@ nextcloud_instanceid: "{{ nextcloud_instanceid_vault }}"
 nextcloud_passwordsalt: "{{ nextcloud_passwordsalt_vault }}"
 nextcloud_secret: "{{ nextcloud_secret_vault }}"
 nextcloud_dbpassword: "{{ nextcloud_dbpassword_vault }}"
-nextcloud_apps:
 
 # MySQL
 mysql_root_password: "{{ mysql_root_password_vault }}"
