@@ -1,6 +1,6 @@
 ---
 - src: geerlingguy.php
-  version: 4.8.0
+  version: 5.0.1
   name: php
 
 - src: geerlingguy.mysql
