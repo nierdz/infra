@@ -154,10 +154,10 @@ nginx_vhosts:
       }
 
 # PHP
-php_default_version_debian: "8.0"
+php_default_version_debian: "8.2"
 php_packages:
-  - php8.0-cli
-  - php8.0-fpm
+  - php8.2-cli
+  - php8.2-fpm
 php_install_recommends: false
 php_enable_webserver: false
 php_enable_php_fpm: true

@@ -55,9 +55,7 @@ docker-run-igln-local: ## Build and run igln.fr container locally
 		igln.fr:local
 
 mkcert: ## Create certs if needed
-	if [[ -e $(MAIN_DIR)/certs/igln.local-key.pem ]] && [[ -e $(MAIN_DIR)/certs/igln.local.pem ]]; then \
-		openssl verify -CAfile ~/.local/share/mkcert/rootCA.pem $(MAIN_DIR)/certs/igln.local.pem; \
-	else \
+	if ! openssl verify -CAfile ~/.local/share/mkcert/rootCA.pem $(MAIN_DIR)/certs/igln.local.pem; then \
 		mkcert \
 			-cert-file $(MAIN_DIR)/certs/igln.local.pem \
 			-key-file $(MAIN_DIR)/certs/igln.local-key.pem \
