@@ -1,5 +1,5 @@
-FROM debian:11-slim as build
 ENV HUGO_VERSION 0.115.4
+FROM debian:12-slim as build
 ARG LOCAL=0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3015
