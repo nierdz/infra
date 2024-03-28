@@ -19,5 +19,5 @@ RUN if [[ $LOCAL -eq 1 ]]; then \
     fi
 
 FROM nginx:1.25
-LABEL version=2.1.0
+LABEL version=3.0.0
 COPY --from=build /www/public /var/www
