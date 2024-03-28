@@ -1,5 +1,5 @@
-FROM debian:11-slim as build
-ENV HUGO_VERSION 0.115.4
+FROM debian:12-slim as build
+ENV HUGO_VERSION 0.124.1
 ARG LOCAL=0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008,DL3015
@@ -19,5 +19,5 @@ RUN if [[ $LOCAL -eq 1 ]]; then \
     fi
 
 FROM nginx:1.25
-LABEL version=2.1.0
+LABEL version=3.0.0
 COPY --from=build /www/public /var/www
