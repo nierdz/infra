@@ -1,6 +1,6 @@
 # Quick reference
 
-This image is made to provide **debian 10** in a molecule pipeline. It provides **systemd** to allow **ansible** service module to work.
+This image is made to provide **debian 12** in a molecule pipeline. It provides **systemd** to allow **ansible** service module to work.
 
 -	**Main repository containing all my docker images**: [nierdz docker images](https://github.com/nierdz/infra/tree/master/docker)
 
