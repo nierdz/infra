@@ -1,11 +1,11 @@
 ---
 - name: Set up hostname according to inventory_hostname
-  hostname:
+  ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
 
 - name: Install common packages
-  apt:
-    name: "{{ common_packages }}"
+  ansible.builtin.apt:
+    name: "{{ utils_common_packages }}"
     state: present
   register: common_packages_installed
   until: common_packages_installed is success
@@ -13,8 +13,8 @@
   delay: 2
 
 - name: Install other packages
-  apt:
-    name: "{{ other_packages|default([]) }}"
+  ansible.builtin.apt:
+    name: "{{ other_packages | default([]) }}"
     state: present
   register: other_packages_installed
   until: other_packages_installed is success
@@ -22,75 +22,73 @@
   delay: 2
 
 - name: Set localtime to Europe/Paris
-  timezone:
+  community.general.timezone:
     name: Europe/Paris
 
 - name: Better history
-  template:
+  ansible.builtin.template:
     src: etc/profile.d/history.sh.j2
     dest: /etc/profile.d/history.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Add some aliases
-  template:
+  ansible.builtin.template:
     src: etc/profile.d/alias.sh.j2
     dest: /etc/profile.d/alias.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Define logrotate in /etc/crontab
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/crontab
-    line: "59 23	* * *	root  /usr/sbin/logrotate /etc/logrotate.conf"  # noqa 203
+    line: "59 23\t* * *\troot  /usr/sbin/logrotate /etc/logrotate.conf" # noqa no-tabs
   notify:
     - cron restart
 
 - name: Clean old logrotate script in /etc/cron.daily/logrotate
-  template:
+  ansible.builtin.template:
     src: etc/cron.daily/logrotate.j2
     dest: /etc/cron.daily/logrotate
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Enable SSH forwarding for sudo
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/sudoers
-    insertafter: '^#?\s*Defaults\s+env_keep\b'
-    line: 'Defaults    env_keep += "SSH_AUTH_SOCK"'
+    insertafter: ^#?\s*Defaults\s+env_keep\b
+    line: Defaults    env_keep += "SSH_AUTH_SOCK"
 
 - name: Install crontab entries
-  cron:
+  ansible.builtin.cron:
     name: "{{ item.key }}"
-    backup: "{{ item.value.backup     | default('no') }}"
-    day: "{{ item.value.day           | default('*') }}"
-    hour: "{{ item.value.hour         | default('*') }}"
-    job: "{{ item.value.job           | default() }}"
-    minute: "{{ item.value.minute     | default('*') }}"
-    month: "{{ item.value.month       | default('*') }}"
-    state: "{{ item.value.state       | default('present') }}"
-    user: "{{ item.value.user         | default('root') }}"
-    weekday: "{{ item.value.weekday   | default('*') }}"
+    backup: "{{ item.value.backup | default('no') }}"
+    day: "{{ item.value.day | default('*') }}"
+    hour: "{{ item.value.hour | default('*') }}"
+    job: "{{ item.value.job | default() }}"
+    minute: "{{ item.value.minute | default('*') }}"
+    month: "{{ item.value.month | default('*') }}"
+    state: "{{ item.value.state | default('present') }}"
+    user: "{{ item.value.user | default('root') }}"
+    weekday: "{{ item.value.weekday | default('*') }}"
     disabled: "{{ item.value.disabled | default('no') }}"
   with_dict: "{{ crontabs | default({}) }}"
 
 - name: Bind primary ip to postfix
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/postfix/main.cf
-    regexp: '^#?\s*inet_interfaces'
-    line: "inet_interfaces = {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    regexp: ^#?\s*inet_interfaces
+    line: inet_interfaces = {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
   notify:
     - postfix restart
 
 - name: Import vim tasks
-  import_tasks: vim.yml
-
+  ansible.builtin.import_tasks: vim.yml
 - name: Import users tasks
-  import_tasks: users.yml
-
+  ansible.builtin.import_tasks: users.yml
 - name: Import nginx tasks
-  import_tasks: nginx.yml
+  ansible.builtin.import_tasks: nginx.yml
   when: nginx_vhosts is defined

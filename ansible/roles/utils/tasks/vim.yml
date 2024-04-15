@@ -1,21 +1,21 @@
 ---
 - name: Update /etc/vim/vimrc
-  template:
+  ansible.builtin.template:
     src: etc/vim/vimrc.j2
     dest: /etc/vim/vimrc
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Remove this shitty mouse support in vim
-  replace:
+  ansible.builtin.replace:
     path: /usr/share/vim/vim82/defaults.vim
-    regexp: 'set mouse=a'
-    replace: 'set mouse-=a'
-    mode: 0644
+    regexp: set mouse=a
+    replace: set mouse-=a
+    mode: "0644"
     owner: root
 
 - name: Set vim as default editor
-  alternatives:
+  community.general.alternatives:
     name: editor
     path: /usr/bin/vim.basic

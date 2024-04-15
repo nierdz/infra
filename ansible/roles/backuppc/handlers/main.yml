@@ -1,5 +1,0 @@
----
-- name: restart backuppc
-  systemd:
-    name: backuppc
-    state: restarted

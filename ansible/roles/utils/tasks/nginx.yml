@@ -1,24 +1,24 @@
 ---
 - name: Create /var/backups/logs/nginx directory
-  file:
+  ansible.builtin.file:
     path: /var/backups/logs/nginx
     state: directory
     owner: www-data
     group: www-data
-    mode: 0750
+    mode: "0750"
 
 - name: Ensure /etc/cron.d/ directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/cron.d
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Archive and delete nginx logs
-  template:
+  ansible.builtin.template:
     src: etc/cron.d/nginx.j2
     dest: /etc/cron.d/nginx
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

@@ -49,4 +49,4 @@ ansible-run: ## Run ansible on all servers
 
 ansible-lint: ## Run ansible-lint
 	ANSIBLE_ROLES_PATH=$(ANSIBLE_DIR)/roles:$(ANSIBLE_DIR)/vendor/roles \
-		ansible-lint -v -c .ansible-lint $(ANSIBLE_DIR)/playbook.yml
+		ansible-lint --write -v -c .ansible-lint $(ANSIBLE_DIR)/playbook.yml

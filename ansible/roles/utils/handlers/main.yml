@@ -1,28 +1,29 @@
 ---
-- name: cron restart
-  service:
+- name: Cron restart
+  ansible.builtin.service:
     name: cron
     state: restarted
 
-- name: apt update
-  apt: update_cache=true
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: "true"
   register: cache_updated
   until: cache_updated is success
   retries: 10
   delay: 2
 
-- name: postfix restart
-  service:
+- name: Postfix restart
+  ansible.builtin.service:
     name: postfix
     state: restarted
 
-- name: restart backuppc
+- name: Restart backuppc
   delegate_to: "{{ backuppc_server }}"
-  systemd:
+  ansible.builtin.systemd:
     name: backuppc
     state: restarted
 
-- name: restart sshd
-  service:
+- name: Restart sshd
+  ansible.builtin.service:
     name: sshd
     state: restarted

@@ -1,9 +1,8 @@
 ---
-resolv_config:
+bind_resolv_config:
   - nameserver:
-      - "127.0.0.1"
-      - "213.186.33.99"
-      - "9.9.9.9"
+      - 127.0.0.1
+      - 9.9.9.9
+      - 213.186.33.99
   - search:
-      - "igln.fr"
-      - "ovh.net"
+      - igln.fr

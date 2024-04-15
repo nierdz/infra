@@ -67,8 +67,8 @@ nginx_vhosts:
     server_name: videoalacon.fr wwww.videoalacon.fr stats.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com igln.fr wwww.igln.fr mnt-tech.fr www.mnt-tech.fr
     state: present
     extra_parameters: |
-      ssl_certificate /root/.acme.sh/videoalacon.fr/fullchain.cer;
-      ssl_certificate_key /root/.acme.sh/videoalacon.fr/videoalacon.fr.key;
+      ssl_certificate /root/.acme.sh/videoalacon.fr_ecc/fullchain.cer;
+      ssl_certificate_key /root/.acme.sh/videoalacon.fr_ecc/videoalacon.fr.key;
       include /etc/nginx/generic.conf;
       include /etc/nginx/gzip.conf;
       include /etc/nginx/security.conf;
@@ -85,8 +85,8 @@ nginx_vhosts:
     root: "/var/www/{{ nextcloud_domain }}/current/nextcloud"
     index: index.php index.html /index.php$request_uri
     extra_parameters: |
-      ssl_certificate /root/.acme.sh/{{ nextcloud_domain }}/fullchain.cer;
-      ssl_certificate_key /root/.acme.sh/{{ nextcloud_domain }}/{{ nextcloud_domain }}.key;
+      ssl_certificate /root/.acme.sh/{{ nextcloud_domain }}_ecc/fullchain.cer;
+      ssl_certificate_key /root/.acme.sh/{{ nextcloud_domain }}_ecc/{{ nextcloud_domain }}.key;
       include /etc/nginx/generic.conf;
       include /etc/nginx/gzip.conf;
       include /etc/nginx/security.conf;
