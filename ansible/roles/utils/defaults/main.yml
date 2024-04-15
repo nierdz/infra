@@ -1,6 +1,6 @@
 ---
 
-common_packages:
+utils_common_packages:
   - ack
   - apt-transport-https
   - bash-completion

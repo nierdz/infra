@@ -1,5 +1,5 @@
 ---
-resolv_config:
+bind_resolv_config:
   - nameserver:
       - "127.0.0.1"
       - "213.186.33.99"

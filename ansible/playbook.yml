@@ -1,17 +1,18 @@
+---
 - name: Provision all servers
   become: true
   hosts: all
   roles:
-    - {role: utils, tags: ['utils']}
-    - {role: bind, tags: ['bind']}
+    - { role: utils, tags: [utils] }
+    - { role: bind, tags: [bind] }
   post_tasks:
     - name: Remove /etc/sudoers.d/kmet
-      file:
+      ansible.builtin.file:
         path: /etc/sudoers.d/kmet
         state: absent
     # Keep this because of my control_path in ssh local configuration
     - name: Remove local control_path to force login again to load group
-      file:
+      ansible.builtin.file:
         path: /home/{{ ansible_env.USER }}/.ssh/{{ ansible_env.SUDO_USER }}@{{ inventory_hostname }}:22
         state: absent
       delegate_to: localhost
@@ -26,55 +27,55 @@
     - name: Clone infra repository
       ansible.builtin.git:
         repo: https://github.com/nierdz/infra.git
-        version: "master"
+        version: master
         dest: /infra
         accept_hostkey: true
         update: true
         recursive: false
     - name: Create /infra/.env and /infra/.ovh
-      template:
+      ansible.builtin.template:
         src: vault_files/{{ item.src }}
         dest: "{{ item.dest }}"
-        mode: 0400
+        mode: "0400"
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
       loop:
-        - { dest: "/infra/.env", src: "docker.env", owner: "www-data", group: "www-data" }
-        - { dest: "/infra/.ovh", src: "ovh.secret", owner: "root", group: "root" }
+        - { dest: /infra/.env, src: docker.env, owner: www-data, group: www-data }
+        - { dest: /infra/.ovh, src: ovh.secret, owner: root, group: root }
     - name: Create /infra/matomo directory
-      file:
+      ansible.builtin.file:
         path: /infra/matomo
         state: directory
-        mode: 0755
+        mode: "0755"
         owner: root
         group: root
     - name: Create /infra/matomo/config.ini.php
-      template:
+      ansible.builtin.template:
         src: config.ini.php.j2
         dest: /infra/matomo/config.ini.php
-        mode: 0400
+        mode: "0400"
         owner: www-data
         group: www-data
     - name: Create /etc/systemd/system/docker-compose@.service
-      template:
+      ansible.builtin.template:
         src: docker-compose@.service.j2
         dest: /etc/systemd/system/docker-compose@.service
-        mode: 0644
+        mode: "0644"
         owner: root
         group: root
     - name: Enable docker-compose services
-      service:
-        name: "docker-compose@{{ item }}"
+      ansible.builtin.service:
+        name: docker-compose@{{ item }}
         enabled: true
         daemon_reload: true
       with_items:
         - igln
         - valc
   roles:
-    - {role: docker, tags: ['docker']}
-    - {role: acme_sh, tags: ['acme_sh']}
-    - {role: mysql_backup, tags: ['mysql_backup']}
-    - {role: logrotate, tags: ['logrotate']}
+    - { role: docker, tags: [docker] }
+    - { role: acme_sh, tags: [acme_sh] }
+    - { role: mysql_backup, tags: [mysql_backup] }
+    - { role: logrotate, tags: [logrotate] }
 
 - name: Configure nextcloud servers
   become: true
@@ -83,37 +84,37 @@
     - vault_vars/all.yml
     - vault_vars/nextcloud.yml
   roles:
-    - {role: acme_sh, tags: [acme_sh']}
-    - {role: nginx, tags: ['nginx']}
-    - {role: mysql, tags: ['mysql']}
-    - {role: php, tags: ['php']}
-    - {role: percona, tags: ['percona']}
-    - {role: nextcloud, tags: ['nextcloud']}
+    - { role: acme_sh, tags: [acme_sh'] }
+    - { role: nginx, tags: [nginx] }
+    - { role: mysql, tags: [mysql] }
+    - { role: php, tags: [php] }
+    - { role: percona, tags: [percona] }
+    - { role: nextcloud, tags: [nextcloud] }
   pre_tasks:
     - name: Install sury key
-      apt_key:
-        url: "https://packages.sury.org/php/apt.gpg"
+      ansible.builtin.apt_key:
+        url: https://packages.sury.org/php/apt.gpg
         state: present
     - name: Add sury repositories
-      apt_repository:
-        repo: "deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
+      ansible.builtin.apt_repository:
+        repo: deb https://packages.sury.org/php/ {{ ansible_distribution_release }} main
         state: present
         update_cache: true
         filename: sury
     - name: Copy specific nginx configuration files
-      copy:
+      ansible.builtin.copy:
         src: "{{ item }}"
         dest: /etc/nginx/
         owner: root
-        mode: 0644
+        mode: "0644"
       with_fileglob:
         - nginx/*.conf
     - name: Copy /etc/nginx/dh4096.pem
-      copy:
+      ansible.builtin.copy:
         src: nginx/dh4096.pem
         dest: /etc/nginx/dh4096.pem
         owner: www-data
-        mode: 0400
+        mode: "0400"
 
 - name: Provision transmission
   become: true
@@ -121,4 +122,4 @@
   vars_files:
     - vault_vars/transmission.yml
   roles:
-    - {role: transmission, tags: ['transmission']}
+    - { role: transmission, tags: [transmission] }

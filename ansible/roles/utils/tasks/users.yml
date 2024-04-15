@@ -1,12 +1,12 @@
 ---
 - name: Create admin group
-  group:
+  ansible.builtin.group:
     name: admin
     gid: 10000
     state: present
 
 - name: Create user accounts
-  user:
+  ansible.builtin.user:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     comment: "{{ item.comment }}"
@@ -15,35 +15,35 @@
   with_items: "{{ users }}"
 
 - name: Create ~/.profile
-  template:
+  ansible.builtin.template:
     src: profile.j2
     dest: /home/{{ item.name }}/.profile
     owner: "{{ item.name }}"
     group: "{{ item.name }}"
-    mode: 0644
+    mode: "0644"
   with_items: "{{ users }}"
 
 - name: Create ~/.bashrc
-  template:
+  ansible.builtin.template:
     src: bashrc.j2
     dest: /home/{{ item.name }}/.bashrc
     owner: "{{ item.name }}"
     group: "{{ item.name }}"
-    mode: 0644
+    mode: "0644"
   with_items: "{{ users }}"
 
 - name: Add user ssh key
-  authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ item.name }}"
     key: "{{ item.ssh_key }}"
   with_items: "{{ users }}"
   when: item.state == 'present'
 
 - name: Create sudo file for admin group
-  template:
+  ansible.builtin.template:
     src: etc/sudoers.d/admin.j2
     dest: /etc/sudoers.d/admin
-    validate: 'visudo -cf %s'
+    validate: visudo -cf %s
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

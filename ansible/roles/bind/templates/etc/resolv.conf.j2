@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for config in resolv_config %}
+{% for config in bind_resolv_config %}
 {% if config.nameserver is defined %}
 {% for ns in config.nameserver %}
 nameserver {{ ns }}

@@ -1,8 +1,8 @@
 ---
 - name: Create /usr/local/bin/mysql_backup.sh
-  copy:
+  ansible.builtin.copy:
     src: usr/local/bin/mysql_backup.sh
     dest: /usr/local/bin/mysql_backup.sh
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"

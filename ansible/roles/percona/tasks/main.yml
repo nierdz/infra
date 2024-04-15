@@ -1,9 +1,10 @@
+---
 - name: Install percona repository package
   ansible.builtin.apt:
-    deb: "https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb"
+    deb: https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb
 
 - name: Install percona packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ percona_packages }}"
     state: present
     update_cache: true
