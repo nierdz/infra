@@ -17,12 +17,6 @@
       delegate_to: localhost
       changed_when: false
 
-- name: Provision xmr-stak
-  become: true
-  hosts: xmrstak
-  roles:
-    - {role: xmr_stak, tags: ['xmr_stak']}
-
 - name: Provision docker server
   become: true
   hosts: docker
