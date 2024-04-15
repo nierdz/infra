@@ -2,6 +2,11 @@
 - name: Provision all servers
   become: true
   hosts: all
+  pre_tasks:
+    - name: Load all vaulted vars
+      ansible.builtin.include_vars: vault_vars/all.yml
+      no_log: true
+      tags: [always]
   roles:
     - { role: utils, tags: [utils] }
     - { role: bind, tags: [bind] }
@@ -21,8 +26,6 @@
 - name: Provision docker server
   become: true
   hosts: docker
-  vars_files:
-    - vault_vars/all.yml
   pre_tasks:
     - name: Clone infra repository
       ansible.builtin.git:
@@ -80,9 +83,6 @@
 - name: Configure nextcloud servers
   become: true
   hosts: nextcloud
-  vars_files:
-    - vault_vars/all.yml
-    - vault_vars/nextcloud.yml
   roles:
     - { role: acme_sh, tags: [acme_sh'] }
     - { role: nginx, tags: [nginx] }
@@ -119,7 +119,5 @@
 - name: Provision transmission
   become: true
   hosts: transmission
-  vars_files:
-    - vault_vars/transmission.yml
   roles:
     - { role: transmission, tags: [transmission] }
