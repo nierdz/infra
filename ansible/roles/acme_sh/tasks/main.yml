@@ -8,7 +8,7 @@
 - name: Create certificates
   ansible.builtin.shell: source /infra/.ovh && ./acme.sh --issue -d {{ item.domains | join(' -d ') }} --server letsencrypt --renew-hook "{{ item.renew_hook }}" --dns dns_ovh
   args:
-    creates: /root/.acme.sh/{{ item.domains | first }}/{{ item.domains | first }}.conf
+    creates: /root/.acme.sh/{{ item.domains | first }}_ecc/{{ item.domains | first }}.conf
     chdir: "{{ acme_sh_path }}"
     executable: /bin/bash
   loop: "{{ acme_sh_certificates }}"
