@@ -1,3 +1,0 @@
-[submodule "docker/igln.fr/www/themes/docdock"]
-	path = docker/igln.fr/www/themes/docdock
-	url = https://github.com/vjeantet/hugo-theme-docdock.git
