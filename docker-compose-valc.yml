@@ -33,7 +33,7 @@ services:
       - ./php/zzz-hardening.ini:/usr/local/etc/php/conf.d/zzz-hardening.ini
       - ./php/zzz-opcache.ini:/usr/local/etc/php/conf.d/zzz-opcache.ini
       - ./php/zzz-php-fpm-tuning.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm-tuning.conf
-      - /root/.acme.sh/videoalacon.fr/:/etc/nginx/videoalacon.fr:ro
+      - /root/.acme.sh/videoalacon.fr_ecc/:/etc/nginx/videoalacon.fr:ro
       - /opt/valc/images:/var/www/bedrock/web/images:ro
       - /opt/valc/uploads:/var/www/bedrock/web/app/uploads:rw
       - .env:/var/www/bedrock/.env:ro
