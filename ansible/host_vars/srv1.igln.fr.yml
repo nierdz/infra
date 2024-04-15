@@ -41,12 +41,6 @@ crontabs:
 # Acme.sh
 acme_sh_certificates:
   - domains:
-      - igln.fr
-      - www.igln.fr
-      - mnt-tech.fr
-      - www.mnt-tech.fr
-    renew_hook: "systemctl restart nginx && systemctl restart docker-compose@igln"
-  - domains:
       - videoalacon.fr
       - www.videoalacon.fr
       - stats.videoalacon.fr
@@ -54,6 +48,10 @@ acme_sh_certificates:
       - www.mad-rabbit.com
       - tenminutestokill.com
       - www.tenminutestokill.com
+      - igln.fr
+      - www.igln.fr
+      - mnt-tech.fr
+      - www.mnt-tech.fr
     renew_hook: "systemctl restart nginx && systemctl restart docker-compose@valc"
   - domains:
       - "{{ nextcloud_domain }}"
@@ -66,23 +64,7 @@ nginx_service_state: started
 nginx_listen_ipv6: false
 nginx_vhosts:
   - listen: "*:443 ssl http2 "
-    server_name: igln.fr wwww.igln.fr mnt-tech.fr www.mnt-tech.fr
-    state: present
-    extra_parameters: |
-      ssl_certificate /root/.acme.sh/igln.fr/fullchain.cer;
-      ssl_certificate_key /root/.acme.sh/igln.fr/igln.fr.key;
-      include /etc/nginx/generic.conf;
-      include /etc/nginx/gzip.conf;
-      include /etc/nginx/security.conf;
-      include /etc/nginx/ssl.conf;
-
-      location / {
-        proxy_pass https://localhost:4431;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Real-IP $remote_addr;
-      }
-  - listen: "*:443 ssl http2 "
-    server_name: videoalacon.fr wwww.videoalacon.fr stats.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com
+    server_name: videoalacon.fr wwww.videoalacon.fr stats.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com igln.fr wwww.igln.fr mnt-tech.fr www.mnt-tech.fr
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/videoalacon.fr/fullchain.cer;

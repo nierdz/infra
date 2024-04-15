@@ -40,28 +40,6 @@ rsync-push: ## Push files to server
 docker-build: ## Build all images in docker folder
 	scripts/docker-build.sh
 
-docker-run-igln-local: ## Build and run igln.fr container locally
-	docker rm -f igln-local
-	docker build \
-		--build-arg LOCAL=1 \
-		-t igln.fr:local \
-		$(MAIN_DIR)/docker/igln.fr
-	docker run -d \
-		-p 127.0.0.1:443:443 \
-		--name igln-local \
-		-v $(MAIN_DIR)/docker/igln.fr/igln.conf:/etc/nginx/conf.d/igln.conf:ro \
-		-v $(MAIN_DIR)/certs/igln.local-key.pem:/etc/ssl/certs/igln.local-key.pem:ro \
-		-v $(MAIN_DIR)/certs/igln.local.pem:/etc/ssl/certs/igln.local.pem:ro \
-		igln.fr:local
-
-mkcert: ## Create certs if needed
-	if ! openssl verify -CAfile ~/.local/share/mkcert/rootCA.pem $(MAIN_DIR)/certs/igln.local.pem; then \
-		mkcert \
-			-cert-file $(MAIN_DIR)/certs/igln.local.pem \
-			-key-file $(MAIN_DIR)/certs/igln.local-key.pem \
-			"igln.local"; \
-	fi
-
 pre-commit: ## Run pre-commit tests
 	pre-commit run --all-files
 
