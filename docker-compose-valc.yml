@@ -21,7 +21,7 @@ services:
 
   valc-wordpress:
     container_name: valc-wordpress
-    image: nierdz/videoalacon.fr:1.4.0
+    image: nierdz/videoalacon.fr:1.4.1
     restart: on-failure
     ports:
       - ${VALC_HTTPS_PORT}:443
@@ -37,7 +37,7 @@ services:
       - /opt/valc/images:/var/www/bedrock/web/images:ro
       - /opt/valc/uploads:/var/www/bedrock/web/app/uploads:rw
       - .env:/var/www/bedrock/.env:ro
-      - ./matomo/config.ini.php:/var/www/matomo/config/config.ini.php:ro
+      - ./matomo/config.ini.php:/var/www/matomo/config/config.ini.php:rw
     shm_size: 512M
     depends_on:
       - valc-mysql
