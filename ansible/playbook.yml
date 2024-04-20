@@ -56,7 +56,7 @@
       ansible.builtin.template:
         src: config.ini.php.j2
         dest: /infra/matomo/config.ini.php
-        mode: "0400"
+        mode: "0600"
         owner: www-data
         group: www-data
     - name: Create /etc/systemd/system/docker-compose@.service
