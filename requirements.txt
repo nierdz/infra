@@ -1,4 +1,6 @@
 ansible==10.1.0
 ansible-lint==24.6.0
 pre-commit==3.7.1
+pynput==1.7.7
+screeninfo==0.8.1
 yamllint==1.35.1
