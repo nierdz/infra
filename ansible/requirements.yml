@@ -16,7 +16,7 @@
   name: nginx
 
 - src: https://github.com/nierdz/ansible-role-nextcloud
-  version: 28.0.4
+  version: 29.0.7
   name: nextcloud
 
 - src: arillso.logrotate
