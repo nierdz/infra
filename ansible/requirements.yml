@@ -1,6 +1,6 @@
 ---
 - src: geerlingguy.php
-  version: 5.0.1
+  version: 6.0.0
   name: php
 
 - src: geerlingguy.mysql
@@ -8,15 +8,15 @@
   name: mysql
 
 - src: geerlingguy.docker
-  version: 6.1.0
+  version: 7.4.1
   name: docker
 
 - src: geerlingguy.nginx
-  version: 3.1.4
+  version: 3.2.0
   name: nginx
 
-- src: https://github.com/nierdz/ansible-role-nextcloud
-  version: 29.0.7
+- src: nierdz.nextcloud
+  version: 30.0.2
   name: nextcloud
 
 - src: arillso.logrotate
