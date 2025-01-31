@@ -2,7 +2,7 @@ FROM debian:12
 
 ENV DEBIAN_FRONTEND noninteractive
 
-LABEL version=1.0.0
+LABEL version=1.0.1
 
 # Install dependencies.
 # hadolint ignore=DL3008
