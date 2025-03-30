@@ -8,7 +8,7 @@
   name: mysql
 
 - src: geerlingguy.docker
-  version: 7.4.1
+  version: 7.4.7
   name: docker
 
 - src: geerlingguy.nginx
