@@ -45,20 +45,6 @@
       loop:
         - { dest: /infra/.env, src: docker.env, owner: www-data, group: www-data }
         - { dest: /infra/.ovh, src: ovh.secret, owner: root, group: root }
-    - name: Create /infra/matomo directory
-      ansible.builtin.file:
-        path: /infra/matomo
-        state: directory
-        mode: "0755"
-        owner: root
-        group: root
-    - name: Create /infra/matomo/config.ini.php
-      ansible.builtin.template:
-        src: config.ini.php.j2
-        dest: /infra/matomo/config.ini.php
-        mode: "0600"
-        owner: www-data
-        group: www-data
     - name: Create /etc/systemd/system/docker-compose@.service
       ansible.builtin.template:
         src: docker-compose@.service.j2
@@ -72,7 +58,6 @@
         enabled: true
         daemon_reload: true
       with_items:
-        - igln
         - valc
   roles:
     - { role: docker, tags: [docker] }
