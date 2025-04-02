@@ -41,7 +41,6 @@ services:
       - /opt/valc/images:/var/www/bedrock/web/images:ro
       - /opt/valc/uploads:/var/www/bedrock/web/app/uploads:rw
       - .env:/var/www/bedrock/.env:ro
-      - ./matomo/config.ini.php:/var/www/matomo/config/config.ini.php:rw
     shm_size: 512M
     depends_on:
       - valc-mysql

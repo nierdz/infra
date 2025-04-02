@@ -43,7 +43,6 @@ acme_sh_certificates:
   - domains:
       - videoalacon.fr
       - www.videoalacon.fr
-      - stats.videoalacon.fr
       - mad-rabbit.com
       - www.mad-rabbit.com
       - tenminutestokill.com
@@ -64,7 +63,7 @@ nginx_service_state: started
 nginx_listen_ipv6: false
 nginx_vhosts:
   - listen: "*:443 ssl http2 "
-    server_name: videoalacon.fr www.videoalacon.fr stats.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com igln.fr www.igln.fr mnt-tech.fr www.mnt-tech.fr
+    server_name: videoalacon.fr www.videoalacon.fr mad-rabbit.com www.mad-rabbit.com tenminutestokill.com www.tenminutestokill.com igln.fr www.igln.fr mnt-tech.fr www.mnt-tech.fr
     state: present
     extra_parameters: |
       ssl_certificate /root/.acme.sh/videoalacon.fr_ecc/fullchain.cer;
