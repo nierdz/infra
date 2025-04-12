@@ -16,7 +16,7 @@
   name: nginx
 
 - src: nierdz.nextcloud
-  version: 31.0.2
+  version: 31.0.3
   name: nextcloud
 
 - src: arillso.logrotate
